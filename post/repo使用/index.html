@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='repo使用 一、基础设施
+安装Python 3 ，目前版本是3.9，不要安装Python 2，这是和旧办法的不同之处
+二、repo工具
+#下载、配置repo使用环境：
+mkdir -p ~/.bin
+PATH=&amp;quot;${HOME}/.bin:${PATH}&amp;quot;
+curl https://storage.googleapis.com/git-repo-downloads/repo &amp;gt; ~/.bin/repo
+chmod a&#43;rx ~/.bin/repo
+#本地新建一个工程文件夹，如repo：
+mkdir repo
+cd repo
+#init操作
+repo init -u （manifest 的git 地址）
+命令行出现：repo has been initialized in xxx 表示init成功
+#同步仓库的代码
+repo sync
+#切分支：
+repo start 分支名字 &amp;ndash;all | project1 project2 …
+三、可能出现的问题：
+1.repo init -u （manifest 的git 地址）的时候，ssl请求出现如下情况，是证书问题：
+Downloading Repo source from https://gerrit.googlesource.com/git-repo
+fatal: Cannot get https://gerrit.googlesource.com/git-repo/clone.bundle
+fatal: error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.'>
+<title>repo使用</title>
+
+<link rel='canonical' href='https://haolovelin.com/post/repo%E4%BD%BF%E7%94%A8/'>
+
+<link rel="stylesheet" href="/scss/style.min.5be32ca3f6e1a997c75795c4359147cc6d4fbd34948c0acd51e31d237033978a.css"><meta property='og:title' content='repo使用'>
+<meta property='og:description' content='repo使用 一、基础设施
+安装Python 3 ，目前版本是3.9，不要安装Python 2，这是和旧办法的不同之处
+二、repo工具
+#下载、配置repo使用环境：
+mkdir -p ~/.bin
+PATH=&amp;quot;${HOME}/.bin:${PATH}&amp;quot;
+curl https://storage.googleapis.com/git-repo-downloads/repo &amp;gt; ~/.bin/repo
+chmod a&#43;rx ~/.bin/repo
+#本地新建一个工程文件夹，如repo：
+mkdir repo
+cd repo
+#init操作
+repo init -u （manifest 的git 地址）
+命令行出现：repo has been initialized in xxx 表示init成功
+#同步仓库的代码
+repo sync
+#切分支：
+repo start 分支名字 &amp;ndash;all | project1 project2 …
+三、可能出现的问题：
+1.repo init -u （manifest 的git 地址）的时候，ssl请求出现如下情况，是证书问题：
+Downloading Repo source from https://gerrit.googlesource.com/git-repo
+fatal: Cannot get https://gerrit.googlesource.com/git-repo/clone.bundle
+fatal: error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.'>
+<meta property='og:url' content='https://haolovelin.com/post/repo%E4%BD%BF%E7%94%A8/'>
+<meta property='og:site_name' content='浩&amp;琳'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2022-01-09T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2022-01-09T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="repo使用">
+<meta name="twitter:description" content="repo使用 一、基础设施
+安装Python 3 ，目前版本是3.9，不要安装Python 2，这是和旧办法的不同之处
+二、repo工具
+#下载、配置repo使用环境：
+mkdir -p ~/.bin
+PATH=&amp;quot;${HOME}/.bin:${PATH}&amp;quot;
+curl https://storage.googleapis.com/git-repo-downloads/repo &amp;gt; ~/.bin/repo
+chmod a&#43;rx ~/.bin/repo
+#本地新建一个工程文件夹，如repo：
+mkdir repo
+cd repo
+#init操作
+repo init -u （manifest 的git 地址）
+命令行出现：repo has been initialized in xxx 表示init成功
+#同步仓库的代码
+repo sync
+#切分支：
+repo start 分支名字 &amp;ndash;all | project1 project2 …
+三、可能出现的问题：
+1.repo init -u （manifest 的git 地址）的时候，ssl请求出现如下情况，是证书问题：
+Downloading Repo source from https://gerrit.googlesource.com/git-repo
+fatal: Cannot get https://gerrit.googlesource.com/git-repo/clone.bundle
+fatal: error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu9f7a08366cc43f473c39f8f10558a931_55504_300x0_resize_box_3.png" width="300"
+                            height="332" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">浩&amp;琳</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+
+        <div class="menu-bottom-section">
+            
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>Dark Mode</span>
+                </li>
+            
+        </div>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/" style="background-color: #2a9d8f; color: #fff;">
+                编程学习
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/repo%E4%BD%BF%E7%94%A8/">repo使用</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jan 09, 2022</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    2 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="repo使用">repo使用</h1>
+<p>一、基础设施</p>
+<p>安装Python 3 ，目前版本是3.9，不要安装Python 2，这是和旧办法的不同之处</p>
+<p>二、repo工具</p>
+<p>#下载、配置repo使用环境：</p>
+<p>mkdir -p ~/.bin</p>
+<p>PATH=&quot;${HOME}/.bin:${PATH}&quot;</p>
+<p>curl <a class="link" href="https://storage.googleapis.com/git-repo-downloads/repo"  target="_blank" rel="noopener"
+    >https://storage.googleapis.com/git-repo-downloads/repo</a> &gt; ~/.bin/repo</p>
+<p>chmod a+rx ~/.bin/repo</p>
+<p>#本地新建一个工程文件夹，如repo：</p>
+<p>mkdir repo</p>
+<p>cd repo</p>
+<p>#init操作</p>
+<p>repo init -u （manifest 的git 地址）</p>
+<p>命令行出现：repo has been initialized in xxx 表示init成功</p>
+<p>#同步仓库的代码</p>
+<p>repo sync</p>
+<p>#切分支：</p>
+<p>repo start 分支名字 &ndash;all | project1 project2 …</p>
+<p>三、可能出现的问题：</p>
+<p><strong>1.repo init -u （manifest 的git 地址）的时候，ssl请求出现如下情况，是证书问题：</strong></p>
+<p>Downloading Repo source from <a class="link" href="https://gerrit.googlesource.com/git-repo"  target="_blank" rel="noopener"
+    >https://gerrit.googlesource.com/git-repo</a></p>
+<p>fatal: Cannot get <a class="link" href="https://gerrit.googlesource.com/git-repo/clone.bundle"  target="_blank" rel="noopener"
+    >https://gerrit.googlesource.com/git-repo/clone.bundle</a></p>
+<p>fatal: error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1123)</p>
+<p>fatal: cloning the git-repo repository failed, will remove &lsquo;.repo/repo&rsquo;</p>
+<p>解决方法：（安装python目录下的证书，3.9为自己的python版本）</p>
+<p>/Applications/Python\ 3.9/Install\ Certificates.command</p>
+<p><strong>2.repo init -u （manifest 的git 地址）的时候，manifest的default.xml找不到的问题：</strong></p>
+<p>fatal: manifest &lsquo;default.xml&rsquo; not available</p>
+<p>fatal: manifest default.xml not found</p>
+<p>解决方法：</p>
+<p>因为git 仓库如果没配置default.xml，我们需要把工程的default.xml放入.repo/manifests 文件夹下</p>
+<h1 id="defaultxml中配置的属性">default.xml中配置的属性：</h1>
+<h2 id="1remote">（1）remote</h2>
+<p>远程仓库地址配置，可以多个。</p>
+<p>name: 名字，也用于子仓库的 git remote 名称（.git/config 里的 remote）</p>
+<p>alias: 别名，可省略，建议设为 origin， 设置了那么子仓库的 git remote 即为此名，方便不同的 name 下可以最终设置生成相同的 remote 名称</p>
+<p>fetch: 仓库地址前缀，即 project 的仓库地址为: remote.fetch + project.name</p>
+<p>pushurl: 一般可省略，省略了则直接用 fetch</p>
+<p>review: Gerrit code review 的地址，如果没有用 Gerrit 则不需要配置（也就不能用 repo upload 命令了）</p>
+<p>revision: 使用此 remote 的默认分支</p>
+<h2 id="2project">（2）project</h2>
+<p>子项目仓库配置，可以多个。</p>
+<p>path: repo sync 同步时，相对于根目录的子仓库文件夹路径</p>
+<p>name: 子仓库的 git 仓库名称</p>
+<p>group: 分组</p>
+<p>revision: 使用的分支名</p>
+<p>clone-depth: 仓库同步 Git 的 depth</p>
+<h2 id="3copyfile">（3）copyfile</h2>
+<p>project 的子节点属性.</p>
+<p>src: project 下的相对路径</p>
+<p>dest: 整个仓库根路径下的相对路径</p>
+<h2 id="4linkfile">（4）linkfile</h2>
+<p>project 的子节点属性，类似 copyfile，只是把复制文件变为创建链接文件。</p>
+<h2 id="5default">（5）default</h2>
+<p>project 没有设置属性时会使用的默认配置，常用的是 remote 和 revision。</p>
+<h2 id="6其他">（6）其他</h2>
+<p>其他现在暂时用的较少，详细完整的 manifest 格式说明请看<a class="link" href="https://link.zhihu.com/?target=https%3A//gerrit.googlesource.com/git-repo/%2B/HEAD/docs/manifest-format.md"  target="_blank" rel="noopener"
+    >官方文档</a>。 了解了 Repo 下的 Manifest 配置仓库的概念后就可以根据自己的项目来创建了，Just do it!</p>
+<h2 id="7local_manifest">（7）local_manifest</h2>
+<p>local_manifest 简单说就是一个比 repo init 时设置的 manifest 有更高优先级的本地配置，一般用在不改动远程 manifest 配置又想设置到本地的专属配置时用得到。版本高一点的 repo 下，在工作根目录新建配置文件即可： .repo/local_manifests/local_manifest.xml</p>
+<p>有一点需要注意的是如果需要覆盖主 manifest 文件已有 project 的配置那么需要先 remove-project 才行，不然会报错：</p>
+<p>fatal: duplicate path project_name in .repo/manifest.xml</p>
+<h2 id="fix-">fix :</h2>
+<!-- raw HTML omitted -->
+<p><em><!-- raw HTML omitted --></em></p>
+<!-- raw HTML omitted -->
+<p>命令：</p>
+<p>repo status: 跟 git status 类似，会把当前 repo 工作区的状态信息列出来</p>
+<p>repo diff: 同理 git diff</p>
+<p>repo forall -c : 在（所有）子仓库下执行命令，比如 repo 没有类似 git stash 的命令，利用 forall 就可以实现：repo forall -c git stash</p>
+<p>repo prune: 删除已经合并分支</p>
+<p>repo stage: 把文件添加到 index 表(暂存区)中</p>
+<p>repo manifest: 显示当前使用的 manifest 信息内容</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2023 浩&amp;琳
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

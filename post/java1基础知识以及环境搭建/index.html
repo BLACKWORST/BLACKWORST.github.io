@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='一、Java的一些基础知识 1.Java的环境以及跨平台 Java是一门面向对象编程语言，具有功能强大和简单易用两个特征。Java语言作为静态面向对象编程语言的代表，极好地实现了面向对象理论，允许程序员以优雅的思维方式进行复杂的编程。那么我将先从JavaSE的基础开始重新梳理和学习。
+1.1 JDK &amp;amp; JVM &amp;amp; JRE分别是什么以及它们的区别？ JDK（Java Development Kit）是Java开发工具包，是针对Java开发者的产品，是整个Java的核心，包括了Java运行环境JRE、Java工具和Java基础类库。
+JRE（Java Runtime Environment）是Java运行环境，是运行JAVA程序所必须的环境的集合，包含JVM标准实现及Java核心类库。
+JVM（Java Virtual Machine）Java虚拟机的缩写，是整个Java实现跨平台的最核心的部分，能够运行以Java语言写作的软件程序。
+因此我们可以得出个简单的结论：JDK &amp;gt; JRE &amp;gt; JVM，我们开发Java重新要下载JDK，运行Java程序需要JRE，而程序是在JVM上运行的。
+JDK的下载地址：https://www.oracle.com/java/technologies/javase-downloads.html
+如果是在windows平台，我们下载并安装JDK后还需要配置环境变量才能开始编程：
+配置环境变量可以参考：
+右键桌面上&amp;quot;我的电脑&amp;quot;&amp;ndash;&amp;gt;&amp;ldquo;属性&amp;rdquo;&amp;ndash;&amp;gt;&amp;ldquo;高级系统设置&amp;rdquo;&amp;ndash;&amp;gt;&amp;ldquo;高级&amp;rdquo;&amp;ndash;&amp;gt;&amp;ldquo;环境变量&amp;rdquo;。在弹出的&amp;quot;环境变量&amp;quot;窗口中的&amp;quot;系统变量&amp;quot;中点击&amp;quot;新建&amp;quot;按钮，在弹出的窗口中，新建一个名为&amp;quot;JAVA_HOME&amp;quot;的环境变量，变量值为Java的安装路径：我的是在D:\JavaSE_14 然后设置Path环境变量，该变量已经存在，所以在列表中选择Path，点击下方的“编辑”按钮，在弹出的窗口中添加如下信息：%JAVA_HOME%\bin;然后点击“确定”按钮即可。
+1.2 为什么Java可以跨平台？ 我们都知道 Java 源文件，通过编译器，能够生产相应的.Class 文件，也就是字节码文件， 而字节码文件又通过Java虚拟机中的解释器，编译成特定机器上的机器码 。
+也就是如下： ① Java源文件 —&amp;gt; 编译器 —&amp;gt; 字节码文件（xxx.Class） ② 字节码文件 —&amp;gt; JVM —&amp;gt; 机器码
+虽然每一种平台的解释器是不同的，但是虚拟机JVM是不同平台都可以使用的，程序运行在JVM上，这也就是Java程序能够跨平台的原因了。当一个程序从开始运行，这时虚拟机就开始实例化了，多个程序启动就会存在多个虚拟机实例。程序退出或者关闭，则虚拟机实例消亡，多个虚拟机实例之间数据不能共享。
+2.面向对象三大特性(封装、继承、多态) 2.1 封装 在面向对象程式设计方法中，封装（英语：Encapsulation）是指一种将抽象性函式接口的实现细节部分包装、隐藏起来的方法。
+封装可以被认为是一个保护屏障，防止该类的代码和数据被外部类定义的代码随机访问。
+要访问该类的代码和数据，必须通过严格的接口控制。
+封装最主要的功能在于我们能修改自己的实现代码，而不用修改那些调用我们代码的程序片段。
+适当的封装可以让程式码更容易理解与维护，也加强了程式码的安全性。
+封装的优点：
+良好的封装能够减少耦合。 类内部的结构可以自由修改。 可以对成员变量进行更精确的控制。 隐藏信息，实现细节。 总结：说人话就是，我把具体怎么做的隐藏起来，不给外部看，外部需要使用我提供的功能时，是不需要关心我是怎么做的，只需要调用接口（类似于父母叫我去买东西，但是我是走路去还是骑车去，他们是不关心的，最后我只要买回来就行）
+对每个值属性提供对外的公共方法访问，也就是创建一对赋取值方法，用于对私有属性的访问:
+public class Person{ private String name; private int age; public int getAge(){ return age; } public String getName(){ return name; } public void setAge(int age){ this.'>
+<title>Java（1）基础知识以及环境搭建</title>
+
+<link rel='canonical' href='https://haolovelin.com/post/java1%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E4%BB%A5%E5%8F%8A%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/'>
+
+<link rel="stylesheet" href="/scss/style.min.5be32ca3f6e1a997c75795c4359147cc6d4fbd34948c0acd51e31d237033978a.css"><meta property='og:title' content='Java（1）基础知识以及环境搭建'>
+<meta property='og:description' content='一、Java的一些基础知识 1.Java的环境以及跨平台 Java是一门面向对象编程语言，具有功能强大和简单易用两个特征。Java语言作为静态面向对象编程语言的代表，极好地实现了面向对象理论，允许程序员以优雅的思维方式进行复杂的编程。那么我将先从JavaSE的基础开始重新梳理和学习。
+1.1 JDK &amp;amp; JVM &amp;amp; JRE分别是什么以及它们的区别？ JDK（Java Development Kit）是Java开发工具包，是针对Java开发者的产品，是整个Java的核心，包括了Java运行环境JRE、Java工具和Java基础类库。
+JRE（Java Runtime Environment）是Java运行环境，是运行JAVA程序所必须的环境的集合，包含JVM标准实现及Java核心类库。
+JVM（Java Virtual Machine）Java虚拟机的缩写，是整个Java实现跨平台的最核心的部分，能够运行以Java语言写作的软件程序。
+因此我们可以得出个简单的结论：JDK &amp;gt; JRE &amp;gt; JVM，我们开发Java重新要下载JDK，运行Java程序需要JRE，而程序是在JVM上运行的。
+JDK的下载地址：https://www.oracle.com/java/technologies/javase-downloads.html
+如果是在windows平台，我们下载并安装JDK后还需要配置环境变量才能开始编程：
+配置环境变量可以参考：
+右键桌面上&amp;quot;我的电脑&amp;quot;&amp;ndash;&amp;gt;&amp;ldquo;属性&amp;rdquo;&amp;ndash;&amp;gt;&amp;ldquo;高级系统设置&amp;rdquo;&amp;ndash;&amp;gt;&amp;ldquo;高级&amp;rdquo;&amp;ndash;&amp;gt;&amp;ldquo;环境变量&amp;rdquo;。在弹出的&amp;quot;环境变量&amp;quot;窗口中的&amp;quot;系统变量&amp;quot;中点击&amp;quot;新建&amp;quot;按钮，在弹出的窗口中，新建一个名为&amp;quot;JAVA_HOME&amp;quot;的环境变量，变量值为Java的安装路径：我的是在D:\JavaSE_14 然后设置Path环境变量，该变量已经存在，所以在列表中选择Path，点击下方的“编辑”按钮，在弹出的窗口中添加如下信息：%JAVA_HOME%\bin;然后点击“确定”按钮即可。
+1.2 为什么Java可以跨平台？ 我们都知道 Java 源文件，通过编译器，能够生产相应的.Class 文件，也就是字节码文件， 而字节码文件又通过Java虚拟机中的解释器，编译成特定机器上的机器码 。
+也就是如下： ① Java源文件 —&amp;gt; 编译器 —&amp;gt; 字节码文件（xxx.Class） ② 字节码文件 —&amp;gt; JVM —&amp;gt; 机器码
+虽然每一种平台的解释器是不同的，但是虚拟机JVM是不同平台都可以使用的，程序运行在JVM上，这也就是Java程序能够跨平台的原因了。当一个程序从开始运行，这时虚拟机就开始实例化了，多个程序启动就会存在多个虚拟机实例。程序退出或者关闭，则虚拟机实例消亡，多个虚拟机实例之间数据不能共享。
+2.面向对象三大特性(封装、继承、多态) 2.1 封装 在面向对象程式设计方法中，封装（英语：Encapsulation）是指一种将抽象性函式接口的实现细节部分包装、隐藏起来的方法。
+封装可以被认为是一个保护屏障，防止该类的代码和数据被外部类定义的代码随机访问。
+要访问该类的代码和数据，必须通过严格的接口控制。
+封装最主要的功能在于我们能修改自己的实现代码，而不用修改那些调用我们代码的程序片段。
+适当的封装可以让程式码更容易理解与维护，也加强了程式码的安全性。
+封装的优点：
+良好的封装能够减少耦合。 类内部的结构可以自由修改。 可以对成员变量进行更精确的控制。 隐藏信息，实现细节。 总结：说人话就是，我把具体怎么做的隐藏起来，不给外部看，外部需要使用我提供的功能时，是不需要关心我是怎么做的，只需要调用接口（类似于父母叫我去买东西，但是我是走路去还是骑车去，他们是不关心的，最后我只要买回来就行）
+对每个值属性提供对外的公共方法访问，也就是创建一对赋取值方法，用于对私有属性的访问:
+public class Person{ private String name; private int age; public int getAge(){ return age; } public String getName(){ return name; } public void setAge(int age){ this.'>
+<meta property='og:url' content='https://haolovelin.com/post/java1%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E4%BB%A5%E5%8F%8A%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/'>
+<meta property='og:site_name' content='浩&amp;琳'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2021-05-27T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-05-27T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Java（1）基础知识以及环境搭建">
+<meta name="twitter:description" content="一、Java的一些基础知识 1.Java的环境以及跨平台 Java是一门面向对象编程语言，具有功能强大和简单易用两个特征。Java语言作为静态面向对象编程语言的代表，极好地实现了面向对象理论，允许程序员以优雅的思维方式进行复杂的编程。那么我将先从JavaSE的基础开始重新梳理和学习。
+1.1 JDK &amp;amp; JVM &amp;amp; JRE分别是什么以及它们的区别？ JDK（Java Development Kit）是Java开发工具包，是针对Java开发者的产品，是整个Java的核心，包括了Java运行环境JRE、Java工具和Java基础类库。
+JRE（Java Runtime Environment）是Java运行环境，是运行JAVA程序所必须的环境的集合，包含JVM标准实现及Java核心类库。
+JVM（Java Virtual Machine）Java虚拟机的缩写，是整个Java实现跨平台的最核心的部分，能够运行以Java语言写作的软件程序。
+因此我们可以得出个简单的结论：JDK &amp;gt; JRE &amp;gt; JVM，我们开发Java重新要下载JDK，运行Java程序需要JRE，而程序是在JVM上运行的。
+JDK的下载地址：https://www.oracle.com/java/technologies/javase-downloads.html
+如果是在windows平台，我们下载并安装JDK后还需要配置环境变量才能开始编程：
+配置环境变量可以参考：
+右键桌面上&amp;quot;我的电脑&amp;quot;&amp;ndash;&amp;gt;&amp;ldquo;属性&amp;rdquo;&amp;ndash;&amp;gt;&amp;ldquo;高级系统设置&amp;rdquo;&amp;ndash;&amp;gt;&amp;ldquo;高级&amp;rdquo;&amp;ndash;&amp;gt;&amp;ldquo;环境变量&amp;rdquo;。在弹出的&amp;quot;环境变量&amp;quot;窗口中的&amp;quot;系统变量&amp;quot;中点击&amp;quot;新建&amp;quot;按钮，在弹出的窗口中，新建一个名为&amp;quot;JAVA_HOME&amp;quot;的环境变量，变量值为Java的安装路径：我的是在D:\JavaSE_14 然后设置Path环境变量，该变量已经存在，所以在列表中选择Path，点击下方的“编辑”按钮，在弹出的窗口中添加如下信息：%JAVA_HOME%\bin;然后点击“确定”按钮即可。
+1.2 为什么Java可以跨平台？ 我们都知道 Java 源文件，通过编译器，能够生产相应的.Class 文件，也就是字节码文件， 而字节码文件又通过Java虚拟机中的解释器，编译成特定机器上的机器码 。
+也就是如下： ① Java源文件 —&amp;gt; 编译器 —&amp;gt; 字节码文件（xxx.Class） ② 字节码文件 —&amp;gt; JVM —&amp;gt; 机器码
+虽然每一种平台的解释器是不同的，但是虚拟机JVM是不同平台都可以使用的，程序运行在JVM上，这也就是Java程序能够跨平台的原因了。当一个程序从开始运行，这时虚拟机就开始实例化了，多个程序启动就会存在多个虚拟机实例。程序退出或者关闭，则虚拟机实例消亡，多个虚拟机实例之间数据不能共享。
+2.面向对象三大特性(封装、继承、多态) 2.1 封装 在面向对象程式设计方法中，封装（英语：Encapsulation）是指一种将抽象性函式接口的实现细节部分包装、隐藏起来的方法。
+封装可以被认为是一个保护屏障，防止该类的代码和数据被外部类定义的代码随机访问。
+要访问该类的代码和数据，必须通过严格的接口控制。
+封装最主要的功能在于我们能修改自己的实现代码，而不用修改那些调用我们代码的程序片段。
+适当的封装可以让程式码更容易理解与维护，也加强了程式码的安全性。
+封装的优点：
+良好的封装能够减少耦合。 类内部的结构可以自由修改。 可以对成员变量进行更精确的控制。 隐藏信息，实现细节。 总结：说人话就是，我把具体怎么做的隐藏起来，不给外部看，外部需要使用我提供的功能时，是不需要关心我是怎么做的，只需要调用接口（类似于父母叫我去买东西，但是我是走路去还是骑车去，他们是不关心的，最后我只要买回来就行）
+对每个值属性提供对外的公共方法访问，也就是创建一对赋取值方法，用于对私有属性的访问:
+public class Person{ private String name; private int age; public int getAge(){ return age; } public String getName(){ return name; } public void setAge(int age){ this.">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu9f7a08366cc43f473c39f8f10558a931_55504_300x0_resize_box_3.png" width="300"
+                            height="332" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">浩&amp;琳</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+
+        <div class="menu-bottom-section">
+            
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>Dark Mode</span>
+                </li>
+            
+        </div>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/" style="background-color: #2a9d8f; color: #fff;">
+                编程学习
+            </a>
+        
+            <a href="/categories/javase/" style="background-color: #666666; color: #fff;">
+                JavaSE
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/java1%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E4%BB%A5%E5%8F%8A%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">Java（1）基础知识以及环境搭建</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">May 27, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    3 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="一java的一些基础知识">一、Java的一些基础知识</h2>
+<h3 id="1java的环境以及跨平台">1.Java的环境以及跨平台</h3>
+<p>Java是一门面向对象编程语言，具有功能强大和简单易用两个特征。Java语言作为静态面向对象编程语言的代表，极好地实现了面向对象理论，允许程序员以优雅的思维方式进行复杂的编程。那么我将先从JavaSE的基础开始重新梳理和学习。</p>
+<h4 id="11-jdk--jvm--jre分别是什么以及它们的区别">1.1 JDK &amp; JVM &amp; JRE分别是什么以及它们的区别？</h4>
+<p>JDK（Java Development Kit）是Java开发工具包，是针对Java开发者的产品，是整个Java的核心，包括了Java运行环境JRE、Java工具和Java基础类库。</p>
+<p>JRE（Java Runtime Environment）是Java运行环境，是运行JAVA程序所必须的环境的集合，包含JVM标准实现及Java核心类库。</p>
+<p>JVM（Java Virtual Machine）Java虚拟机的缩写，是整个Java实现跨平台的最核心的部分，能够运行以Java语言写作的软件程序。</p>
+<p>因此我们可以得出个简单的结论：JDK &gt; JRE &gt; JVM，我们开发Java重新要下载JDK，运行Java程序需要JRE，而程序是在JVM上运行的。</p>
+<p>JDK的下载地址：https://www.oracle.com/java/technologies/javase-downloads.html</p>
+<p>如果是在windows平台，我们下载并安装JDK后还需要配置环境变量才能开始编程：</p>
+<p>配置环境变量可以参考：</p>
+<p>右键桌面上&quot;我的电脑&quot;&ndash;&gt;&ldquo;属性&rdquo;&ndash;&gt;&ldquo;高级系统设置&rdquo;&ndash;&gt;&ldquo;高级&rdquo;&ndash;&gt;&ldquo;环境变量&rdquo;。在弹出的&quot;环境变量&quot;窗口中的&quot;系统变量&quot;中点击&quot;新建&quot;按钮，在弹出的窗口中，新建一个名为&quot;JAVA_HOME&quot;的环境变量，变量值为Java的安装路径：我的是在D:\JavaSE_14
+<img src="/post/java1%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E4%BB%A5%E5%8F%8A%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.assets/2021021123081296.png"
+	width="839"
+	height="217"
+	srcset="/post/java1%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E4%BB%A5%E5%8F%8A%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.assets/2021021123081296_hubcc75125894fa35ad97c6939dba15023_20592_480x0_resize_box_3.png 480w, /post/java1%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E4%BB%A5%E5%8F%8A%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.assets/2021021123081296_hubcc75125894fa35ad97c6939dba15023_20592_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="在这里插入图片描述"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="386"
+		data-flex-basis="927px"
+	
+></p>
+<p>然后设置Path环境变量，该变量已经存在，所以在列表中选择Path，点击下方的“编辑”按钮，在弹出的窗口中添加如下信息：%JAVA_HOME%\bin;然后点击“确定”按钮即可。</p>
+<p><img src="/post/java1%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E4%BB%A5%E5%8F%8A%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.assets/2021021123101988.png"
+	width="677"
+	height="664"
+	srcset="/post/java1%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E4%BB%A5%E5%8F%8A%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.assets/2021021123101988_hu58bed8416a8a7cebd235d3c15c882e2c_84300_480x0_resize_box_3.png 480w, /post/java1%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E4%BB%A5%E5%8F%8A%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.assets/2021021123101988_hu58bed8416a8a7cebd235d3c15c882e2c_84300_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="在这里插入图片描述"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="101"
+		data-flex-basis="244px"
+	
+></p>
+<h4 id="12-为什么java可以跨平台">1.2 为什么Java可以跨平台？</h4>
+<p>我们都知道 Java 源文件，通过编译器，能够生产相应的.Class 文件，也就是字节码文件， 而字节码文件又通过Java虚拟机中的解释器，编译成特定机器上的机器码 。</p>
+<p>也就是如下：
+① Java源文件 —&gt; 编译器 —&gt; 字节码文件（xxx.Class）
+② 字节码文件 —&gt; JVM —&gt; 机器码</p>
+<p>虽然每一种平台的解释器是不同的，但是虚拟机JVM是不同平台都可以使用的，程序运行在JVM上，这也就是Java程序能够跨平台的原因了。当一个程序从开始运行，这时虚拟机就开始实例化了，多个程序启动就会存在多个虚拟机实例。程序退出或者关闭，则虚拟机实例消亡，多个虚拟机实例之间数据不能共享。</p>
+<h3 id="2面向对象三大特性封装继承多态">2.面向对象三大特性(封装、继承、多态)</h3>
+<h4 id="21-封装">2.1 封装</h4>
+<p>在面向对象程式设计方法中，封装（英语：Encapsulation）是指一种将抽象性函式接口的实现细节部分包装、隐藏起来的方法。</p>
+<p>封装可以被认为是一个保护屏障，防止该类的代码和数据被外部类定义的代码随机访问。</p>
+<p>要访问该类的代码和数据，必须通过严格的接口控制。</p>
+<p>封装最主要的功能在于我们能修改自己的实现代码，而不用修改那些调用我们代码的程序片段。</p>
+<p>适当的封装可以让程式码更容易理解与维护，也加强了程式码的安全性。</p>
+<p>封装的优点：</p>
+<ul>
+<li>良好的封装能够减少耦合。</li>
+<li>类内部的结构可以自由修改。</li>
+<li>可以对成员变量进行更精确的控制。</li>
+<li>隐藏信息，实现细节。</li>
+</ul>
+<p>总结：说人话就是，我把具体怎么做的隐藏起来，不给外部看，外部需要使用我提供的功能时，是不需要关心我是怎么做的，只需要调用接口（类似于父母叫我去买东西，但是我是走路去还是骑车去，他们是不关心的，最后我只要买回来就行）</p>
+<p>对每个值属性提供对外的公共方法访问，也就是创建一对赋取值方法，用于对私有属性的访问:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Person</span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> String name<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> age<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getAge</span><span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> age<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">getName</span><span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> name<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setAge</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> age<span style="color:#f92672">){</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">age</span> <span style="color:#f92672">=</span> age<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setName</span><span style="color:#f92672">(</span>String name<span style="color:#f92672">){</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">name</span> <span style="color:#f92672">=</span> name<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h4 id="22-继承">2.2 继承</h4>
+<p>继承是java面向对象编程技术的一块基石，因为它允许创建分等级层次的类。</p>
+<p>继承就是子类继承父类的特征和行为，使得子类对象（实例）具有父类的实例域和方法，或子类从父类继承方法，使得子类具有父类相同的行为。</p>
+<p>兔子和羊属于食草动物类，狮子和豹属于食肉动物类。</p>
+<p>食草动物和食肉动物又是属于动物类。</p>
+<p>所以继承需要符合的关系是：is-a（兔子是一个动物），父类更通用，子类更具体。</p>
+<p>虽然食草动物和食肉动物都是属于动物，但是两者的属性和行为上有差别，所以子类会具有父类的一般特性也会具有自身的特性。</p>
+<p>继承的作用：一般来说，所有父类能够使用的场景，子类应该是可以代替的，比如：自行车、汽车都属于陆地交通工具，陆地交通工具可以用于旅行，那么这样的场景，子类可以代替父类来使用，也就是，自行车、汽车都可以用于旅行。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Transportation</span> <span style="color:#f92672">{</span><span style="color:#75715e">//父类：交通工具
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">travel</span><span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span><span style="color:#e6db74">&#34;使用交通工具旅游&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Car</span> <span style="color:#66d9ef">extends</span> Transportation <span style="color:#f92672">{</span><span style="color:#75715e">//汽车
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  	<span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">travel</span><span style="color:#f92672">(){</span><span style="color:#75715e">//重写travel方法
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span><span style="color:#e6db74">&#34;使用汽车旅游&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Bike</span> <span style="color:#66d9ef">extends</span> Transportation<span style="color:#f92672">{</span><span style="color:#75715e">//自行车
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  	<span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>  	<span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">travel</span><span style="color:#f92672">(){</span><span style="color:#75715e">//重写travel方法         
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span><span style="color:#e6db74">&#34;使用自行车旅游&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Test1</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        Transportation a <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Transportation<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        Transportation b <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Car<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        Transportation c <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Bike<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;a--&#34;</span> <span style="color:#f92672">+</span> a<span style="color:#f92672">.</span><span style="color:#a6e22e">travel</span><span style="color:#f92672">());</span><span style="color:#75715e">//使用交通工具旅游
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;b--&#34;</span> <span style="color:#f92672">+</span> b<span style="color:#f92672">.</span><span style="color:#a6e22e">travel</span><span style="color:#f92672">());</span><span style="color:#75715e">//使用汽车旅游
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>     		System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;c--&#34;</span> <span style="color:#f92672">+</span> c<span style="color:#f92672">.</span><span style="color:#a6e22e">travel</span><span style="color:#f92672">());</span><span style="color:#75715e">//使用自行车旅游
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h4 id="23-多态">2.3 多态</h4>
+<h5 id="231-定义">2.3.1 定义</h5>
+<p>多态是同一个行为具有多个不同表现形式或形态的能力。</p>
+<p>多态就是同一个接口，使用不同的实例而执行不同操作。</p>
+<h5 id="232-三要素">2.3.2 三要素</h5>
+<p>（1）继承
+（2）重写
+（3）父类引用指向子类对象<strong>Parent p = new Child();</strong></p>
+<h5 id="233-好处">2.3.3 好处</h5>
+<p>1.可替换性（substitutability）
+多态对已存在代码具有可替换性。例如，多态对圆Circle类工作，对其他任何圆形几何体，如圆环，也同样工作。
+2.可扩充性（extensibility）
+多态对代码具有可扩充性。增加新的子类不影响已存在类的多态性、继承性，以及其他特性的运行和操作。实际上新加子类更容易获得多态功能。例如，在实现了圆锥、半圆锥以及半球体的多态基础上，很容易增添球体类的多态性。
+3.接口性（interface-ability）
+多态是超类通过方法签名，向子类提供了一个共同接口，由子类来完善或者覆盖它而实现的。
+4.灵活性（flexibility）
+它在应用中体现了灵活多样的操作，提高了使用效率。
+5.简化性（simplicity）
+多态简化对应用软件的代码编写和修改过程，尤其在处理大量对象的运算和操作时，这个特点尤为突出和重要。</p>
+<h5 id="234-java中多态实现方式">2.3.4 Java中多态实现方式</h5>
+<p>方式一：重写
+方式二：接口</p>
+<ol>
+<li>
+<p>生活中的接口最具代表性的就是插座，例如一个三接头的插头都能接在三孔插座中，因为这个是每个国家都有各自规定的接口规则，有可能到国外就不行，那是因为国外自己定义的接口类型。</p>
+</li>
+<li>
+<p>java中的接口类似于生活中的接口，就是一些方法特征的集合，但没有方法的实现。具体可以看 java接口 这一章节的内容。</p>
+</li>
+</ol>
+<p>方式三：抽象类和抽象方法</p>
+<h5 id="235-向上转型">2.3.5 向上转型</h5>
+<p>Father father=new Son(); //多态，父类指向子类的引用
+如果Father类型方法表中没有方法f1，那么即使Son类型中方法表有，编译的时候也通过不了。因为调用方法f1的类的对象father的声明为Father类型。</p>
+<h5 id="236-绑定多态">2.3.6 绑定（多态）</h5>
+<p>将一个方法调用同一个方法主体关联起来被称为绑定.</p>
+<p>静态绑定
+在编译阶段就能够确定调用哪个方法的方式，我们叫做 静态绑定机制 。
+除了被static 修饰的静态方法，所有被private 修饰的私有方法、被final 修饰的禁止子类覆盖的方法。JVM会采用静态绑定机制来顺利的调用这些方法。</p>
+<p>动态绑定
+在程序运行过程中，通过动态创建的对象的方法表来定位方法的方式，我们叫做 动态绑定机制 。
+类对象方法的调用必须在运行过程中采用动态绑定机制。
+首先，根据对象的声明类型(对象引用的类型)找到“合适”的方法。具体步骤如下：
+① 如果能在声明类型中匹配到方法签名完全一样(参数类型一致)的方法，那么这个方法是最合适的。
+② 在第①条不能满足的情况下，寻找可以“凑合”的方法。标准就是通过将参数类型进行自动转型之后再进行匹配。（根据继承树从叶子向上找）如果匹配到多个自动转型后的方法签名f(A)和f(B)，则用下面的标准来确定合适的方法：传递给f(A)方法的参数都可以传递给f(B)，则f(A)最合适。反之f(B)最合适 。
+③ 如果仍然在声明类型中找不到“合适”的方法，则编译阶段就无法通过。</p>
+<h5 id="237-静态属性和静态方法能被继承吗静态方法又是否能被重写呢">2.3.7 静态属性和静态方法能被继承吗？静态方法又是否能被重写呢？</h5>
+<p><strong>静态属性、静态方法和非静态的属性都可以被继承和隐藏而不能被重写</strong>，因此不能实现多态，不能实现父类的引用可以指向不同子类的对象。</p>
+<p>java中，static修饰符修饰的方法就是静态方法。所谓静态就是指：在编译之后所分配的内存会一直存在（不会被回收），直到程序退出内存才会释放这个空间。
+在java中，所有的东西都是对象，对象的抽象就是类，对于一个类而言，如果要使用他的成员（类中的属性，方法等），一般情况下，必须先实例化对象后，通过对象的引用才能访问这些成员。但是，如果要使用的成员使用了static修饰，就可以不通过实例化获得该成员。
+因为静态方法从程序开始运行后就已经分配了内存，也就是说已经写死了。所有引用到该方法的对象（父类的对象也好子类的对象也好）所指向的都是同一块内存中的数据，也就是该静态方法。子类中如果定义了相同名称的静态方法，并不会重写，而应该是在内存中又分配了一块给子类的静态方法，没有重写这一说。</p>
+<p>非静态方法可以被继承和重写，因此可以实现多态。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">A</span> <span style="color:#f92672">{</span> <span style="color:#75715e">//父类
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> String staticStr <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A静态属性&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> String nonStaticStr <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A非静态属性&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">staticMethod</span><span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;A静态方法&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">nonStaticMethod</span><span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;A非静态方法&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">B</span> <span style="color:#66d9ef">extends</span> A<span style="color:#f92672">{</span><span style="color:#75715e">//子类B
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> String staticStr <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;B改写后的静态属性&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> String nonStaticStr <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;B改写后的非静态属性&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">staticMethod</span><span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;B改写后的静态方法&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">nonStaticMethod</span><span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;B改写后的非静态方法&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Test2</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        A a <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> B<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        B b <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> B<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>a<span style="color:#f92672">.</span><span style="color:#a6e22e">nonStaticStr</span><span style="color:#f92672">);</span> <span style="color:#75715e">// A非静态属性
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>a<span style="color:#f92672">.</span><span style="color:#a6e22e">staticStr</span><span style="color:#f92672">);</span>	<span style="color:#75715e">// A静态属性
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        a<span style="color:#f92672">.</span><span style="color:#a6e22e">staticMethod</span><span style="color:#f92672">();</span>	<span style="color:#75715e">// A静态方法
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        a<span style="color:#f92672">.</span><span style="color:#a6e22e">nonStaticMethod</span><span style="color:#f92672">();</span> <span style="color:#75715e">// B改写后的非静态方法
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>b<span style="color:#f92672">.</span><span style="color:#a6e22e">nonStaticStr</span><span style="color:#f92672">);</span> <span style="color:#75715e">// B改写后的非静态属性
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>b<span style="color:#f92672">.</span><span style="color:#a6e22e">staticStr</span><span style="color:#f92672">);</span>	<span style="color:#75715e">// B改写后的静态属性
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        b<span style="color:#f92672">.</span><span style="color:#a6e22e">staticMethod</span><span style="color:#f92672">();</span>	<span style="color:#75715e">// B改写后的静态方法
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        b<span style="color:#f92672">.</span><span style="color:#a6e22e">nonStaticMethod</span><span style="color:#f92672">();</span> <span style="color:#75715e">// B改写后的非静态方法
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h5 id="238-重写与重载的区别">2.3.8 重写与重载的区别</h5>
+<p>方法的重写(Overriding)和重载(Overloading)</p>
+<p>重写是多态的一种表现，如：子类重写父类的方法。</p>
+<p>重载是方法名相同，而参数不同的方法。</p>
+<h5 id="239-对this和super的认识">2.3.9 对this和super的认识</h5>
+<p>this：就是类中指向对象本身的一个特殊引用。
+super：指向自己超（父）类对象的一个引用，而这个超类指的是离自己最近的一个父类。</p>
+<h3 id="3抽象类abstract-class">3.抽象类（Abstract Class）</h3>
+<h4 id="31-定义">3.1 定义</h4>
+<p>如果一个类没有包含足够多的信息来描述一个具体的对象，这样的类就是抽象类。抽象类用abstract修饰。</p>
+<h4 id="32-特点">3.2 特点</h4>
+<p>（1）不能实例化，因为抽象类中含有无法具体实现的方法。
+（2）可在抽象类中定义公共成员变量、成员方法、构造方法等。
+（3）只要包含一个抽象方法的类，该类必须要定义成抽象类（抽象方法是一种特殊的方法，它只有声明但没有具体的实现，抽象方法必须为public或protected）。故可理解为抽象类是在普通类结构里增加抽象方法的组成部分。
+（4）如果子类继承于一个抽象类，则该子类可以有选择性决定是否覆写父类的抽象方法，如果子类没有实现父类的抽象方法，则必须将子类也定义为抽象类（抽象类可以继承抽象类）。
+（5）继承只能单继承，一个子类只能继承一个抽象类。</p>
+<h4 id="33-目的">3.3 目的</h4>
+<p>抽象类本质上是为了继承而存在，为子类提供一个公共特性的<strong>通用模板</strong>，是子类的抽象。</p>
+<h3 id="4接口interface">4.接口（Interface）</h3>
+<h4 id="41-定义">4.1 定义</h4>
+<p>接口在java中是一个抽象类型，是抽象方法的集合。一个类通过继承接口的方式，从而继承接口的抽象方法。它是对行为的抽象。</p>
+<h4 id="42-特点">4.2 特点</h4>
+<p>（1）从定义上看，接口是个集合，并不是类。类描述了属性和方法，而接口只包含方法（未实现的方法），是抽象方法的集合。接口和抽象类一样不能被实例化，因为不是类。但是接口可以被实现（使用 implements 关键字）。实现某个接口的类必须在类中实现该接口的全部方法。虽然接口内的方法都是抽象的（和抽象方法很像，没有实现）但是不需要abstract关键字。
+（2）接口没有构造方法（接口不是类）
+（3）接口中的方法必须是抽象的（不能实现）
+（4）接口中除了static、final变量，不能有其他变量
+（5）接口支持多继承（一个类可以实现多个接口）</p>
+<h4 id="43-目的">4.3 目的</h4>
+<p>提供一组抽象方法的集合，供子类实现。</p>
+<h4 id="44-抽象类与接口区别">4.4 抽象类与接口区别</h4>
+<p>（1）结构
+抽象类中可以有自己的方法实现。也可以有抽象方法。接口只有抽象方法。
+抽象类中有自己的成员变量，成员方法。接口只有常量和抽象方法。
+抽象类可以用public,protected,private等修饰。接口只能用public修饰。</p>
+<p>（2）继承方式
+子类使用extends关键字继承抽象类。子类可以选择性重写抽象类中需要使用的方法，如果子类没有实现抽象类中所有声明的方法的实现，则子类也是抽象类。
+子类使用implements关键字实现接口。子类需要提供接口中所有声明的方法的实现。</p>
+<p>（3）构造方法
+抽象类可以有构造方法，但接口没有构造方法。但抽象类的构造器不用于创造对象，而是让其子类调用这些构造器完成抽象类的初始化操作。</p>
+<p>（4）多/单继承
+一个子类只能继承一个父类，但可以实现多个接口。</p>
+<p>（5）速度
+抽象方法比接口速度快。接口需要时间去寻找在类中实现的方法，故速度较慢。</p>
+<p>（6）设计
+抽象类是对事物的一种抽象，描述的是某一类特性的事物。表示 这个对象是什么。（is-a关系——强调所属关系）
+接口是对行为功能的抽象，描述是否具备某种行为特征。表示 这个对象能做什么。（has-a关系——强调功能实现）</p>
+<p>（7）举例
+门和警报的案例：门都有open和close两个动作，现在为门增加一个警报功能，如何实现？
+思路1：将这三个功能都放在抽象类里面，但是这样一来所有继承于这个抽象类的子类都具备了报警功能，但是有的门并不一定具备报警功能；
+思路2：将这三个功能都放在接口里面，需要用到报警功能的类就需要实现这个接口中的open( )和close( )，也许这个类根本就不具备open( )和close( )这两个功能，比如火灾报警器。</p>
+<p>从这里可以看出， Door的open() 、close()和alarm()根本就属于两个不同范畴内的行为，open()和close()属于门本身固有的行为特性，而alarm()属于延伸的附加行为。因此最好的解决办法是单独将报警设计为一个接口，包含alarm()行为,Door设计为单独的一个抽象类，包含open和close两种行为。再设计一个报警门继承Door类和实现Alarm接口。</p>
+<h3 id="5-总结">5. 总结</h3>
+<h4 id="51-什么是面向过程--什么是面向对象--区别">5.1 什么是面向过程 &amp; 什么是面向对象 &amp; 区别？</h4>
+<p>面向过程：就是分析出解决问题所需要的步骤，然后用函数把这些步骤一步一步实现，使用的时候一个一个依次调用就可以了。</p>
+<p>面向对象：是把构成问题事务分解成各个对象，建立对象的目的不是为了完成一个步骤，而是为了描叙某个事物在整个解决问题的步骤中的行为。</p>
+<h4 id="52-面向对象的特性简述封装继承多态">5.2 面向对象的特性：简述封装、继承、多态</h4>
+<p>封装的思想保证了类内部数据结构的完整性，使用户无法轻易直接操作类的内部数据，这样降低了对内部数据的影响，提高了程序的安全性和可维护性。</p>
+<p>继承就是子类继承父类的特征和行为，使得子类对象（实例）具有父类的实例域和方法，或类从父类继承方法，使得子类具有父类相同的行为。</p>
+<p>多态指的就是在应用程序中出现的“重名”现象。多态性允许以统一的风格编写程序，以处理种类繁多的已存在的类及其相关类。这样既降低了维护难度，又节省了时间。多以重写、重载、实现接口或者抽象类的方式体现。</p>
+<h4 id="53-this和super">5.3 THIS和SUPER</h4>
+<p>通俗的讲，this指的是当前对象，super则指父类的。</p>
+<h4 id="54-接口和抽象类的区别">5.4 接口和抽象类的区别</h4>
+<p>在抽象类中可以写非抽象的方法，从而避免在子类中重复书写他们，这样可以提高代码的复用性，这是抽象类的优势；接口中只能有抽象的方法。
+一个类只能继承一个直接父类，这个父类可以是具体的类也可是抽象类；但是一个类可以实现多个接口。</p>
+<p>接口的成员变量，默认也只能是public static final修饰的。</p>
+<p>抽象类的成员变量可以是非静态的。</p>
+<h4 id="55-静态属性和静态方法能被继承吗静态方法又是否能被重写呢">5.5 静态属性和静态方法能被继承吗？静态方法又是否能被重写呢？</h4>
+<p>父类的静态属性和方法可以被子类继承。</p>
+<p>当父类的引用指向子类时，使用对象调用静态方法或者静态变量，是调用的父类中的方法或者变量。并没有被子类改写。 所以静态变量和方法不能被重写。</p>
+<p>原因：static修饰函数/变量时，其实是全局函数/变量，它只是因为java强调对象的要挂，它与任何类都没有关系。靠这个类的好处就是这个类的成员函数调用static方法不用带类名。</p>
+<p>注意：static关键字可以用修饰代码块.static代码块可以置于类中的任何一个位置，并可以有多个static代码块。在类初次被加载时，会按照静态代码块的顺序来执行，并且只会执行一次。</p>
+<h4 id="56-权限修饰符">5.6 权限修饰符</h4>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>修饰符</th>
+<th>同类中</th>
+<th>同一个包中(子类和无关类)</th>
+<th>不同包(子类)</th>
+<th>不同包(无关类)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public</td>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>protected</td>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+<td>N</td>
+</tr>
+<tr>
+<td>默认</td>
+<td>Y</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+</tr>
+<tr>
+<td>private</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+<td>N</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="57-java中的内部类">5.7 JAVA中的内部类</h4>
+<p>可以将一个类的定义放在里另一个类的内部，这就是内部类。广义上我们将内部类分为四种：成员内部类、静态内部类、局部（方法）内部类、匿名内部类。</p>
+<p>在实际问题中我们会遇到一些接口无法解决或难以解决的问题，此时我们可以使用内部类继承某个具体的或抽象的类，间接解决类无法多继承引起的一系列问题。</p>
+<h4 id="58-闭包和内部类的区别">5.8 闭包和内部类的区别？</h4>
+<p>内部类使用外部的局部变量，实际上形成了闭包，也就是捕获了所在方法内的变量，这个被捕获的变量不能随着方法的执行完毕而消失，因为内部类的实例可能还会用到这个变量，所以需要 final 关键字来让这个变量不消失（final 修饰的变量会转为常量，因此不会随着方法的执行完毕而消失）。
+如果在内部类中使用到了外部方法的变量，需要使用 final 修饰，否则无法编译通过，但如果使用的是 JDK8，那么即便你不加final 修饰，也是可以编译过的，因为编译器替你加上了。</p>
+<h4 id="59-java多态的实现机制是什么">5.9 JAVA多态的实现机制是什么？</h4>
+<p>子类继承父类（extends），类实现接口（implements）</p>
+<h4 id="510-对象生命周期的认识">5.10 对象生命周期的认识</h4>
+<p>如果从表层去看的话，我觉得对象的生命周期主要分创建阶段，应用阶段，不可视阶段，不可达阶段，回收释放阶段。</p>
+<p>先是代码里面定义类，然后通过强引用，软引用，进行应用阶段并在jvm的堆区创建对象，然后在超过对象的作用域后，对象不可见，也就可以被GC回收。不可达阶段，是不再有引用指向对象，这类就会被回收。然后就是被GC回收释放对象空间。</p>
+<h4 id="511-static关键字的作用">5.11 STATIC关键字的作用？</h4>
+<p>修饰成员变量，类加载时就被分配空间，可以通过类直接访问，存储在静态存储区。</p>
+<p>修饰成员方法，类直接调用，不用new。</p>
+<p>单例。</p>
+<p>静态导入包，导入类中的静态方法。</p>
+<h4 id="512-final关键字的作用">5.12 FINAL关键字的作用</h4>
+<p>final关键字可以用来修饰引用、方法和类：</p>
+<p>1.用来修饰一个引用：</p>
+<ol>
+<li>如果引用为基本数据类型，则该引用为常量，该值无法修改；</li>
+<li>如果引用为引用数据类型，比如对象、数组，则该对象、数组本身可以修改，但指向该对象或数组的地址的引用不能修改。</li>
+<li>如果引用是类的成员变量，则必须当场赋值，否则编译会报错。</li>
+</ol>
+<p>2.用来修饰一个方法：</p>
+<p>当使用final修饰方法时，这个方法将成为最终方法，无法被子类重写。但是，该方法仍然可以被继承。</p>
+<p>3.用来修饰类：</p>
+<p>当用final修改类时，该类成为最终类，无法被继承。简称为“断子绝孙类”。比如常用的String类就是最终类。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2023 浩&amp;琳
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

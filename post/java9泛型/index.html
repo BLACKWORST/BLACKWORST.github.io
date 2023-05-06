@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='九、泛型 1.什么是泛型？能解决什么问题？ 泛型是 Java SE 1.5 的新特性，泛型的本质是参数化类型，这种参数类型可以用在类、接口和方法的创建中，分别称为泛型类、泛型接口、泛型方法。在 Java SE 1.5 之前没有泛型的情况的下只能通过对类型 Object 的引用来实现参数的任意化，其带来的缺点是要做显式强制类型转换，而这种强制转换编译期是不做检查的，容易把问题留到运行时，所以 泛型的好处是在编译时检查类型安全，并且所有的强制转换都是自动和隐式的，提高了代码的重用率，避免在运行时出现 ClassCastException。
+JDK 1.5 引入了泛型来允许强类型在编译时进行类型检查；JDK 1.7 泛型实例化类型具备了自动推断能力，譬如 List list = new ArrayList(); 可以写成 List llist = new ArrayList&amp;lt;&amp;gt;(); 了，JDK 具备自动推断能力。
+我们在编写程序时，经常遇到两个模块的功能非常相似，只是一个是处理int数据，另一个是处理string数据，或者其他自定义的数据类型，但我们没有办法，只能分别写多个方法处理每个数据类型，因为方法的参数类型不同。有没有一种办法，在方法中传入通用的数据类型，这样不就可以合并代码了吗？泛型的出现就是专门解决这个问题的。
+2.说说Java中泛型的工作机制？ 在java中，官方强烈推荐我们使用泛型。就是因为他有很多优点。
+（1）类型安全：我们在使用泛型之后，可以指定输入的类型，比如只能输入String类型的值，输入其他的就会报错，这在代码编写时，为我们提供了极大的方便。
+（2）消除强制类型转换：也就是说我们不需要进行类型转化，直接存储、直接输出。
+（3）只在编译器有效：也就是说在运行时泛型是无效的。这避免了jvm花费时间在运行时做额外的操作。
+这种语法机制，只在程序编译阶段起作用，只是给编译器参考的。（运行阶段泛型没用） 使用了泛型好处是什么？ 第一：集合中存储的元素类型统一。 第二：从集合中取出的元素类型是泛型指定的类型，不需要进行大量的向下转型。 泛型的缺点是什么？ 导致集合中存储的元素缺乏多样性。 3.在泛型中extends和super关键字的区别是什么？ &amp;lt;? extends T&amp;gt;和&amp;lt;? super T&amp;gt;是Java泛型中的“通配符（Wildcards）”和“边界（Bounds）”的概念。
+为什么要用通配符和边界？ 使用泛型的过程中，经常出现一种很别扭的情况。比如按照题主的例子，我们有Fruit类，和它的派生类Apple类。
+class Fruit {} class Apple extends Fruit {} 然后有一个最简单的容器：Plate类。盘子里可以放一个泛型的“东西”。我们可以对这个东西做最简单的“放”和“取”的动作：set( )和get( )方法。
+class Plate&amp;lt;T&amp;gt;{ private T item; public Plate(T t){item=t;} public void set(T t){item=t;} public T get(){return item;} } 现在我定义一个“水果盘子”，逻辑上水果盘子当然可以装苹果。'>
+<title>Java（9）泛型</title>
+
+<link rel='canonical' href='https://haolovelin.com/post/java9%E6%B3%9B%E5%9E%8B/'>
+
+<link rel="stylesheet" href="/scss/style.min.5be32ca3f6e1a997c75795c4359147cc6d4fbd34948c0acd51e31d237033978a.css"><meta property='og:title' content='Java（9）泛型'>
+<meta property='og:description' content='九、泛型 1.什么是泛型？能解决什么问题？ 泛型是 Java SE 1.5 的新特性，泛型的本质是参数化类型，这种参数类型可以用在类、接口和方法的创建中，分别称为泛型类、泛型接口、泛型方法。在 Java SE 1.5 之前没有泛型的情况的下只能通过对类型 Object 的引用来实现参数的任意化，其带来的缺点是要做显式强制类型转换，而这种强制转换编译期是不做检查的，容易把问题留到运行时，所以 泛型的好处是在编译时检查类型安全，并且所有的强制转换都是自动和隐式的，提高了代码的重用率，避免在运行时出现 ClassCastException。
+JDK 1.5 引入了泛型来允许强类型在编译时进行类型检查；JDK 1.7 泛型实例化类型具备了自动推断能力，譬如 List list = new ArrayList(); 可以写成 List llist = new ArrayList&amp;lt;&amp;gt;(); 了，JDK 具备自动推断能力。
+我们在编写程序时，经常遇到两个模块的功能非常相似，只是一个是处理int数据，另一个是处理string数据，或者其他自定义的数据类型，但我们没有办法，只能分别写多个方法处理每个数据类型，因为方法的参数类型不同。有没有一种办法，在方法中传入通用的数据类型，这样不就可以合并代码了吗？泛型的出现就是专门解决这个问题的。
+2.说说Java中泛型的工作机制？ 在java中，官方强烈推荐我们使用泛型。就是因为他有很多优点。
+（1）类型安全：我们在使用泛型之后，可以指定输入的类型，比如只能输入String类型的值，输入其他的就会报错，这在代码编写时，为我们提供了极大的方便。
+（2）消除强制类型转换：也就是说我们不需要进行类型转化，直接存储、直接输出。
+（3）只在编译器有效：也就是说在运行时泛型是无效的。这避免了jvm花费时间在运行时做额外的操作。
+这种语法机制，只在程序编译阶段起作用，只是给编译器参考的。（运行阶段泛型没用） 使用了泛型好处是什么？ 第一：集合中存储的元素类型统一。 第二：从集合中取出的元素类型是泛型指定的类型，不需要进行大量的向下转型。 泛型的缺点是什么？ 导致集合中存储的元素缺乏多样性。 3.在泛型中extends和super关键字的区别是什么？ &amp;lt;? extends T&amp;gt;和&amp;lt;? super T&amp;gt;是Java泛型中的“通配符（Wildcards）”和“边界（Bounds）”的概念。
+为什么要用通配符和边界？ 使用泛型的过程中，经常出现一种很别扭的情况。比如按照题主的例子，我们有Fruit类，和它的派生类Apple类。
+class Fruit {} class Apple extends Fruit {} 然后有一个最简单的容器：Plate类。盘子里可以放一个泛型的“东西”。我们可以对这个东西做最简单的“放”和“取”的动作：set( )和get( )方法。
+class Plate&amp;lt;T&amp;gt;{ private T item; public Plate(T t){item=t;} public void set(T t){item=t;} public T get(){return item;} } 现在我定义一个“水果盘子”，逻辑上水果盘子当然可以装苹果。'>
+<meta property='og:url' content='https://haolovelin.com/post/java9%E6%B3%9B%E5%9E%8B/'>
+<meta property='og:site_name' content='浩&amp;琳'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2021-06-06T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-06-06T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Java（9）泛型">
+<meta name="twitter:description" content="九、泛型 1.什么是泛型？能解决什么问题？ 泛型是 Java SE 1.5 的新特性，泛型的本质是参数化类型，这种参数类型可以用在类、接口和方法的创建中，分别称为泛型类、泛型接口、泛型方法。在 Java SE 1.5 之前没有泛型的情况的下只能通过对类型 Object 的引用来实现参数的任意化，其带来的缺点是要做显式强制类型转换，而这种强制转换编译期是不做检查的，容易把问题留到运行时，所以 泛型的好处是在编译时检查类型安全，并且所有的强制转换都是自动和隐式的，提高了代码的重用率，避免在运行时出现 ClassCastException。
+JDK 1.5 引入了泛型来允许强类型在编译时进行类型检查；JDK 1.7 泛型实例化类型具备了自动推断能力，譬如 List list = new ArrayList(); 可以写成 List llist = new ArrayList&amp;lt;&amp;gt;(); 了，JDK 具备自动推断能力。
+我们在编写程序时，经常遇到两个模块的功能非常相似，只是一个是处理int数据，另一个是处理string数据，或者其他自定义的数据类型，但我们没有办法，只能分别写多个方法处理每个数据类型，因为方法的参数类型不同。有没有一种办法，在方法中传入通用的数据类型，这样不就可以合并代码了吗？泛型的出现就是专门解决这个问题的。
+2.说说Java中泛型的工作机制？ 在java中，官方强烈推荐我们使用泛型。就是因为他有很多优点。
+（1）类型安全：我们在使用泛型之后，可以指定输入的类型，比如只能输入String类型的值，输入其他的就会报错，这在代码编写时，为我们提供了极大的方便。
+（2）消除强制类型转换：也就是说我们不需要进行类型转化，直接存储、直接输出。
+（3）只在编译器有效：也就是说在运行时泛型是无效的。这避免了jvm花费时间在运行时做额外的操作。
+这种语法机制，只在程序编译阶段起作用，只是给编译器参考的。（运行阶段泛型没用） 使用了泛型好处是什么？ 第一：集合中存储的元素类型统一。 第二：从集合中取出的元素类型是泛型指定的类型，不需要进行大量的向下转型。 泛型的缺点是什么？ 导致集合中存储的元素缺乏多样性。 3.在泛型中extends和super关键字的区别是什么？ &amp;lt;? extends T&amp;gt;和&amp;lt;? super T&amp;gt;是Java泛型中的“通配符（Wildcards）”和“边界（Bounds）”的概念。
+为什么要用通配符和边界？ 使用泛型的过程中，经常出现一种很别扭的情况。比如按照题主的例子，我们有Fruit类，和它的派生类Apple类。
+class Fruit {} class Apple extends Fruit {} 然后有一个最简单的容器：Plate类。盘子里可以放一个泛型的“东西”。我们可以对这个东西做最简单的“放”和“取”的动作：set( )和get( )方法。
+class Plate&amp;lt;T&amp;gt;{ private T item; public Plate(T t){item=t;} public void set(T t){item=t;} public T get(){return item;} } 现在我定义一个“水果盘子”，逻辑上水果盘子当然可以装苹果。">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu9f7a08366cc43f473c39f8f10558a931_55504_300x0_resize_box_3.png" width="300"
+                            height="332" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">浩&amp;琳</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+
+        <div class="menu-bottom-section">
+            
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>Dark Mode</span>
+                </li>
+            
+        </div>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/" style="background-color: #2a9d8f; color: #fff;">
+                编程学习
+            </a>
+        
+            <a href="/categories/javase/" style="background-color: #666666; color: #fff;">
+                JavaSE
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/java9%E6%B3%9B%E5%9E%8B/">Java（9）泛型</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jun 06, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    2 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="九泛型">九、泛型</h2>
+<h3 id="1什么是泛型能解决什么问题">1.什么是泛型？能解决什么问题？</h3>
+<p>泛型是 Java SE 1.5 的新特性，泛型的本质是参数化类型，这种参数类型可以用在类、接口和方法的创建中，分别称为泛型类、泛型接口、泛型方法。在 Java SE 1.5 之前没有泛型的情况的下只能通过对类型 Object 的引用来实现参数的任意化，其带来的缺点是要做显式强制类型转换，而这种强制转换编译期是不做检查的，容易把问题留到运行时，所以 泛型的好处是在编译时检查类型安全，并且所有的强制转换都是自动和隐式的，提高了代码的重用率，避免在运行时出现 ClassCastException。</p>
+<p>JDK 1.5 引入了泛型来允许强类型在编译时进行类型检查；JDK 1.7 泛型实例化类型具备了自动推断能力，譬如 List<!-- raw HTML omitted --> list = new ArrayList<!-- raw HTML omitted -->(); 可以写成 List<!-- raw HTML omitted --> llist = new ArrayList&lt;&gt;(); 了，JDK 具备自动推断能力。</p>
+<p>我们在编写程序时，经常遇到两个模块的功能非常相似，只是一个是处理int数据，另一个是处理string数据，或者其他自定义的数据类型，但我们没有办法，只能分别写多个方法处理每个数据类型，因为方法的参数类型不同。有没有一种办法，在方法中传入通用的数据类型，这样不就可以合并代码了吗？泛型的出现就是专门解决这个问题的。</p>
+<h3 id="2说说java中泛型的工作机制">2.说说Java中泛型的工作机制？</h3>
+<p>在java中，官方强烈推荐我们使用泛型。就是因为他有很多优点。</p>
+<p>（1）类型安全：我们在使用泛型之后，可以指定输入的类型，比如只能输入String类型的值，输入其他的就会报错，这在代码编写时，为我们提供了极大的方便。</p>
+<p>（2）消除强制类型转换：也就是说我们不需要进行类型转化，直接存储、直接输出。</p>
+<p>（3）只在编译器有效：也就是说在运行时泛型是无效的。这避免了jvm花费时间在运行时做额外的操作。</p>
+<ul>
+<li>这种语法机制，只在程序编译阶段起作用，只是给编译器参考的。（运行阶段泛型没用）</li>
+<li>使用了泛型好处是什么？
+第一：集合中存储的元素类型统一。
+第二：从集合中取出的元素类型是泛型指定的类型，不需要进行大量的向下转型。</li>
+<li>泛型的缺点是什么？
+导致集合中存储的元素缺乏多样性。</li>
+</ul>
+<h3 id="3在泛型中extends和super关键字的区别是什么">3.在泛型中extends和super关键字的区别是什么？</h3>
+<p><code>&lt;? extends T&gt;</code>和<code>&lt;? super T&gt;</code>是Java泛型中的“通配符（Wildcards）”和“边界（Bounds）”的概念。</p>
+<ul>
+<li>
+<!-- raw HTML omitted -->
+</li>
+<li>
+<!-- raw HTML omitted -->
+</li>
+</ul>
+<h5 id="为什么要用通配符和边界">为什么要用通配符和边界？</h5>
+<p>使用泛型的过程中，经常出现一种很别扭的情况。比如按照题主的例子，我们有Fruit类，和它的派生类Apple类。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Fruit</span> <span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Apple</span> <span style="color:#66d9ef">extends</span> Fruit <span style="color:#f92672">{}</span>
+</span></span></code></pre></div><p>然后有一个最简单的容器：Plate类。盘子里可以放一个泛型的“东西”。我们可以对这个东西做最简单的“放”和“取”的动作：set( )和get( )方法。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Plate</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> T item<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">Plate</span><span style="color:#f92672">(</span>T t<span style="color:#f92672">){</span>item<span style="color:#f92672">=</span>t<span style="color:#f92672">;}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>T t<span style="color:#f92672">){</span>item<span style="color:#f92672">=</span>t<span style="color:#f92672">;}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> T <span style="color:#a6e22e">get</span><span style="color:#f92672">(){</span><span style="color:#66d9ef">return</span> item<span style="color:#f92672">;}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>现在我定义一个“水果盘子”，逻辑上水果盘子当然可以装苹果。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Plate<span style="color:#f92672">&lt;</span>Fruit<span style="color:#f92672">&gt;</span> p<span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> Plate<span style="color:#f92672">&lt;</span>Apple<span style="color:#f92672">&gt;(</span><span style="color:#66d9ef">new</span> Apple<span style="color:#f92672">());</span>
+</span></span></code></pre></div><p>但实际上Java编译器不允许这个操作。会报错，“装苹果的盘子”无法转换成“装水果的盘子”。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>error: incompatible types<span style="color:#f92672">:</span> Plate<span style="color:#f92672">&lt;</span>Apple<span style="color:#f92672">&gt;</span> cannot be converted to Plate<span style="color:#f92672">&lt;</span>Fruit<span style="color:#f92672">&gt;</span>
+</span></span></code></pre></div><p>为了让泛型用起来更舒服，Sun的大脑袋们就想出了<code>&lt;? extends T&gt;</code>和<code>&lt;? super T&gt;</code>的办法，来让”水果盘子“和”苹果盘子“之间发生关系。</p>
+<h5 id="什么是上界">什么是上界？</h5>
+<p>下面代码就是“上界通配符（Upper Bounds Wildcards）”：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Plate<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">？</span> <span style="color:#66d9ef">extends</span> Fruit<span style="color:#f92672">&gt;</span>
+</span></span></code></pre></div><p>翻译成人话就是：一个能放水果以及一切是水果派生类的盘子。再直白点就是：啥水果都能放的盘子。这和我们人类的逻辑就比较接近了。<code>Plate&lt;？ extends Fruit&gt;</code>和<code>Plate&lt;Apple&gt;</code>最大的区别就是：<code>Plate&lt;？ extends Fruit&gt;</code>是<code>Plate&lt;Fruit&gt;</code>以及<code>Plate&lt;Apple&gt;</code>的基类。直接的好处就是，我们可以用“苹果盘子”给“水果盘子”赋值了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Plate<span style="color:#f92672">&lt;?</span> <span style="color:#66d9ef">extends</span> Fruit<span style="color:#f92672">&gt;</span> p<span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> Plate<span style="color:#f92672">&lt;</span>Apple<span style="color:#f92672">&gt;(</span><span style="color:#66d9ef">new</span> Apple<span style="color:#f92672">());</span>
+</span></span></code></pre></div><p>如果把Fruit和Apple的例子再扩展一下，食物分成水果和肉类，水果有苹果和香蕉，肉类有猪肉和牛肉，苹果还有两种青苹果和红苹果。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">//Lev 1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Food</span><span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//Lev 2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Fruit</span> <span style="color:#66d9ef">extends</span> Food<span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Meat</span> <span style="color:#66d9ef">extends</span> Food<span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//Lev 3
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Apple</span> <span style="color:#66d9ef">extends</span> Fruit<span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Banana</span> <span style="color:#66d9ef">extends</span> Fruit<span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Pork</span> <span style="color:#66d9ef">extends</span> Meat<span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Beef</span> <span style="color:#66d9ef">extends</span> Meat<span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//Lev 4
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RedApple</span> <span style="color:#66d9ef">extends</span> Apple<span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GreenApple</span> <span style="color:#66d9ef">extends</span> Apple<span style="color:#f92672">{}</span>
+</span></span></code></pre></div><p>在这个体系中，上界通配符 <code>Plate&lt;？ extends Fruit&gt;</code> 覆盖下图中蓝色的区域。</p>
+<p><img src="/post/java9%E6%B3%9B%E5%9E%8B/index.assets/820480-20161125004120143-1731938777.png"
+	width="1576"
+	height="764"
+	srcset="/post/java9%E6%B3%9B%E5%9E%8B/index.assets/820480-20161125004120143-1731938777_hu27cfb25c2ba402035fa19a73e436fa4c_236996_480x0_resize_box_3.png 480w, /post/java9%E6%B3%9B%E5%9E%8B/index.assets/820480-20161125004120143-1731938777_hu27cfb25c2ba402035fa19a73e436fa4c_236996_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="206"
+		data-flex-basis="495px"
+	
+></p>
+<h5 id="什么是下界">什么是下界？</h5>
+<p>相对应的，“下界通配符（Lower Bounds Wildcards）”：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Plate<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">？</span> <span style="color:#66d9ef">super</span> Fruit<span style="color:#f92672">&gt;</span>
+</span></span></code></pre></div><p>表达的就是相反的概念：一个能放水果以及一切是水果基类的盘子。<code>Plate&lt;？ super Fruit&gt;</code>是<code>Plate&lt;Fruit&gt;</code>的基类，但不是<code>Plate&lt;Apple&gt;</code>的基类。对应刚才那个例子，<code>Plate&lt;？ super Fruit&gt;</code>覆盖下图中红色的区域。</p>
+<p><img src="/post/java9%E6%B3%9B%E5%9E%8B/index.assets/820480-20161125004216471-1377946016.png"
+	width="1572"
+	height="808"
+	srcset="/post/java9%E6%B3%9B%E5%9E%8B/index.assets/820480-20161125004216471-1377946016_hu5453a146aa47d43fb6c0f81044997752_192628_480x0_resize_box_3.png 480w, /post/java9%E6%B3%9B%E5%9E%8B/index.assets/820480-20161125004216471-1377946016_hu5453a146aa47d43fb6c0f81044997752_192628_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="194"
+		data-flex-basis="466px"
+	
+></p>
+<h5 id="上下界通配符的副作用">上下界通配符的副作用</h5>
+<p>边界让Java不同泛型之间的转换更容易了。但不要忘记，这样的转换也有一定的副作用。那就是容器的部分功能可能失效。</p>
+<p>还是以刚才的Plate为例。我们可以对盘子做两件事，往盘子里set()新东西，以及从盘子里get()东西。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Plate</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> T item<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">Plate</span><span style="color:#f92672">(</span>T t<span style="color:#f92672">){</span>item<span style="color:#f92672">=</span>t<span style="color:#f92672">;}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>T t<span style="color:#f92672">){</span>item<span style="color:#f92672">=</span>t<span style="color:#f92672">;}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> T <span style="color:#a6e22e">get</span><span style="color:#f92672">(){</span><span style="color:#66d9ef">return</span> item<span style="color:#f92672">;}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h6 id="上界-extends-t不能往里存只能往外取">上界&lt;? extends T&gt;不能往里存，只能往外取</h6>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> List<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">fill</span><span style="color:#f92672">(</span>T<span style="color:#f92672">...</span> t<span style="color:#f92672">);</span>
+</span></span></code></pre></div><p>但通配符<code>&lt;?&gt;</code>没有这种约束，<code>Plate&lt;?&gt;</code>单纯的就表示：盘子里放了一个东西，是什么我不知道。</p>
+<p>所以题主问题里的错误就在这里，<code>Plate&lt;？ extends Fruit&gt;</code>里什么都放不进去。</p>
+<h6 id="下界-super-t不影响往里存但往外取只能放在object对象里">下界&lt;? super T&gt;不影响往里存，但往外取只能放在Object对象里</h6>
+<p>使用下界&lt;? super Fruit&gt;会使从盘子里取东西的get( )方法部分失效，只能存放到Object对象里。set( )方法正常。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Plate<span style="color:#f92672">&lt;?</span> <span style="color:#66d9ef">super</span> Fruit<span style="color:#f92672">&gt;</span> p<span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> Plate<span style="color:#f92672">&lt;</span>Fruit<span style="color:#f92672">&gt;(</span><span style="color:#66d9ef">new</span> Fruit<span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//存入元素正常
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>p<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Fruit<span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>p<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Apple<span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//读取出来的东西只能存放在Object类里。
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Apple newFruit3<span style="color:#f92672">=</span>p<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>    <span style="color:#75715e">//Error
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Fruit newFruit1<span style="color:#f92672">=</span>p<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>    <span style="color:#75715e">//Error
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Object newFruit2<span style="color:#f92672">=</span>p<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>
+</span></span></code></pre></div><p>因为下界规定了元素的最小粒度的下限，实际上是放松了容器元素的类型控制。既然元素是Fruit的基类，那往里存粒度比Fruit小的都可以。但往外读取元素就费劲了，只有所有类的基类Object对象才能装下。但这样的话，元素的类型信息就全部丢失。</p>
+<h5 id="pecs原则">PECS原则</h5>
+<p>最后看一下什么是PECS（Producer Extends Consumer Super）原则，已经很好理解了：</p>
+<ul>
+<li>频繁往外读取内容的，适合用上界Extends。</li>
+<li>经常往里插入的，适合用下界Super。</li>
+</ul>
+<h3 id="4比较一下其它语言中的泛型和java泛型的区别">4.比较一下其它语言中的泛型和Java泛型的区别。</h3>
+<p>Java泛型为了向前兼容，采取运行期类型擦出泛型参数的方式来实现。这就意味着，你在使用泛型的时候，任何具体的类型都已经被擦除。因此，以上的ArrayList<!-- raw HTML omitted -->和ArrayList<!-- raw HTML omitted -->实际上都恢复到他们的原生类型List，是同一种类型。正确理解Java泛型的类型擦除，能帮我们理解Java泛型中的很多奇怪特性。</p>
+<p>按C#对泛型的理解，泛型实质就是类的模板。我们认为很容易知道类ArrayList<!-- raw HTML omitted -->和ArrayList<!-- raw HTML omitted -->应该是不同的类型。<strong>Java运行结果判断ArrayList<!-- raw HTML omitted -->和ArrayList<!-- raw HTML omitted -->是相同的类型。Java的泛型不是真正的泛型，只是编译器的泛型，不是运行时的泛型。</strong></p>
+<h3 id="5在java中list-a-和list-b-是一样的类型还是不一样的类型为什么">5.在Java中List&lt; A &gt;和List&lt; B &gt;是一样的类型还是不一样的类型？为什么？</h3>
+<p>一样的类型Java的类型。因为java的泛型不是真正的泛型，<strong>只是编译器的泛型，不是运行时的泛型</strong>，java的泛型通过<strong>类型擦除</strong>实现，在编译器阶段实现，会生成同样的字节码。</p>
+<h3 id="6你可以例举一些自己使用泛型的栗子吗">6.你可以例举一些自己使用泛型的栗子吗？</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Plate</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> T item<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">Plate</span><span style="color:#f92672">(</span>T t<span style="color:#f92672">){</span>item<span style="color:#f92672">=</span>t<span style="color:#f92672">;}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>T t<span style="color:#f92672">){</span>item<span style="color:#f92672">=</span>t<span style="color:#f92672">;}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> T <span style="color:#a6e22e">get</span><span style="color:#f92672">(){</span><span style="color:#66d9ef">return</span> item<span style="color:#f92672">;}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div>
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2023 浩&amp;琳
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

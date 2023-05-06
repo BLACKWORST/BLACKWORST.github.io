@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='计算机基础——计算机网络 作为一名程序员，不可能不与网络打交道。所以网络的知识很重要，以下提及的知识点都需要了解清楚。
+一、背景知识 1、什么是计算机网络 计算机网络，是指地理位置不同，具有独立功能的计算机及周边设备，通过在网络操作系统中连接的通信线路，管理和协调网络管理软件和网络通信协议，实现计算机系统的资源共享和信息传输的计算机系统。
+计算机网络的基本功能是数据通信和资源共享。 资源共享包括硬件、软件和数据资源的共享。
+2、网络的分类 按照覆盖的地理范围来分： 广域网：广域网是一种公共数据网络，其可以将远隔千里的计算机连在一起。 局域网：局域网一般属于单位所有，用于将有限范围内的各种计算机、终端和外部设备连接起来。 城域网：是以IP为基础，通过计算机网络、广播电视台、电信网的三网融合，形成覆盖城市区域的网络通信平台。 比如：校园网就属于局域网
+二、OSI&amp;mdash;开放系统互连基本参考模型 OSI（Open System Interconnection，开放系统互连）七层网络模型称为开放式系统互联参考模型，是一个逻辑上的定义和规范 ，顾名思义，把网络从逻辑上分为了7层。每一层都有相关、相对应的物理设备，比如路由器，交换机； OSI七层模型是一种框架性的设计方法，其最主要的功能就是帮助不同类型的主机实现数据传输。 学习计算机网络原理的时候往往用的是五层协议的体系结构 : 物理层, 数据链路层, 网络层, 传输层和应用层。 但是我们今天了解一下七层都有什么吧。
+1、物理层 我们都知道，计算机的世界里只有0和1, 存储在计算机中也是一大串0和1的组合。但是这些数字不能在真实的物理介质中传输，而需要把它转换为光信号或者电信号，所以这一层负责将这些比特流与光电信号进行转换。
+如果没有物理层， 那么也就不存在互联网,，不存在数据的共享， 因为数据无法在网络中流动。 所以， 物理层处于OSI参考模型的最低层，它利用传输介质为通信的主机之间建立，管理和释放物理连接，实现比特流的透明传输（传输单位是比特），保证比特流通过传输介质的正确传输。
+2、数据链路层 数据在这一层不再是以比特流的形式传输，而是分割成一个一个的 帧 再进行传输。也就是说，数据链路层 是为网络层提供数据传送服务的，这种服务要依靠本层具备的功能来实现。 链路层应具备如下功能： （1）链路连接的建立、拆除和分离 （2）帧定界和帧同步。链路层的数据传输单元是帧，协议不同，帧的长短和界面也有差别，但无论如何必须对帧进行定界； （3）顺序控制，指对帧的收发顺序的控制； （4）差错检测和恢复。还有链路标识，流量控制等等。差错检测多用方阵码校验和循环码校验来检测信道上数据的误码，而帧丢失等用序号检测。各种错误的恢复则常靠反馈重发技术来完成。
+3、网络层 网络层是将网络地址翻译成对应的物理地址，通过路由选择算法为分组通过通信子网选择适当的传输路径，实现流量控制、拥塞控制和网络互联的功能；网络层用于本地L A N网段之上的计算机系统建立通信，它之所以可以这样做，是因为它有自己的路由地址结构，这种结构与第二层机器地址是分开的、独立的。这种协议称为路由或可路由协议。 为建立网络连接和为上层提供服务，网络层应具备以下主要功能： （1）路由选择和中继； （2）激活，终止网络连接； （3）在一条数据链路上复用多条网络连接，多采取 分时复用技术； （4）检测与恢复； （5）排序，流量控制； （6）服务选择； （7）网络管理。
+4、传输层 传输层是两台计算机经过网络进行数据通信时，第一个端到端的层次，具有缓冲作用。当网络层服务质量不能满足要求时，它将服务加以提高，以满足高层的要求；当网络层服务质量较好时，它只用很少的工作。传输层还可进行复用，即在一个网络连接上创建多个逻辑连接。传输层也称为运输层。传输层只存在于端开放系统中，是介于低3层通信子网系统和高3层之间的一层，但是很重要的一层。因为它是源端到目的端对数据传送进行控制从低到高的最后一层。 主要功能是端开放系统之间数据的收妥确认。同时，还用于弥补各种通信网路的质量差异，对经过下三层之后仍然存在的传输差错进行恢复，进一步提高可靠性。另外，还通过复用、分段和组合、连接和分离、分流和合流等技术措施，提高吞吐量和服务质量。 这一层主要重点是两个协议 : UDP 和 TCP。在以后的文章会介绍这两个协议。
+5、会话层 会话层负责在网络中的两节点之间建立、维持和终止通信。 会话层的功能包括：建立通信链接，保持会话过程通信链接的畅通，同步两个节点之间的对话，决定通信是否被中断以及通信中断时决定从何处重新发送。 会话层通过决定节点通信的优先级和通信时间的长短来设置通信期限。
+6、表示层 它的主要作用之一是为异种机通信提供一种公共语言，以便能进行互操作。这种类型的服务之所以需要，是因为不同的计算机体系结构使用的数据表示法不同。与第五层提供透明的数据运输不同，表示层是处理所有与数据表示及运输有关的问题，包括转换、加密和压缩。除此之外，表示层协议还对图片和文件格式信息进行解码和编码。 例如，IBM 主机 使用EBCDIC编码，而大部分PC机使用的是ASCII码。在这种情况下，便需要表示层来完成这种转换。'>
+<title>计算机网络</title>
+
+<link rel='canonical' href='https://haolovelin.com/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/'>
+
+<link rel="stylesheet" href="/scss/style.min.5be32ca3f6e1a997c75795c4359147cc6d4fbd34948c0acd51e31d237033978a.css"><meta property='og:title' content='计算机网络'>
+<meta property='og:description' content='计算机基础——计算机网络 作为一名程序员，不可能不与网络打交道。所以网络的知识很重要，以下提及的知识点都需要了解清楚。
+一、背景知识 1、什么是计算机网络 计算机网络，是指地理位置不同，具有独立功能的计算机及周边设备，通过在网络操作系统中连接的通信线路，管理和协调网络管理软件和网络通信协议，实现计算机系统的资源共享和信息传输的计算机系统。
+计算机网络的基本功能是数据通信和资源共享。 资源共享包括硬件、软件和数据资源的共享。
+2、网络的分类 按照覆盖的地理范围来分： 广域网：广域网是一种公共数据网络，其可以将远隔千里的计算机连在一起。 局域网：局域网一般属于单位所有，用于将有限范围内的各种计算机、终端和外部设备连接起来。 城域网：是以IP为基础，通过计算机网络、广播电视台、电信网的三网融合，形成覆盖城市区域的网络通信平台。 比如：校园网就属于局域网
+二、OSI&amp;mdash;开放系统互连基本参考模型 OSI（Open System Interconnection，开放系统互连）七层网络模型称为开放式系统互联参考模型，是一个逻辑上的定义和规范 ，顾名思义，把网络从逻辑上分为了7层。每一层都有相关、相对应的物理设备，比如路由器，交换机； OSI七层模型是一种框架性的设计方法，其最主要的功能就是帮助不同类型的主机实现数据传输。 学习计算机网络原理的时候往往用的是五层协议的体系结构 : 物理层, 数据链路层, 网络层, 传输层和应用层。 但是我们今天了解一下七层都有什么吧。
+1、物理层 我们都知道，计算机的世界里只有0和1, 存储在计算机中也是一大串0和1的组合。但是这些数字不能在真实的物理介质中传输，而需要把它转换为光信号或者电信号，所以这一层负责将这些比特流与光电信号进行转换。
+如果没有物理层， 那么也就不存在互联网,，不存在数据的共享， 因为数据无法在网络中流动。 所以， 物理层处于OSI参考模型的最低层，它利用传输介质为通信的主机之间建立，管理和释放物理连接，实现比特流的透明传输（传输单位是比特），保证比特流通过传输介质的正确传输。
+2、数据链路层 数据在这一层不再是以比特流的形式传输，而是分割成一个一个的 帧 再进行传输。也就是说，数据链路层 是为网络层提供数据传送服务的，这种服务要依靠本层具备的功能来实现。 链路层应具备如下功能： （1）链路连接的建立、拆除和分离 （2）帧定界和帧同步。链路层的数据传输单元是帧，协议不同，帧的长短和界面也有差别，但无论如何必须对帧进行定界； （3）顺序控制，指对帧的收发顺序的控制； （4）差错检测和恢复。还有链路标识，流量控制等等。差错检测多用方阵码校验和循环码校验来检测信道上数据的误码，而帧丢失等用序号检测。各种错误的恢复则常靠反馈重发技术来完成。
+3、网络层 网络层是将网络地址翻译成对应的物理地址，通过路由选择算法为分组通过通信子网选择适当的传输路径，实现流量控制、拥塞控制和网络互联的功能；网络层用于本地L A N网段之上的计算机系统建立通信，它之所以可以这样做，是因为它有自己的路由地址结构，这种结构与第二层机器地址是分开的、独立的。这种协议称为路由或可路由协议。 为建立网络连接和为上层提供服务，网络层应具备以下主要功能： （1）路由选择和中继； （2）激活，终止网络连接； （3）在一条数据链路上复用多条网络连接，多采取 分时复用技术； （4）检测与恢复； （5）排序，流量控制； （6）服务选择； （7）网络管理。
+4、传输层 传输层是两台计算机经过网络进行数据通信时，第一个端到端的层次，具有缓冲作用。当网络层服务质量不能满足要求时，它将服务加以提高，以满足高层的要求；当网络层服务质量较好时，它只用很少的工作。传输层还可进行复用，即在一个网络连接上创建多个逻辑连接。传输层也称为运输层。传输层只存在于端开放系统中，是介于低3层通信子网系统和高3层之间的一层，但是很重要的一层。因为它是源端到目的端对数据传送进行控制从低到高的最后一层。 主要功能是端开放系统之间数据的收妥确认。同时，还用于弥补各种通信网路的质量差异，对经过下三层之后仍然存在的传输差错进行恢复，进一步提高可靠性。另外，还通过复用、分段和组合、连接和分离、分流和合流等技术措施，提高吞吐量和服务质量。 这一层主要重点是两个协议 : UDP 和 TCP。在以后的文章会介绍这两个协议。
+5、会话层 会话层负责在网络中的两节点之间建立、维持和终止通信。 会话层的功能包括：建立通信链接，保持会话过程通信链接的畅通，同步两个节点之间的对话，决定通信是否被中断以及通信中断时决定从何处重新发送。 会话层通过决定节点通信的优先级和通信时间的长短来设置通信期限。
+6、表示层 它的主要作用之一是为异种机通信提供一种公共语言，以便能进行互操作。这种类型的服务之所以需要，是因为不同的计算机体系结构使用的数据表示法不同。与第五层提供透明的数据运输不同，表示层是处理所有与数据表示及运输有关的问题，包括转换、加密和压缩。除此之外，表示层协议还对图片和文件格式信息进行解码和编码。 例如，IBM 主机 使用EBCDIC编码，而大部分PC机使用的是ASCII码。在这种情况下，便需要表示层来完成这种转换。'>
+<meta property='og:url' content='https://haolovelin.com/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/'>
+<meta property='og:site_name' content='浩&amp;琳'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2021-07-15T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-07-15T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="计算机网络">
+<meta name="twitter:description" content="计算机基础——计算机网络 作为一名程序员，不可能不与网络打交道。所以网络的知识很重要，以下提及的知识点都需要了解清楚。
+一、背景知识 1、什么是计算机网络 计算机网络，是指地理位置不同，具有独立功能的计算机及周边设备，通过在网络操作系统中连接的通信线路，管理和协调网络管理软件和网络通信协议，实现计算机系统的资源共享和信息传输的计算机系统。
+计算机网络的基本功能是数据通信和资源共享。 资源共享包括硬件、软件和数据资源的共享。
+2、网络的分类 按照覆盖的地理范围来分： 广域网：广域网是一种公共数据网络，其可以将远隔千里的计算机连在一起。 局域网：局域网一般属于单位所有，用于将有限范围内的各种计算机、终端和外部设备连接起来。 城域网：是以IP为基础，通过计算机网络、广播电视台、电信网的三网融合，形成覆盖城市区域的网络通信平台。 比如：校园网就属于局域网
+二、OSI&amp;mdash;开放系统互连基本参考模型 OSI（Open System Interconnection，开放系统互连）七层网络模型称为开放式系统互联参考模型，是一个逻辑上的定义和规范 ，顾名思义，把网络从逻辑上分为了7层。每一层都有相关、相对应的物理设备，比如路由器，交换机； OSI七层模型是一种框架性的设计方法，其最主要的功能就是帮助不同类型的主机实现数据传输。 学习计算机网络原理的时候往往用的是五层协议的体系结构 : 物理层, 数据链路层, 网络层, 传输层和应用层。 但是我们今天了解一下七层都有什么吧。
+1、物理层 我们都知道，计算机的世界里只有0和1, 存储在计算机中也是一大串0和1的组合。但是这些数字不能在真实的物理介质中传输，而需要把它转换为光信号或者电信号，所以这一层负责将这些比特流与光电信号进行转换。
+如果没有物理层， 那么也就不存在互联网,，不存在数据的共享， 因为数据无法在网络中流动。 所以， 物理层处于OSI参考模型的最低层，它利用传输介质为通信的主机之间建立，管理和释放物理连接，实现比特流的透明传输（传输单位是比特），保证比特流通过传输介质的正确传输。
+2、数据链路层 数据在这一层不再是以比特流的形式传输，而是分割成一个一个的 帧 再进行传输。也就是说，数据链路层 是为网络层提供数据传送服务的，这种服务要依靠本层具备的功能来实现。 链路层应具备如下功能： （1）链路连接的建立、拆除和分离 （2）帧定界和帧同步。链路层的数据传输单元是帧，协议不同，帧的长短和界面也有差别，但无论如何必须对帧进行定界； （3）顺序控制，指对帧的收发顺序的控制； （4）差错检测和恢复。还有链路标识，流量控制等等。差错检测多用方阵码校验和循环码校验来检测信道上数据的误码，而帧丢失等用序号检测。各种错误的恢复则常靠反馈重发技术来完成。
+3、网络层 网络层是将网络地址翻译成对应的物理地址，通过路由选择算法为分组通过通信子网选择适当的传输路径，实现流量控制、拥塞控制和网络互联的功能；网络层用于本地L A N网段之上的计算机系统建立通信，它之所以可以这样做，是因为它有自己的路由地址结构，这种结构与第二层机器地址是分开的、独立的。这种协议称为路由或可路由协议。 为建立网络连接和为上层提供服务，网络层应具备以下主要功能： （1）路由选择和中继； （2）激活，终止网络连接； （3）在一条数据链路上复用多条网络连接，多采取 分时复用技术； （4）检测与恢复； （5）排序，流量控制； （6）服务选择； （7）网络管理。
+4、传输层 传输层是两台计算机经过网络进行数据通信时，第一个端到端的层次，具有缓冲作用。当网络层服务质量不能满足要求时，它将服务加以提高，以满足高层的要求；当网络层服务质量较好时，它只用很少的工作。传输层还可进行复用，即在一个网络连接上创建多个逻辑连接。传输层也称为运输层。传输层只存在于端开放系统中，是介于低3层通信子网系统和高3层之间的一层，但是很重要的一层。因为它是源端到目的端对数据传送进行控制从低到高的最后一层。 主要功能是端开放系统之间数据的收妥确认。同时，还用于弥补各种通信网路的质量差异，对经过下三层之后仍然存在的传输差错进行恢复，进一步提高可靠性。另外，还通过复用、分段和组合、连接和分离、分流和合流等技术措施，提高吞吐量和服务质量。 这一层主要重点是两个协议 : UDP 和 TCP。在以后的文章会介绍这两个协议。
+5、会话层 会话层负责在网络中的两节点之间建立、维持和终止通信。 会话层的功能包括：建立通信链接，保持会话过程通信链接的畅通，同步两个节点之间的对话，决定通信是否被中断以及通信中断时决定从何处重新发送。 会话层通过决定节点通信的优先级和通信时间的长短来设置通信期限。
+6、表示层 它的主要作用之一是为异种机通信提供一种公共语言，以便能进行互操作。这种类型的服务之所以需要，是因为不同的计算机体系结构使用的数据表示法不同。与第五层提供透明的数据运输不同，表示层是处理所有与数据表示及运输有关的问题，包括转换、加密和压缩。除此之外，表示层协议还对图片和文件格式信息进行解码和编码。 例如，IBM 主机 使用EBCDIC编码，而大部分PC机使用的是ASCII码。在这种情况下，便需要表示层来完成这种转换。">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu9f7a08366cc43f473c39f8f10558a931_55504_300x0_resize_box_3.png" width="300"
+                            height="332" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">浩&amp;琳</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+
+        <div class="menu-bottom-section">
+            
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>Dark Mode</span>
+                </li>
+            
+        </div>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/" style="background-color: #2a9d8f; color: #fff;">
+                编程学习
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jul 15, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    5 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="计算机基础计算机网络">计算机基础——计算机网络</h1>
+<p>作为一名程序员，不可能不与网络打交道。所以网络的知识很重要，以下提及的知识点都需要了解清楚。</p>
+<h2 id="一背景知识">一、背景知识</h2>
+<h3 id="1什么是计算机网络">1、什么是计算机网络</h3>
+<p>计算机网络，是指地理位置不同，具有独立功能的计算机及周边设备，通过在网络操作系统中连接的通信线路，管理和协调网络管理软件和网络通信协议，实现计算机系统的资源共享和信息传输的计算机系统。</p>
+<p>计算机网络的基本功能是数据通信和资源共享。 资源共享包括硬件、软件和数据资源的共享。</p>
+<h3 id="2网络的分类">2、网络的分类</h3>
+<p>按照覆盖的地理范围来分：
+广域网：广域网是一种公共数据网络，其可以将远隔千里的计算机连在一起。
+局域网：局域网一般属于单位所有，用于将有限范围内的各种计算机、终端和外部设备连接起来。
+城域网：是以IP为基础，通过计算机网络、广播电视台、电信网的三网融合，形成覆盖城市区域的网络通信平台。
+比如：校园网就属于局域网</p>
+<h2 id="二osi---开放系统互连基本参考模型">二、OSI&mdash;开放系统互连基本参考模型</h2>
+<p>OSI（Open System Interconnection，开放系统互连）七层网络模型称为开放式系统互联参考模型，是一个逻辑上的定义和规范
+，顾名思义，把网络从逻辑上分为了7层。每一层都有相关、相对应的物理设备，比如路由器，交换机；
+OSI七层模型是一种框架性的设计方法，其最主要的功能就是帮助不同类型的主机实现数据传输。
+学习计算机网络原理的时候往往用的是五层协议的体系结构 : 物理层, 数据链路层, 网络层, 传输层和应用层。
+但是我们今天了解一下七层都有什么吧。</p>
+<h3 id="1物理层">1、物理层</h3>
+<p>我们都知道，计算机的世界里只有0和1, 存储在计算机中也是一大串0和1的组合。但是这些数字不能在真实的物理介质中传输，而需要把它转换为光信号或者电信号，所以这一层负责将这些<strong>比特流</strong>与<strong>光电信号</strong>进行转换。</p>
+<p>如果没有物理层， 那么也就不存在互联网,，不存在数据的共享， 因为数据无法在网络中流动。
+所以， 物理层处于OSI参考模型的最低层，它利用传输介质为通信的主机之间建立，管理和释放物理连接，实现比特流的透明传输（传输单位是比特），保证比特流通过传输介质的正确传输。</p>
+<h3 id="2数据链路层">2、数据链路层</h3>
+<p>数据在这一层不再是以比特流的形式传输，而是分割成一个一个的 <strong>帧</strong> 再进行传输。也就是说，数据链路层 是为网络层提供数据传送服务的，这种服务要依靠本层具备的功能来实现。
+链路层应具备如下功能：
+（1）链路连接的建立、拆除和分离
+（2）帧定界和帧同步。<strong>链路层的数据传输单元是帧</strong>，协议不同，帧的长短和界面也有差别，但无论如何必须对帧进行定界；
+（3）顺序控制，指对帧的收发顺序的控制；
+（4）差错检测和恢复。还有链路标识，流量控制等等。差错检测多用方阵码校验和循环码校验来检测信道上数据的误码，而帧丢失等用序号检测。各种错误的<strong>恢复则常靠反馈重发技术来完成</strong>。</p>
+<h3 id="3网络层">3、网络层</h3>
+<p>网络层是将网络地址翻译成对应的物理地址，通过路由选择算法为分组通过通信子网选择适当的传输路径，实现<strong>流量控制、拥塞控制和网络互联</strong>的功能；网络层用于本地L A N网段之上的计算机系统建立通信，它之所以可以这样做，是因为它有自己的<strong>路由地址结构</strong>，这种结构与第二层机器地址是分开的、独立的。这种协议称为<strong>路由或可路由协议</strong>。
+为建立网络连接和为上层提供服务，网络层应具备以下主要功能：
+（1）路由选择和中继；
+（2）激活，终止网络连接；
+（3）在一条数据链路上复用多条网络连接，多采取 <strong>分时复用技术</strong>；
+（4）检测与恢复；
+（5）排序，流量控制；
+（6）服务选择；
+（7）网络管理。</p>
+<h3 id="4传输层">4、传输层</h3>
+<p>传输层是两台计算机经过网络进行数据通信时，第一个<strong>端到端</strong>的层次，具有缓冲作用。当网络层服务质量不能满足要求时，它将服务加以提高，以满足高层的要求；当网络层服务质量较好时，它只用很少的工作。传输层还可进行复用，即在一个网络连接上创建多个逻辑连接。传输层也称为运输层。传输层只存在于端开放系统中，是介于低3层通信子网系统和高3层之间的一层，但是很重要的一层。因为它是源端到目的端对数据传送进行控制从低到高的最后一层。
+主要功能是端开放系统之间数据的收妥确认。同时，还用于弥补各种通信网路的质量差异，对经过下三层之后仍然存在的传输差错进行恢复，进一步提高可靠性。另外，还通过复用、分段和组合、连接和分离、分流和合流等技术措施，提高吞吐量和服务质量。
+这一层主要重点是两个协议 : <strong>UDP 和 TCP</strong>。在以后的文章会介绍这两个协议。</p>
+<h3 id="5会话层">5、会话层</h3>
+<p>会话层负责在网络中的<strong>两节点之间建立、维持和终止通信</strong>。
+会话层的功能包括：建立通信链接，保持会话过程通信链接的畅通，同步两个节点之间的对话，决定通信是否被中断以及通信中断时决定从何处重新发送。
+会话层通过决定节点通信的优先级和通信时间的长短来设置通信期限。</p>
+<h3 id="6表示层">6、表示层</h3>
+<p>它的主要作用之一是为异种机通信<strong>提供一种公共语言</strong>，以便能进行互操作。这种类型的服务之所以需要，是因为不同的计算机体系结构使用的数据表示法不同。与第五层提供透明的数据运输不同，表示层是处理所有与数据表示及运输有关的问题，包括转换、加密和压缩。除此之外，表示层协议还对图片和文件格式信息进行解码和编码。
+例如，IBM 主机 使用EBCDIC编码，而大部分PC机使用的是ASCII码。在这种情况下，便需要表示层来完成这种转换。</p>
+<h3 id="7应用层">7、应用层</h3>
+<p>OSI参考模型的最高层。
+其功能是<strong>实现应用进程（如用户程序、终端操作员等）之间的信息交换</strong>。同时，还具有<strong>一系列业务处理所需要的服务功能</strong>。
+应用层一般包括公共应用服务要素（CASE）和特定应用服务要素（SASE）。其中CASE提供应用进程中最基本的服务，向应用进程提供信息传送所必需的、但又独立于应用进程通信的能力。SASE实质上是各种应用进程在应用层中的映射，每一个SASE都针对某一类具体应用，例如文件传送、访问和管理（FTAM）、虚拟终端（VT）、消息处理系统（MHS）、电子数据互换（EDI）和目录查询等。
+OSI七层模型的优点
+OSI七层模型将服务、接口和协议这三个概念明确地区分开来，这样各个层之间具有很强的独立性， 所以：
+（服务说明某一层为上一层提供一些什么功能，接口说明上一层如何使用下层的服务，而协议涉及如何实现本层的服务）
+1、减少网络复杂度 ，一旦网络发生故障，可迅速定位故障所处层次，便于查找和纠错；
+2、标准化 ，每一层都遵循同样的标准，便于不同的网络设备实现互操作
+3、模块化
+4、协作
+5、加速发展 ，有效刺激网络技术革新，因为每次更新都可以在小范围内进行，不需对整个网络动大手术。
+6、简单教学</p>
+<h2 id="三tcpip四层模型">三、TCP/IP四层模型</h2>
+<h3 id="1什么是tcpip">1、什么是TCP/IP？</h3>
+<p>TCP/IP是一组协议的代名词，它还包括许多协议，组成了TCP/IP协议簇.
+TCP/IP通讯协议采用了5层的层级结构，每一层都呼叫它的下一层所提供的网络来完成自己的需求.</p>
+<h3 id="2分层介绍">2、分层介绍</h3>
+<p>（1）应用层
+TCP/IP模型将OSI参考模型中的会话层和表示层的功能合并到应用层实现。　　
+应用层面向不同的网络应用引入了不同的应用层协议。其中，有基于TCP协议的，如文件传输协议（File Transfer Protocol，FTP）、虚拟终端协议（TELNET）、超文本传输协议（Hyper Text Transfer Protocol，HTTP），也有基于UDP协议的。</p>
+<p>（2）传输层: 负责两台主机之间的数据传输. 如传输控制协议 (TCP), 能够确保数据可靠的从源主机发送到目标主机.在TCP/IP模型中，传输层的功能是使源端主机和目标端主机上的对等实体可以进行会话。在传输层定义了两种服务质量不同的协议。即：传输控制协议TCP（transmissioncontrol protocol）和用户数据报协议UDP（user datagram protocol）。　　
+TCP协议是一个面向连接的、可靠的协议。它将一台主机发出的字节流无差错地发往互联网上的其他主机。在发送端，它负责把上层传送下来的字节流分成报文段并传递给下层。在接收端，它负责把收到的报文进行重组后递交给上层。TCP协议还要处理端到端的流量控制，以避免缓慢接收的接收方没有足够的缓冲区接收发送方发送的大量数据。　　
+　UDP协议是一个不可靠的、无连接协议，主要适用于不需要对报文进行排序和流量控制的场合。　　
+（3）网络层: 负责地址管理和路由选择.
+例如在IP协议中, 通过IP地址来标识一台主机, 并通过路由表的方式规划出两台主机之间的数据传输的线路(路由). 路由器(Router)工作在网络层.
+（4）网络接口层网络接口层与OSI参考模型中的物理层和数据链路层相对应。网络接口层是TCP/IP与各种LAN或WAN的接口。</p>
+<p>网络接口层在发送端将上层的IP数据报封装成帧后发送到网络上；数据帧通过网络到达接收端时，该结点的网络接口层对数据帧拆封，并检查帧中包含的MAC地址。如果该地址就是本机的MAC地址或者是广播地址，则上传到网络层，否则丢弃该帧。</p>
+<p>当使用串行线路连接主机与网络，或连接网络与网络时，例如，主机通过Modem和电话线接入Internet，则需要在网络接口层运行SLIP或PPP协议。</p>
+<p>☆ SLIP（Serial Line Internet Protocol）协议提供了一种在串行通信线路上封装IP数据报的简单方法，使用户通过电话线和Modem能方便地接入TCP/IP网络。</p>
+<p>☆ PPP（Point to Point Protocol）协议是一种有效的点到点通信协议，解决了SLIP存在的上述问题，即可以支持多种网络层协议（如IP、IPX等），支持动态分配的IP地址；并且PPP帧中设置了校验字段，因而PPP在网络接口层上具有差错检验能力。</p>
+<h2 id="四tcp的三次握手和四次挥手">四、TCP的三次握手和四次挥手</h2>
+<h3 id="tcp-协议简述">TCP 协议简述</h3>
+<p>TCP 提供面向有连接的通信传输，面向有连接是指在传送数据之前必须先建立连接，数据传送完成后要释放连接。</p>
+<p>无论哪一方向另一方发送数据之前，都必须先在双方之间建立一条连接。在TCP/IP协议中，TCP协议提供可靠的连接服务，连接是通过<strong>三次握手</strong>进行初始化的。
+同时由于TCP协议是一种面向连接的、可靠的、基于字节流的运输层通信协议，TCP是<strong>全双工模式</strong>，所以需要<strong>四次挥手</strong>关闭连接。</p>
+<h3 id="tcp包首部">TCP包首部</h3>
+<p>网络中传输的数据包由两部分组成：一部分是协议所要用到的首部，另一部分是上一层传过来的数据。首部的结构由协议的具体规范详细定义。在数据包的首部，明确标明了协议应该如何读取数据。反过来说，看到首部，也就能够了解该协议必要的信息以及所要处理的数据。包首部就像协议的脸。</p>
+<p>所以我们在学习TCP协议之前，首先要知道TCP在网络传输中处于哪个位置，以及它的协议的规范，下面我们就看看TCP首部的网络传输起到的作用：</p>
+<p><img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/msg_tcp.png"
+	width="823"
+	height="771"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/msg_tcp_hu8fb8bbcd4e2d2478a3d3ae148fdf0701_205152_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/msg_tcp_hu8fb8bbcd4e2d2478a3d3ae148fdf0701_205152_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="网络数据传输过程"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="106"
+		data-flex-basis="256px"
+	
+></p>
+<p>下面的图是TCP头部的规范定义，它定义了TCP协议如何读取和解析数据：
+<img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/TCPheader.png"
+	width="700"
+	height="289"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/TCPheader_hu00132ac617e22b29db6bcd45620edafd_81005_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/TCPheader_hu00132ac617e22b29db6bcd45620edafd_81005_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="TCP头部"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="242"
+		data-flex-basis="581px"
+	
+></p>
+<p>TCP首部承载这TCP协议需要的各项信息，下面我们来分析一下：</p>
+<ul>
+<li><strong>TCP端口号</strong>
+TCP的连接是需要四个要素确定唯一一个连接：
+<strong>（源IP，源端口号）+ （目地IP，目的端口号）</strong>
+所以TCP首部预留了两个16位作为端口号的存储，而IP地址由上一层IP协议负责传递
+源端口号和目地端口各占16位两个字节，也就是端口的范围是2^16=65535
+另外1024以下是系统保留的，从1024-65535是用户使用的端口范围</li>
+<li><strong>TCP的序号和确认号</strong>：
+<strong>32位序号 seq</strong>：Sequence number 缩写seq ，TCP通信过程中某一个传输方向上的字节流的每个字节的序号，通过这个来确认发送的数据<strong>有序</strong>，比如现在序列号为1000，发送了1000，下一个序列号就是2000。
+<strong>32位确认号 ack</strong>：Acknowledge number 缩写ack，TCP对上一次seq序号做出的确认号，用来响应TCP报文段，给收到的TCP报文段的序号seq加1。</li>
+<li><strong>TCP的标志位</strong>
+每个TCP段都有一个目的，这是借助于TCP标志位选项来确定的，允许发送方或接收方指定哪些标志应该被使用，以便段被另一端正确处理。
+用的最广泛的标志是 <strong>SYN</strong>，<strong>ACK</strong> 和 <strong>FIN</strong>，用于建立连接，确认成功的段传输，最后终止连接。
+<ol>
+<li><strong>SYN</strong>：简写为<code>S</code>，同步标志位，用于建立会话连接，同步序列号；</li>
+<li><strong>ACK</strong>： 简写为<code>.</code>，确认标志位，对已接收的数据包进行确认；</li>
+<li><strong>FIN</strong>： 简写为<code>F</code>，完成标志位，表示我已经没有数据要发送了，即将关闭连接；</li>
+<li>PSH：简写为<code>P</code>，推送标志位，表示该数据包被对方接收后应立即交给上层应用，而不在缓冲区排队；</li>
+<li>RST：简写为<code>R</code>，重置标志位，用于连接复位、拒绝错误和非法的数据包；</li>
+<li>URG：简写为<code>U</code>，紧急标志位，表示数据包的紧急指针域有效，用来保证连接不被阻断，并督促中间设备尽快处理；</li>
+</ol>
+</li>
+</ul>
+<h3 id="tcp-三次握手建立连接">TCP 三次握手建立连接</h3>
+<p>所谓三次握手(Three-way Handshake)，是指建立一个 TCP 连接时，需要客户端和服务器总共发送3个报文。</p>
+<p>三次握手的目的是连接服务器指定端口，建立 TCP 连接，并同步连接双方的序列号和确认号，交换 TCP 窗口大小信息。在 socket 编程中，客户端执行 connect() 时。将触发三次握手。</p>
+<p>三次握手过程的示意图如下：
+<img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/established.png"
+	width="712"
+	height="621"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/established_hu082a06e01f1abd1adbff0d32f2ee5ce4_93171_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/established_hu082a06e01f1abd1adbff0d32f2ee5ce4_93171_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="三次握手建立连接"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="114"
+		data-flex-basis="275px"
+	
+></p>
+<ul>
+<li><strong>第一次握手</strong>：
+客户端将TCP报文<strong>标志位SYN置为1</strong>，随机产生一个序号值seq=J，保存在TCP首部的序列号(Sequence Number)字段里，指明客户端打算连接的服务器的端口，并将该数据包发送给服务器端，发送完毕后，客户端进入<code>SYN_SENT</code>状态，等待服务器端确认。</li>
+<li><strong>第二次握手</strong>：
+服务器端收到数据包后由标志位SYN=1知道客户端请求建立连接，服务器端将TCP报文<strong>标志位SYN和ACK都置为1</strong>，ack=J+1，随机产生一个序号值seq=K，并将该数据包发送给客户端以确认连接请求，服务器端进入<code>SYN_RCVD</code>状态。</li>
+<li><strong>第三次握手</strong>：
+客户端收到确认后，检查ack是否为J+1，ACK是否为1，如果正确则将标志位ACK置为1，ack=K+1，并将该数据包发送给服务器端，服务器端检查ack是否为K+1，ACK是否为1，如果正确则连接建立成功，客户端和服务器端进入<code>ESTABLISHED</code>状态，完成三次握手，随后客户端与服务器端之间可以开始传输数据了。</li>
+</ul>
+<p>注意:我们上面写的ack和ACK，不是同一个概念：</p>
+<ul>
+<li>小写的ack代表的是头部的确认号Acknowledge number， 缩写ack，是对上一个包的序号进行确认的号，ack=seq+1。</li>
+<li>大写的ACK，则是我们上面说的TCP首部的标志位，用于标志的TCP包是否对上一个包进行了确认操作，如果确认了，则把ACK标志位设置成1。</li>
+</ul>
+<p>下面我自己做实验，开一个HTTP服务，监听80端口，然后使用Tcpdump命令抓包，看一下TCP三次握手的过程：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>sudo tcpdump <span style="color:#f92672">-</span>n <span style="color:#f92672">-</span>t <span style="color:#f92672">-</span>S <span style="color:#f92672">-</span>i enp0s3  port <span style="color:#ae81ff">80</span> 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>第一次握手<span style="color:#960050;background-color:#1e0010">，</span>标志位Flags<span style="color:#f92672">=</span>S
+</span></span><span style="display:flex;"><span>IP <span style="color:#ae81ff">10.0.2.2.51323</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">10.0.2.15.80</span>: Flags [S], seq <span style="color:#ae81ff">84689409</span>, win <span style="color:#ae81ff">65535</span>, options [mss <span style="color:#ae81ff">1460</span>], length <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>第二次握手<span style="color:#960050;background-color:#1e0010">，</span>标志位Flags<span style="color:#f92672">=</span>[S<span style="color:#f92672">.</span>]
+</span></span><span style="display:flex;"><span>IP <span style="color:#ae81ff">10.0.2.15.80</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">10.0.2.2.51323</span>: Flags [S<span style="color:#f92672">.</span>], seq <span style="color:#ae81ff">1893430205</span>, ack <span style="color:#ae81ff">84689410</span>, win <span style="color:#ae81ff">64240</span>, options [mss <span style="color:#ae81ff">1460</span>], length <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>第三次握手<span style="color:#960050;background-color:#1e0010">，</span>标志位Flags<span style="color:#f92672">=</span>[<span style="color:#f92672">.</span>]
+</span></span><span style="display:flex;"><span>IP <span style="color:#ae81ff">10.0.2.2.51323</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">10.0.2.15.80</span>: Flags [<span style="color:#f92672">.</span>], ack <span style="color:#ae81ff">1893430206</span>, win <span style="color:#ae81ff">65535</span>, length <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>建立连接后<span style="color:#960050;background-color:#1e0010">，</span>客户端发送http请求 
+</span></span><span style="display:flex;"><span>IP <span style="color:#ae81ff">10.0.2.2.51321</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">10.0.2.15.80</span>: Flags [P<span style="color:#f92672">.</span>], seq <span style="color:#ae81ff">1</span>:<span style="color:#ae81ff">753</span>, ack <span style="color:#ae81ff">1</span>, win <span style="color:#ae81ff">65535</span>, length <span style="color:#ae81ff">752</span>: HTTP: GET <span style="color:#f92672">/</span> HTTP<span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span>
+</span></span></code></pre></div><blockquote>
+<p>tcpdump命令解析一下：
+-i : 指定抓包的网卡是enp0s3
+-n: 把域名转成IP显示
+-t: 不显示时间
+-S: 序列号使用绝对数值，不指定-S的话，序列号会使用相对的数值
+port: 指定监听端口是80
+host:指定监听的主机名</p>
+</blockquote>
+<p>我们看下实战中TCP的三次握手过程：</p>
+<ul>
+<li>第一次握手，客户端51323端口号向服务器端80号端口发起连接，此时标志位flags=S，即SYN=1标志，表示向服务端发起连接的请求，同时生成序列号seq=84689409</li>
+<li>第二次握手，服务端标志位flags=[S.]，即SYN+ACK标志位设置为1，表示对上一个请求连接的报文进行确认，同时设置ack=seq+1=184689410，生成序列号seq=1893430205</li>
+<li>第三次握手，客户端对服务端的响应进行确认，所以此时标志位是[.]即ACK=1，同时返回对上一个报文的seq的确认号，ack=1893430206</li>
+</ul>
+<p>至此，三次握手完成，一个TCP连接建立完成，接下来就是双端传输数据了</p>
+<h4 id="为什么需要三次握手">为什么需要三次握手？</h4>
+<p>我们假设client发出的第一个连接请求报文段并没有丢失，而是在某个网络结点长时间的滞留了，以致延误到连接释放以后的某个时间才到达server。</p>
+<p>本来这是一个早已失效的报文段。但server收到此失效的连接请求报文段后，就误认为是client再次发出的一个新的连接请求。于是就向client发出确认报文段，同意建立连接。</p>
+<p>假设不采用“三次握手”，那么只要server发出确认，新的连接就建立了。由于现在client并没有发出建立连接的请求，因此不会理睬server的确认，也不会向server发送数据。但server却以为新的运输连接已经建立，并一直等待client发来数据。这样，server的很多资源就白白浪费掉了。</p>
+<p>所以，采用“三次握手”的办法可以防止上述现象发生。例如刚才那种情况，client不会向server的确认发出确认。server由于收不到确认，就知道client并没有要求建立连接。</p>
+<p>TCP 三次握手跟现实生活中的人与人打电话是很类似的：</p>
+<blockquote>
+<p>三次握手：
+“喂，你听得到吗？”
+“我听得到呀，你听得到我吗？”
+“我能听到你，今天 balabala……”</p>
+</blockquote>
+<p>经过三次的互相确认，大家就会认为对方对听的到自己说话，并且愿意下一步沟通，否则，对话就不一定能正常下去了。</p>
+<h3 id="tcp-四次挥手关闭连接">TCP 四次挥手关闭连接</h3>
+<p>四次挥手即终止TCP连接，就是指断开一个TCP连接时，需要客户端和服务端总共发送4个包以确认连接的断开。在socket编程中，这一过程由客户端或服务端任一方执行close来触发。
+由于TCP连接是全双工的，因此，每个方向都必须要单独进行关闭，这一原则是当一方完成数据发送任务后，发送一个FIN来终止这一方向的连接，收到一个FIN只是意味着这一方向上没有数据流动了，即不会再收到数据了，但是在这个TCP连接上仍然能够发送数据，直到这一方向也发送了FIN。首先进行关闭的一方将执行主动关闭，而另一方则执行被动关闭。</p>
+<p>四次挥手过程的示意图如下：
+<img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/close.png"
+	width="703"
+	height="633"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/close_hu1cddfbe2d49f388cf6f6f82c926830ca_94980_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/close_hu1cddfbe2d49f388cf6f6f82c926830ca_94980_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="四次挥手关闭连接"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="111"
+		data-flex-basis="266px"
+	
+></p>
+<p>挥手请求可以是Client端，也可以是Server端发起的，我们假设是Client端发起：</p>
+<ul>
+<li><strong>第一次挥手</strong>： Client端发起挥手请求，向Server端发送标志位是FIN报文段，设置序列号seq，此时，Client端进入<code>FIN_WAIT_1</code>状态，这表示Client端没有数据要发送给Server端了。</li>
+<li><strong>第二次分手</strong>：Server端收到了Client端发送的FIN报文段，向Client端返回一个标志位是ACK的报文段，ack设为seq加1，Client端进入<code>FIN_WAIT_2</code>状态，Server端告诉Client端，我确认并同意你的关闭请求。</li>
+<li><strong>第三次分手</strong>： Server端向Client端发送标志位是FIN的报文段，请求关闭连接，同时Client端进入<code>LAST_ACK</code>状态。</li>
+<li><strong>第四次分手</strong> ： Client端收到Server端发送的FIN报文段，向Server端发送标志位是ACK的报文段，然后Client端进入<code>TIME_WAIT</code>状态。Server端收到Client端的ACK报文段以后，就关闭连接。此时，Client端等待<strong>2MSL</strong>的时间后依然没有收到回复，则证明Server端已正常关闭，那好，Client端也可以关闭连接了。</li>
+</ul>
+<h4 id="为什么连接的时候是三次握手关闭的时候却是四次握手">为什么连接的时候是三次握手，关闭的时候却是四次握手？</h4>
+<p>建立连接时因为当Server端收到Client端的SYN连接请求报文后，可以直接发送<strong>SYN+ACK</strong>报文。其中ACK报文是用来应答的，SYN报文是用来同步的。所以建立连接只需要三次握手。</p>
+<p>由于TCP协议是一种面向连接的、可靠的、基于字节流的运输层通信协议，TCP是<strong>全双工模式</strong>。
+这就意味着，关闭连接时，当Client端发出FIN报文段时，只是表示Client端告诉Server端数据已经发送完毕了。当Server端收到FIN报文并返回ACK报文段，表示它已经知道Client端没有数据发送了，但是Server端还是可以发送数据到Client端的，所以Server很可能并不会立即关闭SOCKET，直到Server端把数据也发送完毕。
+当Server端也发送了FIN报文段时，这个时候就表示Server端也没有数据要发送了，就会告诉Client端，我也没有数据要发送了，之后彼此就会愉快的中断这次TCP连接。</p>
+<h4 id="为什么要等待2msl">为什么要等待2MSL？</h4>
+<p><strong>MSL</strong>：报文段最大生存时间，它是任何报文段被丢弃前在网络内的最长时间。
+有以下两个原因：</p>
+<ul>
+<li><strong>第一点：保证TCP协议的全双工连接能够可靠关闭</strong>：
+由于IP协议的不可靠性或者是其它网络原因，导致了Server端没有收到Client端的ACK报文，那么Server端就会在超时之后重新发送FIN，如果此时Client端的连接已经关闭处于<code>CLOESD</code>状态，那么重发的FIN就找不到对应的连接了，从而导致连接错乱，所以，Client端发送完最后的ACK不能直接进入<code>CLOSED</code>状态，而要保持<code>TIME_WAIT</code>，当再次收到FIN的收，能够保证对方收到ACK，最后正确关闭连接。</li>
+<li><strong>第二点：保证这次连接的重复数据段从网络中消失</strong>
+如果Client端发送最后的ACK直接进入<code>CLOSED</code>状态，然后又再向Server端发起一个新连接，这时不能保证新连接的与刚关闭的连接的端口号是不同的，也就是新连接和老连接的端口号可能一样了，那么就可能出现问题：如果前一次的连接某些数据滞留在网络中，这些延迟数据在建立新连接后到达Client端，由于新老连接的端口号和IP都一样，TCP协议就认为延迟数据是属于新连接的，新连接就会接收到脏数据，这样就会导致数据包混乱。所以TCP连接需要在TIME_WAIT状态等待2倍MSL，才能保证本次连接的所有数据在网络中消失。</li>
+</ul>
+<h2 id="五dns域名解析">五、DNS域名解析</h2>
+<h3 id="1域名系统概述">1、域名系统概述</h3>
+<p>域名系统DNS(Domain Name System)是因特网使用的命名系统，用来把便于人们使用的机器名字转换成为IP地址。域名系统其实就是名字系统。为什么不叫“名字”而叫“域名”呢？这是因为在这种因特网的命名系统中使用了许多的“域(domain)”，因此就出现了“域名”这个名词。“域名系统”明确地指明这种系统是应用在因特网中。</p>
+<p>我们都知道，IP地址是由32位的二进制数字组成的。用户与因特网上某台主机通信时，显然不愿意使用很难记忆的长达32位的二进制主机地址。即使是点分十进制IP地址也并不太容易记忆。相反，大家愿意使用比较容易记忆的主机名字。但是，机器在处理IP数据报时，并不是使用域名而是使用IP地址。这是因为IP地址长度固定，而域名的长度不固定，机器处理起来比较困难。</p>
+<p>域名到IP地址的解析是由分布在因特网上的许多域名服务器程序共同完成的。域名服务器程序在专设的结点上运行，而人们也常把运行域名服务器程序的机器称为域名服务器。</p>
+<h3 id="2因特网的域名结构">2、因特网的域名结构</h3>
+<p>由于因特网的用户数量较多，所以因特网在命名时采用的是层次树状结构的命名方法。任何一个连接在因特网上的主机或路由器，都有一个唯一的层次结构的名字，即域名(domain name)。这里，“域”(domain)是名字空间中一个可被管理的划分。</p>
+<h3 id="3域名服务器">3、域名服务器</h3>
+<p>如果采用上述的树状结构，每一个节点都采用一个域名服务器，这样会使得域名服务器的数量太多，使域名服务器系统的运行效率降低。所以在DNS中，采用划分区的方法来解决。</p>
+<p>一个服务器所负责管辖(或有权限)的范围叫做区(zone)。各单位根据具体情况来划分自己管辖范围的区。但在一个区中的所有节点必须是能够连通的。每一个区设置相应的权限域名服务器，用来保存该区中的所有主机到域名IP地址的映射。总之，DNS服务器的管辖范围不是以“域”为单位，而是以“区”为单位。区是DNS服务器实际管辖的范围。区 &lt;= 域。</p>
+<p>根域名服务器：最高层次的域名服务器，也是最重要的域名服务器。所有的根域名服务器都知道所有的顶级域名服务器的域名和IP地址。不管是哪一个本地域名服务器，若要对因特网上任何一个域名进行解析，只要自己无法解析，就首先求助根域名服务器。所以根域名服务器是最重要的域名服务器。假定所有的根域名服务器都瘫痪了，那么整个DNS系统就无法工作。需要注意的是，在很多情况下，根域名服务器并不直接把待查询的域名直接解析出IP地址，而是告诉本地域名服务器下一步应当找哪一个顶级域名服务器进行查询。</p>
+<p>顶级域名服务器：负责管理在该顶级域名服务器注册的二级域名。</p>
+<p>权限域名服务器：负责一个“区”的域名服务器。</p>
+<p>本地域名服务器：本地服务器不属于下图的域名服务器的层次结构，但是它对域名系统非常重要。当一个主机发出DNS查询请求时，这个查询请求报文就发送给本地域名服务器。</p>
+<h3 id="4域名的解析过程">4、域名的解析过程</h3>
+<p>一、主机向本地域名服务器的查询一般都是采用递归查询。所谓递归查询就是：如果主机所询问的本地域名服务器不知道被查询的域名的IP地址，那么本地域名服务器就以DNS客户的身份，向其它根域名服务器继续发出查询请求报文(即替主机继续查询)，而不是让主机自己进行下一步查询。因此，递归查询返回的查询结果或者是所要查询的IP地址，或者是报错，表示无法查询到所需的IP地址。</p>
+<p>二、本地域名服务器向根域名服务器的查询的迭代查询。迭代查询的特点：当根域名服务器收到本地域名服务器发出的迭代查询请求报文时，要么给出所要查询的IP地址，要么告诉本地服务器：“你下一步应当向哪一个域名服务器进行查询”。然后让本地服务器进行后续的查询。根域名服务器通常是把自己知道的顶级域名服务器的IP地址告诉本地域名服务器，让本地域名服务器再向顶级域名服务器查询。顶级域名服务器在收到本地域名服务器的查询请求后，要么给出所要查询的IP地址，要么告诉本地服务器下一步应当向哪一个权限域名服务器进行查询。最后，知道了所要解析的IP地址或报错，然后把这个结果返回给发起查询的主机。</p>
+<p>查询步骤：</p>
+<p>1、主机m.abc.com先向本地服务器dns.xyz.com进行递归查询。</p>
+<p>2、本地服务器采用迭代查询。它先向一个根域名服务器查询。</p>
+<p>3、根域名服务器告诉本地服务器，下一次应查询的顶级域名服务器dns.com的IP地址。</p>
+<p>4、本地域名服务器向顶级域名服务器dns.com进行查询。</p>
+<p>5、顶级域名服务器dns.com告诉本地域名服务器，下一步应查询的权限服务器dns.abc.com的IP地址。</p>
+<p>6、本地域名服务器向权限域名服务器dns.abc.com进行查询。</p>
+<p>7、权限域名服务器dns.abc.com告诉本地域名服务器，所查询的主机的IP地址。</p>
+<p>8、本地域名服务器最后把查询结果告诉m.xyz.com。</p>
+<p>整个查询过程共用到了8个UDP报文。</p>
+<p>为了提高DNS查询效率，并减轻服务器的负荷和减少因特网上的DNS查询报文数量，在域名服务器中广泛使用了高速缓存，用来存放最近查询过的域名以及从何处获得域名映射信息的记录。</p>
+<p>例如，在上面的查询过程中，如果在m.xyz.com的主机上不久前已经有用户查询过y.abc.com的IP地址，那么本地域名服务器就不必向根域名服务器重新查询y.abc.com的IP地址，而是直接把告诉缓存中存放的上次查询结果(即y.abc.com的IP地址)告诉用户。</p>
+<p>由于名字到地址的绑定并不经常改变，为保持告诉缓存中的内容正确，域名服务器应为每项内容设置计时器并处理超过合理时间的项(例如每个项目两天)。当域名服务器已从缓存中删去某项信息后又被请求查询该项信息，就必须重新到授权管理该项的域名服务器绑定信息。当权限服务器回答一个查询请求时，在响应中都指明绑定有效存在的时间值。增加此时间值可减少网络开销，而减少此时间值可提高域名解析的正确性。</p>
+<p>不仅在本地域名服务器中需要高速缓存，在主机中也需要。许多主机在启动时从本地服务器下载名字和地址的全部数据库，维护存放自己最近使用的域名的高速缓存，并且只在从缓存中找不到名字时才使用域名服务器。维护本地域名服务器数据库的主机应当定期地检查域名服务器以获取新的映射信息，而且主机必须从缓存中删除无效的项。由于域名改动并不频繁，大多数网点不需花精力就能维护数据库的一致性。</p>
+<p>1.1）域名与ip地址
+（1）ip地址：ip地址是一个32位（4字节）的二进制数（IPV4）,常见格式为：192.168.1.101.IP地址是IP协议移动的一种统一的地址格式，为互联网上每一个网络和每一台主机分配一个逻辑地址.
+IPV4与IPV6的区别：IPv4 使用32位（4字节）地址，因此只有 4,294,967,296 个，但随着联网设备的增加，这些地址显然是不够用的，所以需要新的协议和更多的地址。IPv6 便是这个新的协议，IPV6有128位（8字节）地址，有2^128-1个地址，IPv6 的目的皆在解决 IPv4 枯竭的问题。
+（2）域名：ip地址与域名是一对多的关系。一个ip地址可以对应多个域名，但是一个域名只有一个ip地址。ip地址是数字组成的，不方便记忆，所以有了域名。</p>
+<p>1.2）域名系统（DNS——Domain Name System）
+域名虽然便于人们记忆，但机器之间只能互相认识IP地址，它们之间的转换工作称为域名解析，域名解析需要由专门的域名解析服务器来完成，DNS就是进行域名解析的服务器。域名的最终指向是IP。
+将主机名和域名转换为IP地址。（域名：www.qq.com-&gt;119.147.15.13）</p>
+<p>a)DNS本质
+用于TCP/IP应用程序的数据库，该数据库中记录了域名和IP的对应关系，同时也是一种用于客户端和服务端通讯的应用层的计算机网络协议。</p>
+<p>b)域名的特点
+1、分布式：将域名服务器分布式存储于不同计算机中，目前全球有13台根服务器
+2、阶层式：域名格式采用分层结构，类似树状结构，一棵独立的DNS子树就是一个区域（zone），一个区域被委派了授权机构（唯一授权机构：网络信息中心NIC），该机构需搭建DNS服务区，记录该区域下的子域名和IP对应关系，并且该授权机构可以再委派该区域下的子区域的DNS系统，依此向下委派，形成阶梯式管理结构
+3、建立缓存：当一个DNS服务器查询到域名和IP的映射关系后，会将该映射数据写入自己的缓存中，如果其他的主机再来询问相同的映射关系时，直接读取自己的缓存，而不需要再去询问其他服务器了</p>
+<p>c)一次请求域名解析过程
+迭代查询（服务端）和递归查询（客户端）（区别：递归是查询者变化，迭代是查询者不变）</p>
+<p>以查询 zh.wikipedia.org 为例：</p>
+<p>输入域名&quot;zh.wikipedia.org&quot;，操作系统会先检查自己的本地hosts文件是否有这个网址映射关系。如果hosts没有这个域名的映射，则查询本地DNS解析器缓存。如果hosts与本地DNS服务器缓存都没有相应的网址映射关系，首先会找TCP/IP参数中设置的首选DNS服务器。
+客户端发送查询报文&quot;query zh.wikipedia.org&quot;至DNS服务器，DNS服务器首先检查自身缓存，如果存在记录则直接返回结果。
+如果记录老化或不存在，则：
+（1）DNS服务器向根域名服务器发送查询报文&quot;query zh.wikipedia.org&quot;，根域名服务器返回顶级域.org 的权威域名服务器地址。
+（2）DNS服务器向 .org 域的权威域名服务器发送查询报文&quot;query zh.wikipedia.org&quot;，得到二级域.wikipedia.org 的权威域名服务器地址。
+（3）DNS服务器向 .wikipedia.org 域的权威域名服务器发送查询报文&quot;query zh.wikipedia.org&quot;，得到主机 zh 的A记录，存入自身缓存并返回给客户端。</p>
+<p>1.3）以Chrome浏览器为例，Chrome解析域名对应的IP地址
+Chrome浏览器会首先搜索浏览器自身的DNS缓存（可以使用 chrome://net-internals/#dns 来进行查看），浏览器自身的DNS缓存有效期比较短，且容纳有限，大概是1000条。如果自身的缓存中存在blog.csdn.net 对应的IP地址并且没有过期，则解析成功。
+如果未找到，那么Chrome会搜索操作系统自身的DNS缓存（可以在命令行下使用 ipconfig /displaydns 查看）。如果找到且没有过期则成功。
+如果未找到，那么尝试读取位于C:\Windows\System32\drivers\etc下的hosts文件，如果找到对应的IP地址则解析成功。
+如果未找到，浏览器首先会找TCP/IP参数中设置的本地DNS服务器，并请求LDNS服务器来解析这个域名，这台服务器一般在你的城市的某个角落，距离你不会很远，并且这台服务器的性能都很好，一般都会缓存域名解析结果，大约80%的域名解析到这里就完成了。否则本地DNS服务器会请求根DNS服务器。
+本地DNS会把请求发至13台根DNS，根DNS服务器会返回所查询域的主域名服务器的地址(.net)，本地DNS服务器使用该IP信息联系负责.net域的这台服务器。这台负责.net域的服务器收到请求后，会返回.net域的下一级DNS服务器地址(blog.csdn.net)给本地DNS服务器。以此类推，直至找到。</p>
+<h2 id="六http协议">六、HTTP协议</h2>
+<h3 id="http协议简介">HTTP协议简介</h3>
+<p>超文本传输协议（英文：<strong>H</strong>yper<strong>T</strong>ext <strong>T</strong>ransfer <strong>P</strong>rotocol，缩写：HTTP）是一种用于分布式、协作式和超媒体信息系统的应用层协议。HTTP是万维网的数据通信的基础。</p>
+<p>HTTP的发展是由蒂姆·伯纳斯-李于1989年在欧洲核子研究组织（CERN）所发起。HTTP的标准制定由万维网协会（World Wide Web Consortium，W3C）和互联网工程任务组（Internet Engineering Task Force，IETF）进行协调，最终发布了一系列的RFC，其中最著名的是1999年6月公布的 RFC 2616，定义了HTTP协议中现今广泛使用的一个版本——HTTP 1.1。</p>
+<p>2014年12月，互联网工程任务组（IETF）的Hypertext Transfer Protocol Bis（httpbis）工作小组将HTTP/2标准提议递交至IESG进行讨论，于2015年2月17日被批准。 HTTP/2标准于2015年5月以RFC 7540正式发表，取代HTTP 1.1成为HTTP的实现标准。</p>
+<h3 id="http协议概述">HTTP协议概述</h3>
+<p>HTTP是一个客户端终端（用户）和服务器端（网站）请求和应答的标准（TCP）。通过使用网页浏览器、网络爬虫或者其它的工具，客户端发起一个HTTP请求到服务器上指定端口（默认端口为80）。我们称这个客户端为用户代理程序（user agent）。应答的服务器上存储着一些资源，比如HTML文件和图像。我们称这个应答服务器为源服务器（origin server）。在用户代理和源服务器中间可能存在多个“中间层”，比如代理服务器、网关或者隧道（tunnel）。</p>
+<p>尽管TCP/IP协议是互联网上最流行的应用，HTTP协议中，并没有规定必须使用它或它支持的层。事实上，HTTP可以在任何互联网协议上，或其他网络上实现。HTTP假定其下层协议提供可靠的传输。因此，任何能够提供这种保证的协议都可以被其使用。因此也就是其在TCP/IP协议族使用TCP作为其传输层。</p>
+<p>通常，由HTTP客户端发起一个请求，创建一个到服务器指定端口（默认是80端口）的TCP连接。HTTP服务器则在那个端口监听客户端的请求。一旦收到请求，服务器会向客户端返回一个状态，比如&quot;HTTP/1.1 200 OK&quot;，以及返回的内容，如请求的文件、错误消息、或者其它信息。</p>
+<h3 id="http工作原理">HTTP工作原理</h3>
+<p>HTTP协议定义Web客户端如何从Web服务器请求Web页面，以及服务器如何把Web页面传送给客户端。HTTP协议采用了请求/响应模型。客户端向服务器发送一个请求报文，请求报文包含请求的方法、URL、协议版本、请求头部和请求数据。服务器以一个状态行作为响应，响应的内容包括协议的版本、成功或者错误代码、服务器信息、响应头部和响应数据。</p>
+<p>以下是 HTTP 请求/响应的步骤：</p>
+<p>\1. 客户端连接到Web服务器
+一个HTTP客户端，通常是浏览器，与Web服务器的HTTP端口（默认为80）建立一个TCP套接字连接。例如，<a class="link" href="http://www.baidu.com/"  target="_blank" rel="noopener"
+    >http://www.baidu.com</a>。</p>
+<p>\2. 发送HTTP请求
+通过TCP套接字，客户端向Web服务器发送一个文本的请求报文，一个请求报文由请求行、请求头部、空行和请求数据4部分组成。</p>
+<p>\3. 服务器接受请求并返回HTTP响应
+Web服务器解析请求，定位请求资源。服务器将资源复本写到TCP套接字，由客户端读取。一个响应由状态行、响应头部、空行和响应数据4部分组成。</p>
+<p>\4. 释放连接TCP连接
+若connection 模式为close，则服务器主动关闭TCP连接，客户端被动关闭连接，释放TCP连接;若connection 模式为keepalive，则该连接会保持一段时间，在该时间内可以继续接收请求;</p>
+<p>\5. 客户端浏览器解析HTML内容
+客户端浏览器首先解析状态行，查看表明请求是否成功的状态代码。然后解析每一个响应头，响应头告知以下为若干字节的HTML文档和文档的字符集。客户端浏览器读取响应数据HTML，根据HTML的语法对其进行格式化，并在浏览器窗口中显示。</p>
+<p>例如：在浏览器地址栏键入URL，按下回车之后会经历以下流程：</p>
+<ol>
+<li>浏览器向 DNS 服务器请求解析该 URL 中的域名所对应的 IP 地址;</li>
+<li>解析出 IP 地址后，根据该 IP 地址和默认端口 80，和服务器建立TCP连接;</li>
+<li>浏览器发出读取文件(URL 中域名后面部分对应的文件)的HTTP 请求，该请求报文作为 TCP 三次握手的第三个报文的数据发送给服务器;</li>
+<li>服务器对浏览器请求作出响应，并把对应的 html 文本发送给浏览器;</li>
+<li>释放 TCP连接;</li>
+<li>浏览器将该 html 文本并显示内容; 　</li>
+</ol>
+<p>　　</p>
+<p>　　<img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418160227278-698810818.png"
+	width="1406"
+	height="378"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418160227278-698810818_hu987486a28a8fd1a28e0bb5fa35d92907_213899_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418160227278-698810818_hu987486a28a8fd1a28e0bb5fa35d92907_213899_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="371"
+		data-flex-basis="892px"
+	
+></p>
+<p>　　<strong>http协议是基于TCP/IP协议之上的应用层协议。</strong></p>
+<p>　　<strong>基于 请求-响应 的模式</strong></p>
+<p>　　　　HTTP协议规定,请求从客户端发出,最后服务器端响应该请求并 返回。换句话说,肯定是先从客户端开始建立通信的,服务器端在没有 接收到请求之前不会发送响应</p>
+<p>　　　　<img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418160433297-1726664935.png"
+	width="1746"
+	height="654"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418160433297-1726664935_hu5c9f6581ae4da7ad9719d32eb43f04c4_360334_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418160433297-1726664935_hu5c9f6581ae4da7ad9719d32eb43f04c4_360334_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="266"
+		data-flex-basis="640px"
+	
+></p>
+<p>　　<strong>无状态保存</strong></p>
+<p>　　　　HTTP是一种不保存状态,即无状态(stateless)协议。HTTP协议 自身不对请求和响应之间的通信状态进行保存。也就是说在HTTP这个 级别,协议对于发送过的请求或响应都不做持久化处理。</p>
+<p>　　　　<img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418160546133-1479186889.png"
+	width="1910"
+	height="828"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418160546133-1479186889_huc6936cf6338580dd584ba4ef7de72798_420792_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418160546133-1479186889_huc6936cf6338580dd584ba4ef7de72798_420792_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="230"
+		data-flex-basis="553px"
+	
+></p>
+<p>　　　　使用HTTP协议,每当有新的请求发送时,就会有对应的新响应产 生。协议本身并不保留之前一切的请求或响应报文的信息。这是为了更快地处理大量事务,确保协议的可伸缩性,而特意把HTTP协议设计成 如此简单的。可是,随着Web的不断发展,因无状态而导致业务处理变得棘手 的情况增多了。比如,用户登录到一家购物网站,即使他跳转到该站的 其他页面后,也需要能继续保持登录状态。针对这个实例,网站为了能 够掌握是谁送出的请求,需要保存用户的状态。HTTP/1.1虽然是无状态协议,但为了实现期望的保持状态功能, 于是引入了Cookie技术。有了Cookie再用HTTP协议通信,就可以管 理状态了。有关Cookie的详细内容稍后讲解。</p>
+<p>　　<strong>无连接</strong></p>
+<p>　　　　无连接的含义是限制每次连接只处理一个请求。服务器处理完客户的请求，并收到客户的应答后，即断开连接。采用这种方式可以节省传输时间，并且可以提高并发性能，不能和每个用户建立长久的连接，请求一次相应一次，服务端和客户端就中断了。但是无连接有两种方式，早期的http协议是一个请求一个响应之后，直接就断开了，但是现在的http协议1.1版本不是直接就断开了，而是等几秒钟，这几秒钟是等什么呢，等着用户有后续的操作，如果用户在这几秒钟之内有新的请求，那么还是通过之前的连接通道来收发消息，如果过了这几秒钟用户没有发送新的请求，那么就会断开连接，这样可以提高效率，减少短时间内建立连接的次数，因为建立连接也是耗时的，默认的好像是3秒中现在，但是这个时间是可以通过咱们后端的代码来调整的，自己网站根据自己网站用户的行为来分析统计出一个最优的等待时间。</p>
+<h3 id="http请求方法">HTTP请求方法</h3>
+<p>HTTP/1.1协议中共定义了八种方法（也叫“动作”）来以不同方式操作指定的资源：</p>
+<h3 id="get">GET</h3>
+<p>向指定的资源发出“显示”请求。使用GET方法应该只用在读取数据，而不应当被用于产生“副作用”的操作中，例如在Web Application中。其中一个原因是GET可能会被网络蜘蛛等随意访问。</p>
+<h3 id="head">HEAD</h3>
+<p>与GET方法一样，都是向服务器发出指定资源的请求。只不过服务器将不传回资源的本文部分。它的好处在于，使用这个方法可以在不必传输全部内容的情况下，就可以获取其中“关于该资源的信息”（元信息或称元数据）。</p>
+<h3 id="post">POST</h3>
+<p>向指定资源提交数据，请求服务器进行处理（例如提交表单或者上传文件）。数据被包含在请求本文中。这个请求可能会创建新的资源或修改现有资源，或二者皆有。</p>
+<h3 id="put">PUT</h3>
+<p>向指定资源位置上传其最新内容。</p>
+<h3 id="delete">DELETE</h3>
+<p>请求服务器删除Request-URI所标识的资源。</p>
+<h3 id="trace">TRACE</h3>
+<p>回显服务器收到的请求，主要用于测试或诊断。</p>
+<h3 id="options">OPTIONS</h3>
+<p>这个方法可使服务器传回该资源所支持的所有HTTP请求方法。用&rsquo;*&lsquo;来代替资源名称，向Web服务器发送OPTIONS请求，可以测试服务器功能是否正常运作。</p>
+<h3 id="connect">CONNECT</h3>
+<p>HTTP/1.1协议中预留给能够将连接改为管道方式的代理服务器。通常用于SSL加密服务器的链接（经由非加密的HTTP代理服务器）。</p>
+<p>注意事项：</p>
+<ol>
+<li>方法名称是区分大小写的。当某个请求所针对的资源不支持对应的请求方法的时候，服务器应当返回状态码405（Method Not Allowed），当服务器不认识或者不支持对应的请求方法的时候，应当返回状态码501（Not Implemented）。</li>
+<li>HTTP服务器至少应该实现GET和HEAD方法，其他方法都是可选的。当然，所有的方法支持的实现都应当匹配下述的方法各自的语义定义。此外，除了上述方法，特定的HTTP服务器还能够扩展自定义的方法。例如PATCH（由 RFC 5789 指定的方法）用于将局部修改应用到资源*。*</li>
+</ol>
+<h4 id="请求方式-get与post请求通过form表单我们自己写写看">请求方式: get与post请求（通过form表单我们自己写写看）</h4>
+<ul>
+<li>GET提交的数据会放在URL之后，也就是请求行里面，以?分割URL和传输数据，参数之间以&amp;相连，如EditBook?name=test1&amp;id=123456.（请求头里面那个content-type做的这种参数形式，后面讲） POST方法是把提交的数据放在HTTP包的请求体中.</li>
+<li>GET提交的数据大小有限制（因为浏览器对URL的长度有限制），而POST方法提交的数据没有限制.</li>
+<li>GET与POST请求在服务端获取请求数据方式不同，就是我们自己在服务端取请求数据的时候的方式不同了，这句废话昂。</li>
+</ul>
+<h3 id="http状态码">HTTP状态码</h3>
+<p>所有HTTP响应的第一行都是状态行，依次是当前HTTP版本号，3位数字组成的状态代码，以及描述状态的短语，彼此由空格分隔。</p>
+<p>状态代码的第一个数字代表当前响应的类型：</p>
+<ul>
+<li>1xx消息——请求已被服务器接收，继续处理</li>
+<li>2xx成功——请求已成功被服务器接收、理解、并接受</li>
+<li>3xx重定向——需要后续操作才能完成这一请求</li>
+<li>4xx请求错误——请求含有词法错误或者无法被执行</li>
+<li>5xx服务器错误——服务器在处理某个正确请求时发生错误</li>
+</ul>
+<p>虽然 RFC 2616 中已经推荐了描述状态的短语，例如&quot;200 OK&quot;，&ldquo;404 Not Found&rdquo;，但是WEB开发者仍然能够自行决定采用何种短语，用以显示本地化的状态描述或者自定义信息。</p>
+<p>　　<img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418161321986-304902913.png"
+	width="1920"
+	height="636"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418161321986-304902913_hu320e779dbfc3e2374df1ffec9ce90b0c_249645_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418161321986-304902913_hu320e779dbfc3e2374df1ffec9ce90b0c_249645_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="301"
+		data-flex-basis="724px"
+	
+></p>
+<p>URL</p>
+<p>超文本传输协议（HTTP）的统一资源定位符将从因特网获取信息的五个基本元素包括在一个简单的地址中：</p>
+<ul>
+<li>传送协议。</li>
+<li>层级URL标记符号(为[//],固定不变)</li>
+<li>访问资源需要的凭证信息（可省略）</li>
+<li>服务器。（通常为域名，有时为IP地址）</li>
+<li>端口号。（以数字方式表示，若为HTTP的默认值“:80”可省略）</li>
+<li>路径。（以“/”字符区别路径中的每一个目录名称）</li>
+<li>查询。（GET模式的窗体参数，以“?”字符为起点，每个参数以“&amp;”隔开，再以“=”分开参数名称与数据，通常以UTF8的URL编码，避开字符冲突的问题）</li>
+<li>片段。以“#”字符为起点</li>
+</ul>
+<p>以http://www.luffycity.com:80/news/index.html?id=250&amp;page=1 为例, 其中：</p>
+<p>http，是协议；
+<a class="link" href="https://www.luffycity.com"  target="_blank" rel="noopener"
+    >www.luffycity.com</a>，是服务器；
+80，是服务器上的默认网络端口号，默认不显示；
+/news/index.html，是路径（URI：直接定位到对应的资源）；
+?id=250&amp;page=1，是查询。
+大多数网页浏览器不要求用户输入网页中“http://”的部分，因为绝大多数网页内容是超文本传输协议文件。同样，“80”是超文本传输协议文件的常用端口号，因此一般也不必写明。一般来说用户只要键入统一资源定位符的一部分（www.luffycity.com:80/news/index.html?id=250&amp;page=1）就可以了。</p>
+<p>由于超文本传输协议允许服务器将浏览器重定向到另一个网页地址，因此许多服务器允许用户省略网页地址中的部分，比如 www。从技术上来说这样省略后的网页地址实际上是一个不同的网页地址，浏览器本身无法决定这个新地址是否通，服务器必须完成重定向的任务。</p>
+<h3 id="http请求格式请求协议">HTTP请求格式(请求协议)</h3>
+<p>　　　　<img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/867021-20180322001733298-201433635.jpg"
+	width="520"
+	height="183"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/867021-20180322001733298-201433635_hu61c9cd76bf70aad448e0fe66959485a8_35626_480x0_resize_q75_box.jpg 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/867021-20180322001733298-201433635_hu61c9cd76bf70aad448e0fe66959485a8_35626_1024x0_resize_q75_box.jpg 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="284"
+		data-flex-basis="681px"
+	
+></p>
+<p>　　　　　URL包含：/index/index2?a=1&amp;b=2；路径和参数都在这里。</p>
+<p>　　　　<img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418160914403-902015370.png"
+	width="1600"
+	height="906"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418160914403-902015370_hu74d606ba4b48f13d3429084686620611_190652_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418160914403-902015370_hu74d606ba4b48f13d3429084686620611_190652_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="176"
+		data-flex-basis="423px"
+	
+></p>
+<p>　　　　　　请求头里面的内容举个例子：这个length表示请求体里面的数据长度，其他的请求头里面的这些键值对，陆续我们会讲的，大概知道一下就可以了，其中有一个user-agent，算是需要你记住的吧，就是告诉你的服务端，我是用什么给你发送的请求。</p>
+<p>　　　　　　<img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/988061-20190217180939495-1485103656.png"
+	width="233"
+	height="83"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/988061-20190217180939495-1485103656_hu85a4bcb2367a129d0a4c4b29e7c63b00_11513_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/988061-20190217180939495-1485103656_hu85a4bcb2367a129d0a4c4b29e7c63b00_11513_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="280"
+		data-flex-basis="673px"
+	
+></p>
+<p>　　　　　　</p>
+<p>　　　　　　以京东为例，看一下user-agent</p>
+<p>　　　　　　<img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/988061-20190217181850193-212820996.png"
+	width="1241"
+	height="420"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/988061-20190217181850193-212820996_hufa85033f3cf58c750981a2e8ba5e3898_151027_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/988061-20190217181850193-212820996_hufa85033f3cf58c750981a2e8ba5e3898_151027_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="295"
+		data-flex-basis="709px"
+	
+></p>
+<p>　　　　　<img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/988061-20190217182211177-715034357.png"
+	width="1034"
+	height="552"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/988061-20190217182211177-715034357_hub647de9c81e821ce652b8ff28e365dc7_189500_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/988061-20190217182211177-715034357_hub647de9c81e821ce652b8ff28e365dc7_189500_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="187"
+		data-flex-basis="449px"
+	
+></p>
+<p>　　　　　　看一个爬虫的例子，爬京东的时候没问题，但是爬抽屉的时候必须带着user-agent，因为抽屉对user-agent做了判断，来判断你是不是一个正常的请求，算是反扒机制的一种。</p>
+<p>　　　　　　<img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/988061-20190217200715895-666653052.png"
+	width="684"
+	height="262"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/988061-20190217200715895-666653052_hu941632d17f4b8c99487887d1c44b7982_73348_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/988061-20190217200715895-666653052_hu941632d17f4b8c99487887d1c44b7982_73348_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="261"
+		data-flex-basis="626px"
+	
+></p>
+<p>　　　　　　打开我们保存的demo.html文件，然后通过浏览器打开看看就能看到页面效果。</p>
+<p>　　　　　　写上面这些内容的意思是让你知道有这么个请求头的存在，有些是有意义的，请求头我们还可以自己定义，就在requests模块里面那个headers={}，这个字典里面加就行。</p>
+<p>　　　　　　</p>
+<p>　　</p>
+<h3 id="http响应格式响应协议">HTTP响应格式（响应协议）</h3>
+<p>　　<img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/867021-20180322001744323-654009411.jpg"
+	width="575"
+	height="198"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/867021-20180322001744323-654009411_hu12902b84837c79a1e4eef19f9c817033_41193_480x0_resize_q75_box.jpg 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/867021-20180322001744323-654009411_hu12902b84837c79a1e4eef19f9c817033_41193_1024x0_resize_q75_box.jpg 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="290"
+		data-flex-basis="696px"
+	
+></p>
+<p>　　<img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418161014087-738990087.png"
+	width="1370"
+	height="852"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418161014087-738990087_huea56f5765a47f530ac699d1ccf1c3adc_187117_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/877318-20180418161014087-738990087_huea56f5765a47f530ac699d1ccf1c3adc_187117_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="160"
+		data-flex-basis="385px"
+	
+></p>
+<h2 id="七cookiesessiontoken的区别">七、cookie，session，token的区别</h2>
+<h3 id="cookie">Cookie</h3>
+<p>cookie 是一个非常具体的东西，指的就是浏览器里面能永久存储的一种数据，仅仅是浏览器实现的一种数据存储功能。</p>
+<p>cookie由服务器生成，发送给浏览器，浏览器把cookie以kv形式保存到某个目录下的文本文件内，下一次请求同一网站时会把该cookie发送给服务器。由于cookie是存在客户端上的，所以浏览器加入了一些限制确保cookie不会被恶意使用，同时不会占据太多磁盘空间，所以每个域的cookie数量是有限的。</p>
+<h3 id="session">Session</h3>
+<p>session 从字面上讲，就是会话。这个就类似于你和一个人交谈，你怎么知道当前和你交谈的是张三而不是李四呢？对方肯定有某种特征（长相等）表明他就是张三。</p>
+<p>session 也是类似的道理，服务器要知道当前发请求给自己的是谁。为了做这种区分，服务器就要给每个客户端分配不同的“身份标识”，然后客户端每次向服务器发请求的时候，都带上这个“身份标识”，服务器就知道这个请求来自于谁了。至于客户端怎么保存这个“身份标识”，可以有很多种方式，对于浏览器客户端，大家都默认采用 cookie 的方式。</p>
+<p>服务器使用session把用户的信息临时保存在了服务器上，用户离开网站后session会被销毁。这种用户信息存储方式相对cookie来说更安全，可是session有一个缺陷：如果web服务器做了负载均衡，那么下一个操作请求到了另一台服务器的时候session会丢失。</p>
+<h3 id="token">Token</h3>
+<p>在Web领域基于Token的身份验证随处可见。在大多数使用Web API的互联网公司中，tokens 是多用户下处理认证的最佳方式。</p>
+<p>以下几点特性会让你在程序中使用基于Token的身份验证</p>
+<ol>
+<li>无状态、可扩展</li>
+<li>支持移动设备</li>
+<li>跨程序调用</li>
+<li>安全</li>
+</ol>
+<p>那些使用基于Token的身份验证的大佬们</p>
+<p>大部分你见到过的API和Web应用都使用tokens。例如Facebook, Twitter, Google+, GitHub等。</p>
+<h3 id="token的起源">Token的起源</h3>
+<p>在介绍基于Token的身份验证的原理与优势之前，不妨先看看之前的认证都是怎么做的。</p>
+<p>基于服务器的验证</p>
+<p>我们都是知道HTTP协议是无状态的，这种无状态意味着程序需要验证每一次请求，从而辨别客户端的身份。</p>
+<p>在这之前，程序都是通过在服务端存储的登录信息来辨别请求的。这种方式一般都是通过存储Session来完成。</p>
+<p>下图展示了基于服务器验证的原理</p>
+<p>随着Web，应用程序，已经移动端的兴起，这种验证的方式逐渐暴露出了问题。尤其是在可扩展性方面。</p>
+<p>基于服务器验证方式暴露的一些问题</p>
+<ol>
+<li>Seesion：每次认证用户发起请求时，服务器需要去创建一个记录来存储信息。当越来越多的用户发请求时，内存的开销也会不断增加。</li>
+<li>可扩展性：在服务端的内存中使用Seesion存储登录信息，伴随而来的是可扩展性问题。</li>
+<li>CORS(跨域资源共享)：当我们需要让数据跨多台移动设备上使用时，跨域资源的共享会是一个让人头疼的问题。在使用Ajax抓取另一个域的资源，就可以会出现禁止请求的情况。</li>
+<li>CSRF(跨站请求伪造)：用户在访问银行网站时，他们很容易受到跨站请求伪造的攻击，并且能够被利用其访问其他的网站。</li>
+</ol>
+<p>在这些问题中，可扩展行是最突出的。因此我们有必要去寻求一种更有行之有效的方法。</p>
+<h3 id="基于token的验证原理">基于Token的验证原理</h3>
+<p>基于Token的身份验证是无状态的，我们不将用户信息存在服务器或Session中。</p>
+<p>这种概念解决了在服务端存储信息时的许多问题</p>
+<p>NoSession意味着你的程序可以根据需要去增减机器，而不用去担心用户是否登录。</p>
+<p>基于Token的身份验证的过程如下:</p>
+<ol>
+<li>用户通过用户名和密码发送请求。</li>
+<li>程序验证。</li>
+<li>程序返回一个签名的token 给客户端。</li>
+<li>客户端储存token,并且每次用于每次发送请求。</li>
+<li>服务端验证token并返回数据。</li>
+</ol>
+<p>每一次请求都需要token。token应该在HTTP的头部发送从而保证了Http请求无状态。我们同样通过设置服务器属性Access-Control-Allow-Origin:* ，让服务器能接受到来自所有域的请求。需要主要的是，在ACAO头部标明(designating)*时，不得带有像HTTP认证，客户端SSL证书和cookies的证书。</p>
+<p>实现思路：</p>
+<ol>
+<li>用户登录校验，校验成功后就返回Token给客户端。</li>
+<li>客户端收到数据后保存在客户端</li>
+<li>客户端每次访问API是携带Token到服务器端。</li>
+<li>服务器端采用filter过滤器校验。校验成功则返回请求数据，校验失败则返回错误码</li>
+</ol>
+<p>当我们在程序中认证了信息并取得token之后，我们便能通过这个Token做许多的事情。</p>
+<p>我们甚至能基于创建一个基于权限的token传给第三方应用程序，这些第三方程序能够获取到我们的数据（当然只有在我们允许的特定的token）</p>
+<h3 id="tokens的优势">Tokens的优势</h3>
+<ul>
+<li>无状态、可扩展</li>
+</ul>
+<p>在客户端存储的Tokens是无状态的，并且能够被扩展。基于这种无状态和不存储Session信息，负载负载均衡器能够将用户信息从一个服务传到其他服务器上。</p>
+<p>如果我们将已验证的用户的信息保存在Session中，则每次请求都需要用户向已验证的服务器发送验证信息(称为Session亲和性)。用户量大时，可能会造成</p>
+<p>一些拥堵。</p>
+<p>但是不要着急。使用tokens之后这些问题都迎刃而解，因为tokens自己hold住了用户的验证信息。</p>
+<ul>
+<li>安全性</li>
+</ul>
+<p>请求中发送token而不再是发送cookie能够防止CSRF(跨站请求伪造)。即使在客户端使用cookie存储token，cookie也仅仅是一个存储机制而不是用于认证。不将信息存储在Session中，让我们少了对session操作。</p>
+<p>token是有时效的，一段时间之后用户需要重新验证。我们也不一定需要等到token自动失效，token有撤回的操作，通过token revocataion可以使一个特定的token或是一组有相同认证的token无效。</p>
+<ul>
+<li>可扩展性</li>
+</ul>
+<p>Tokens能够创建与其它程序共享权限的程序。例如，能将一个随便的社交帐号和自己的大号(Fackbook或是Twitter)联系起来。当通过服务登录Twitter(我们将这个过程Buffer)时，我们可以将这些Buffer附到Twitter的数据流上(we are allowing Buffer to post to our Twitter stream)。</p>
+<p>使用tokens时，可以提供可选的权限给第三方应用程序。当用户想让另一个应用程序访问它们的数据，我们可以通过建立自己的API，得出特殊权限的tokens。</p>
+<ul>
+<li>多平台跨域</li>
+</ul>
+<p>我们提前先来谈论一下CORS(跨域资源共享)，对应用程序和服务进行扩展的时候，需要介入各种各种的设备和应用程序。</p>
+<p>Having our API just serve data, we can also make the design choice to serve assets from a CDN. This eliminates the issues that CORS brings up after we set a quick header configuration for our application.</p>
+<p>只要用户有一个通过了验证的token，数据和资源就能够在任何域上被请求到。</p>
+<pre tabindex="0"><code>Access-Control-Allow-Origin: *   
+1
+</code></pre><ul>
+<li>基于标准</li>
+</ul>
+<p>创建token的时候，你可以设定一些选项。我们在后续的文章中会进行更加详尽的描述，但是标准的用法会在JSON Web Tokens体现。</p>
+<p>最近的程序和文档是供给JSON Web Tokens的。它支持众多的语言。这意味在未来的使用中你可以真正的转换你的认证机制。</p>
+<h2 id="八https原理及流程">八、Https原理及流程</h2>
+<p>我们知道，HTTP请求都是明文传输的，所谓的明文指的是没有经过加密的信息，如果HTTP请求被黑客拦截，并且里面含有银行卡密码等敏感数据的话，会非常危险。为了解决这个问题，Netscape 公司制定了HTTPS协议，HTTPS可以将数据加密传输，也就是传输的是密文，即便黑客在传输过程中拦截到数据也无法破译，这就保证了网络通信的安全。</p>
+<h3 id="密码学基础">密码学基础</h3>
+<p>在正式讲解HTTPS协议之前，我们首先要知道一些密码学的知识。</p>
+<p><strong>明文</strong>： 明文指的是未被加密过的原始数据。
+<strong>密文</strong>：明文被某种加密算法加密之后，会变成密文，从而确保原始数据的安全。密文也可以被解密，得到原始的明文。
+<strong>密钥</strong>：密钥是一种参数，它是在明文转换为密文或将密文转换为明文的算法中输入的参数。密钥分为对称密钥与非对称密钥，分别应用在对称加密和非对称加密上。</p>
+<p><strong>对称加密</strong>：对称加密又叫做私钥加密，即信息的发送方和接收方使用同一个密钥去加密和解密数据。对称加密的特点是算法公开、加密和解密速度快，适合于对大数据量进行加密，常见的对称加密算法有DES、3DES、TDEA、Blowfish、RC5和IDEA。
+其加密过程如下：<strong>明文 + 加密算法 + 私钥 =&gt; 密文</strong>
+解密过程如下：   <strong>密文 + 解密算法 + 私钥 =&gt; 明文</strong></p>
+<p>对称加密中用到的密钥叫做私钥，私钥表示个人私有的密钥，即该密钥不能被泄露。
+其加密过程中的私钥与解密过程中用到的私钥是同一个密钥，这也是称加密之所以称之为“对称”的原因。由于对称加密的算法是公开的，所以一旦私钥被泄露，那么密文就很容易被破解，所以对称加密的缺点是密钥安全管理困难。</p>
+<p><strong>非对称加密</strong>：非对称加密也叫做公钥加密。非对称加密与对称加密相比，其安全性更好。对称加密的通信双方使用相同的密钥，如果一方的密钥遭泄露，那么整个通信就会被破解。而非对称加密使用一对密钥，即公钥和私钥，且二者成对出现。私钥被自己保存，不能对外泄露。公钥指的是公共的密钥，任何人都可以获得该密钥。用公钥或私钥中的任何一个进行加密，用另一个进行解密。
+被公钥加密过的密文只能被私钥解密，过程如下：
+<strong>明文 + 加密算法 + 公钥 =&gt; 密文， 密文 + 解密算法 + 私钥 =&gt; 明文</strong>
+被私钥加密过的密文只能被公钥解密，过程如下：
+<strong>明文 + 加密算法 + 私钥 =&gt; 密文， 密文 + 解密算法 + 公钥 =&gt; 明文</strong></p>
+<p>由于加密和解密使用了两个不同的密钥，这就是非对称加密“非对称”的原因。
+非对称加密的缺点是加密和解密花费时间长、速度慢，只适合对少量数据进行加密。
+在非对称加密中使用的主要算法有：RSA、Elgamal、Rabin、D-H、ECC（椭圆曲线加密算法）等。</p>
+<h3 id="https通信过程">HTTPS通信过程</h3>
+<p><strong>HTTPS协议 = HTTP协议 + SSL/TLS协议</strong>，在HTTPS数据传输的过程中，需要用SSL/TLS对数据进行加密和解密，需要用HTTP对加密后的数据进行传输，由此可以看出HTTPS是由HTTP和SSL/TLS一起合作完成的。</p>
+<p>SSL的全称是Secure Sockets Layer，即安全套接层协议，是为网络通信提供安全及数据完整性的一种安全协议。SSL协议在1994年被Netscape发明，后来各个浏览器均支持SSL，其最新的版本是3.0</p>
+<p>TLS的全称是Transport Layer Security，即安全传输层协议，最新版本的TLS（Transport Layer Security，传输层安全协议）是IETF（Internet Engineering Task Force，Internet工程任务组）制定的一种新的协议，它建立在SSL 3.0协议规范之上，是SSL 3.0的后续版本。在TLS与SSL3.0之间存在着显著的差别，主要是它们所支持的加密算法不同，所以TLS与SSL3.0不能互操作。虽然TLS与SSL3.0在加密算法上不同，但是在我们理解HTTPS的过程中，我们可以把SSL和TLS看做是同一个协议。</p>
+<p>HTTPS为了兼顾安全与效率，同时使用了对称加密和非对称加密。数据是被对称加密传输的，对称加密过程需要客户端的一个密钥，为了确保能把该密钥安全传输到服务器端，采用非对称加密对该密钥进行加密传输，总的来说，对数据进行对称加密，对称加密所要使用的密钥通过非对称加密传输。</p>
+<p><strong>HTTPS在传输的过程中会涉及到三个密钥：</strong></p>
+<p>服务器端的公钥和私钥，用来进行非对称加密</p>
+<p>客户端生成的随机密钥，用来进行对称加密</p>
+<p>一个HTTPS请求实际上包含了两次HTTP传输，可以细分为8步。
+1.客户端向服务器发起HTTPS请求，连接到服务器的443端口</p>
+<p>2.服务器端有一个密钥对，即公钥和私钥，是用来进行非对称加密使用的，服务器端保存着私钥，不能将其泄露，公钥可以发送给任何人。</p>
+<p>3.服务器将自己的公钥发送给客户端。</p>
+<p>4.客户端收到服务器端的证书之后，会对证书进行检查，验证其合法性，如果发现发现证书有问题，那么HTTPS传输就无法继续。严格的说，这里应该是验证服务器发送的数字证书的合法性，关于客户端如何验证数字证书的合法性，下文会进行说明。如果公钥合格，那么客户端会生成一个随机值，这个随机值就是用于进行对称加密的密钥，我们将该密钥称之为client key，即客户端密钥，这样在概念上和服务器端的密钥容易进行区分。然后用服务器的公钥对客户端密钥进行非对称加密，这样客户端密钥就变成密文了，至此，HTTPS中的第一次HTTP请求结束。</p>
+<p>5.客户端会发起HTTPS中的第二个HTTP请求，将加密之后的客户端密钥发送给服务器。</p>
+<p>6.服务器接收到客户端发来的密文之后，会用自己的私钥对其进行非对称解密，解密之后的明文就是客户端密钥，然后用客户端密钥对数据进行对称加密，这样数据就变成了密文。</p>
+<p>7.然后服务器将加密后的密文发送给客户端。</p>
+<p>8.客户端收到服务器发送来的密文，用客户端密钥对其进行对称解密，得到服务器发送的数据。这样HTTPS中的第二个HTTP请求结束，整个HTTPS传输完成。</p>
+<h2 id="九网络数据解析">九、网络数据解析</h2>
+<p>TCP/IP协议数据包，一般由应用层、传输层、网络层、数据链路层封装而成。</p>
+<p><strong>四层协议各自的作用：</strong></p>
+<p>　　数据链路层实现了网卡接口的驱动程序。</p>
+<p>　　网络层实现了数据包的选路和转发。</p>
+<p>　　传输层为两台主机上的应用程序提供端到端（end to end）的通信。</p>
+<p>　　应用层负责处理应用程序的逻辑。</p>
+<p>#1、先封装的协议头是传输层，传输层有TCP、UDP、TLS 、DCCP 、SCTP 、RSVP 、PPTP，常用的有TCP，UDP</p>
+<p><strong>TCP头的结构（tcp头总长度为 20个字节+options可选选项）</strong></p>
+<p><strong><img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/1283038-20171124100511390-1136155553.png"
+	width="640"
+	height="240"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/1283038-20171124100511390-1136155553_hu5e253dcff5614d46410027f1be24bde5_19397_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/1283038-20171124100511390-1136155553_hu5e253dcff5614d46410027f1be24bde5_19397_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="266"
+		data-flex-basis="640px"
+	
+></strong></p>
+<p>（1）TCP源端口（Source Port）：16位的源端口包含初始化通信的端口号。源端口和IP地址的作用是标识报文的返回地址。</p>
+<p>（2）TCP目的端口（Destination Port）：16位的目的端口域定义传输的目的。这个端口指明报文接收计算机上的应用程序地址接口。</p>
+<p>（3）序列号（Sequence Number）：32位 TCP连线发送方向接收方的封包顺序号。</p>
+<p>（4）确认序号（Acknowledge Number）：32位 接收方回发的应答顺序号。</p>
+<p>（5）头长度（Header Length）：偏移量（4bit）和保留（4bit）总共8位 。 表示TCP头的双四字节数，如果转化为字节个数需要乘以4。</p>
+<p>（6）保留（2bit）和标记（6bit）总共8位。</p>
+<p>　<strong>标记位：</strong>　</p>
+<p>　　URG：是否使用紧急指针，0为不使用，1为使用。</p>
+<p>　　ACK：请求/应答状态。0为请求，1为应答。</p>
+<p>　　PSH：以最快的速度传输数据。　　</p>
+<p>　　RST：连线复位，首先断开连接，然后重建。</p>
+<p>　　SYN：同步连线序号，用来建立连线。</p>
+<p>　　FIN：结束连线。如果FIN为0是结束连线请求，FIN为1表示结束连线。</p>
+<p>（7）窗口大小（Window）：16位 目的机使用16位的域告诉源主机，它想收到的每个TCP数据段大小。</p>
+<p>（8）校验和（Check Sum）：16位 这个校验和和IP的校验和有所不同，不仅对头数据进行校验还对封包内容校验。</p>
+<p>（9）紧急指针（Urgent Pointer）：16位 当URG为1的时候才有效。TCP的紧急方式是发送紧急数据的一种方式。</p>
+<p>（10）可选选项(options)24位，类似IP，是可选选项。填充8位，使选项凑足32位。</p>
+<p><strong>UDP头的结构</strong></p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>源端口（2字节）</th>
+<th>目的端口（2字节）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>封报长度（2字节）</td>
+<td>校验和（2字节）</td>
+</tr>
+<tr>
+<td>数据</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p>（1）源端口（Source Port）：16位的源端口域包含初始化通信的端口号。源端口和IP地址的作用是标识报文的返回地址。</p>
+<p>（2）目的端口（Destination Port）：16位的目的端口域定义传输的目的。这个端口指明报文接收计算机上的应用程序地址接口。</p>
+<p>（3）封包长度（Length）：16位 UDP头和数据的总长度。</p>
+<p>（4）校验和（Check Sum）： 16位 和TCP和校验和一样，不仅对头数据进行校验，还对包的内容进行校验。</p>
+<p>#2、然后封装的是网络层，网络层主要是IP协议，还有ICMP协议，IGMP协议等**<a class="link" href="https://www.baidu.com/s?wd=igmp%e5%8d%8f%e8%ae%ae&amp;tn=44039180_cpr&amp;fenlei=mv6quAkxTZn0IZRqIHckPjm4nH00T1Y3Pvc3P1PWPWTsnHIhrycv0ZwV5Hcvrjm3rH6sPfKWUMw85HfYnjn4nH6sgvPsT6KdThsqpZwYTjCEQLGCpyw9Uz4Bmy-bIi4WUvYETgN-TLwGUv3EPH6Yn1TvPWmdP10sPjfsn1md"  target="_blank" rel="noopener"
+    >
+</a></p>
+<p><strong>IP协议头（ip头总长度根据IP头的头长来计算。一般IP没有可选选项，长度为20字节，也就是对应头长等于5）：</strong></p>
+<p><img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/1283038-20171124094430875-559687692.png"
+	width="640"
+	height="240"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/1283038-20171124094430875-559687692_hu661eace82f35ef96e75cd9241e4a6e10_20898_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/1283038-20171124094430875-559687692_hu661eace82f35ef96e75cd9241e4a6e10_20898_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="266"
+		data-flex-basis="640px"
+	
+></p>
+<p><strong>1-1</strong>.版本4位，表示版本号，目前最广泛的是4=B1000，即常说的IPv4；相信IPv6以后会广泛应用，它能给世界上每个纽扣都分配</p>
+<p>​    一个IP地址。</p>
+<p>**1-2.**头长4位，数据包头部长度。它表示数据包头部包括多少个32位长整型，也就是多少个4字节的数据。无选项则为5（红色部分）。</p>
+<p>　　这个字段表示了IP头部的总长度，但它不是直接表示，因为它只占了4比特，最大也就15，实际的IP头部长度等于首部长度字段表示的     值乘以4，单位是字节，也就是首部最长为15×4＝60字节，一般IP数据报首部都没有选择项，长度为20字节，也就是对应头长等于5。</p>
+<p><strong>1-3</strong>.服务类型，包括8个二进制位，每个位的意义如下：</p>
+<p>​    过程字段：3位，设置了数据包的重要性，取值越大数据越重要，取值范围为：0（正常）~ 7（网络控制）</p>
+<p>​    延迟字段：1位，取值：0（正常）、1（期特低的延迟）</p>
+<p>​    流量字段：1位，取值：0（正常）、1（期特高的流量）</p>
+<p>​    可靠性字段：1位，取值：0（正常）、1（期特高的可靠性）</p>
+<p>​    成本字段：1位，取值：0（正常）、1（期特最小成本）</p>
+<p>​    保留字段：1位 ，未使用</p>
+<p><strong>1-4</strong>.包裹总长16位，当前数据包的总长度，单位是字节。当然最大只能是65535，及64KB。</p>
+<p><strong>2-1</strong>.重组标识16位，发送主机赋予的标识，以便接收方进行分片重组。</p>
+<p><strong>2-2</strong>.标志3位，他们各自的意义如下：</p>
+<p>​    保留段位(2)：1位，未使用</p>
+<p>​    不分段位(1)：1位，取值：0（允许数据报分段）、1（数据报不能分段）</p>
+<p>​    更多段位(0)：1位，取值：0（数据包后面没有包，该包为最后的包）、1（数据包后面有更多的包）</p>
+<p><strong>2-3</strong>.段偏移量13位，与更多段位组合，帮助接收方组合分段的报文，以字节为单位。</p>
+<p><strong>3-1</strong>.生存时间8位，经常ping命令看到的TTL（Time To Live）就是这个，每经过一个路由器，该值就减一，到零丢弃。</p>
+<p><strong>3-2</strong>.协议代码8位，表明使用该包裹的上层协议，如TCP=6，ICMP=1，UDP=17等。</p>
+<p>**3-3.**头检验和16位，是IPv4数据包头部的校验和。由发送端填充，接收端对其使用CRC算法检验IP数据报头部在传输过程中是否损坏。</p>
+<p><strong>4-1</strong>.源始地址，32位4字节，我们常看到的IP是将每个字节用点（.）分开，如此而已。</p>
+<p><strong>5-1</strong>.目的地址，32位，同上。</p>
+<p><strong>6-1</strong>.可选选项，主要是给一些特殊的情况使用，往往安全路由会当作攻击而过滤掉，普联（TP_LINK）的TL-ER5110路由就能这么做。</p>
+<p><em><strong>*ICMP协议头*</strong></em></p>
+<p>ICMP报文就像是IP报文的小弟，总顶着IP报文的名头出来混。因为ICMP报文是在IP报文内部的：</p>
+<p><img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/1283038-20171124165414000-173715077.png"
+	width="490"
+	height="49"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/1283038-20171124165414000-173715077_hu02daccf416a4164917f8b56ea5135478_19921_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/1283038-20171124165414000-173715077_hu02daccf416a4164917f8b56ea5135478_19921_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="1000"
+		data-flex-basis="2400px"
+	
+></p>
+<p><img src="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/1283038-20171124163842843-1186548906.png"
+	width="468"
+	height="205"
+	srcset="/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/1283038-20171124163842843-1186548906_huc57d8e9f123e3f8861399a0e55f95f08_8535_480x0_resize_box_3.png 480w, /post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/1283038-20171124163842843-1186548906_huc57d8e9f123e3f8861399a0e55f95f08_8535_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="228"
+		data-flex-basis="547px"
+	
+></p>
+<p>ICMP所有报文的前4个字节都是一样的，但是剩下的其他字节不相同。</p>
+<p>前四个字节统一的格式：类型（8位），代码（8位），校验和（16位）</p>
+<p><strong>类型和代码</strong>决定了ICMP报文的类型。常见的有：</p>
+<p>　　类型8， 代码0 ==&gt; 表示回显请求（ping请求）</p>
+<p>　　类型0， 代码0 ==&gt; 表示回显应答（ping应答）</p>
+<p>　　类型11，代码0 ==&gt; 超时</p>
+<p><strong>检验和字段</strong>：包括数据在内的整个ICMP数据包的检验和；其计算方法和IP头部检验和的计算方法一样的。</p>
+<p>ICMP报文具体分为<strong>查询报文</strong>和<strong>差错报文</strong>(对ICMP差错报文有时需要做特殊处理，因此要对其进行区分。如：对ICMP差错报文进行响应时，永远不会生成另一份ICMP差错报文，否则会出现死循环)</p>
+<p><strong>#3、最后封装的是数据链路层，即以太网头和FCS</strong></p>
+<p>**以太网头（总长度为14个字节）**是由  6字节的目的MAC地址 + 6字节的源MAC地址 + 2字节的类型 组成。</p>
+<p>以太的各种类型：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th><strong>以太类型</strong></th>
+<th><strong>协议</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x0800</td>
+<td>Internet协议版本4（<a class="link" href="http://en.wikipedia.org/wiki/IPv4"  target="_blank" rel="noopener"
+    >IPv4</a>）</td>
+</tr>
+<tr>
+<td>0x0806</td>
+<td>地址解析协议（<a class="link" href="http://en.wikipedia.org/wiki/Address_Resolution_Protocol"  target="_blank" rel="noopener"
+    >ARP</a>）</td>
+</tr>
+<tr>
+<td>0x8035</td>
+<td>反向地址解析协议（<a class="link" href="http://en.wikipedia.org/wiki/RARP"  target="_blank" rel="noopener"
+    >RARP</a>）</td>
+</tr>
+<tr>
+<td>三个数值</td>
+<td><a class="link" href="http://en.wikipedia.org/wiki/AppleTalk"  target="_blank" rel="noopener"
+    >AppleTalk</a>（Ethertalk）</td>
+</tr>
+<tr>
+<td>0x80f3</td>
+<td><a class="link" href="http://en.wikipedia.org/wiki/AppleTalk"  target="_blank" rel="noopener"
+    >AppleTalk</a>地址解析协议（AARP）</td>
+</tr>
+<tr>
+<td>为0x8100</td>
+<td><a class="link" href="http://en.wikipedia.org/wiki/IEEE_802.1Q"  target="_blank" rel="noopener"
+    >IEEE 802.1Q</a>标签帧</td>
+</tr>
+<tr>
+<td>三个数值</td>
+<td>Novell <a class="link" href="http://en.wikipedia.org/wiki/IPX"  target="_blank" rel="noopener"
+    >IPX</a>（alt）</td>
+</tr>
+<tr>
+<td>0x8138</td>
+<td><a class="link" href="http://en.wikipedia.org/wiki/Novell"  target="_blank" rel="noopener"
+    >Novell公司</a></td>
+</tr>
+<tr>
+<td>0x86DD</td>
+<td>Internet协议版本6（<a class="link" href="http://en.wikipedia.org/wiki/IPv6"  target="_blank" rel="noopener"
+    >IPv6</a>）</td>
+</tr>
+<tr>
+<td>0x8819</td>
+<td><a class="link" href="http://en.wikipedia.org/wiki/CobraNet"  target="_blank" rel="noopener"
+    >CobraNet技术</a></td>
+</tr>
+<tr>
+<td>0x88a8</td>
+<td>提供商桥接（<a class="link" href="http://en.wikipedia.org/wiki/IEEE_802.1ad"  target="_blank" rel="noopener"
+    >IEEE 802.1ad</a>）</td>
+</tr>
+<tr>
+<td>0x8847</td>
+<td><a class="link" href="http://en.wikipedia.org/wiki/Multiprotocol_Label_Switching"  target="_blank" rel="noopener"
+    >MPLS</a>单播</td>
+</tr>
+<tr>
+<td>0x8848</td>
+<td><a class="link" href="http://en.wikipedia.org/wiki/Multiprotocol_Label_Switching"  target="_blank" rel="noopener"
+    >MPLS</a>多播</td>
+</tr>
+<tr>
+<td>0x8863</td>
+<td><a class="link" href="http://en.wikipedia.org/wiki/Point-to-Point_Protocol_over_Ethernet"  target="_blank" rel="noopener"
+    >PPPoE</a>发现阶段</td>
+</tr>
+<tr>
+<td>0x8864</td>
+<td>PPPoE会话阶段</td>
+</tr>
+<tr>
+<td>0x888E</td>
+<td>EAP over LAN（<a class="link" href="http://en.wikipedia.org/wiki/IEEE_802.1X"  target="_blank" rel="noopener"
+    >IEEE 802.1X</a>）</td>
+</tr>
+<tr>
+<td>0x889A</td>
+<td><a class="link" href="http://en.wikipedia.org/wiki/HyperSCSI"  target="_blank" rel="noopener"
+    >HyperSCSI</a>（以太网SCSI）</td>
+</tr>
+<tr>
+<td>0x88A2</td>
+<td><a class="link" href="http://en.wikipedia.org/wiki/ATA_over_Ethernet"  target="_blank" rel="noopener"
+    >以太网ATA</a></td>
+</tr>
+<tr>
+<td>0x88A4</td>
+<td><a class="link" href="http://en.wikipedia.org/wiki/EtherCAT"  target="_blank" rel="noopener"
+    >EtherCAT</a>协议</td>
+</tr>
+<tr>
+<td>0x88CD</td>
+<td><a class="link" href="http://en.wikipedia.org/wiki/SERCOS_interface"  target="_blank" rel="noopener"
+    >SERCOS-III</a></td>
+</tr>
+<tr>
+<td>0x88D8</td>
+<td>以太网电路仿真服务（<a class="link" href="http://en.wikipedia.org/w/index.php?title=MEF-8&amp;action=edit&amp;redlink=1"  target="_blank" rel="noopener"
+    >MEF-8</a>）</td>
+</tr>
+<tr>
+<td>0x88E5</td>
+<td>MAC安全（<a class="link" href="http://en.wikipedia.org/wiki/IEEE_802.1AE"  target="_blank" rel="noopener"
+    >IEEE 802.1AE</a>）</td>
+</tr>
+<tr>
+<td>0x8906</td>
+<td><a class="link" href="http://en.wikipedia.org/wiki/Fibre_Channel_over_Ethernet"  target="_blank" rel="noopener"
+    >以太网光纤通道</a></td>
+</tr>
+<tr>
+<td>0x8914</td>
+<td><a class="link" href="http://en.wikipedia.org/w/index.php?title=FCoE_initialization_protocol&amp;action=edit&amp;redlink=1"  target="_blank" rel="noopener"
+    >FCoE初始化协议</a></td>
+</tr>
+<tr>
+<td>0x9100</td>
+<td><a class="link" href="http://en.wikipedia.org/wiki/Q-in-Q"  target="_blank" rel="noopener"
+    >Q-in-Q的</a></td>
+</tr>
+<tr>
+<td>0xCAFE</td>
+<td><a class="link" href="http://wiki.wireshark.org/LLT"  target="_blank" rel="noopener"
+    >Veritas低延迟传输（LLT）</a></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>在不定长的数据字段(以太网头后面的数据)后是4个字节的帧校验序列(FCS)</strong></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2023 浩&amp;琳
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='十、反射 1.什么是反射？ JAVA反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法，对于任意一个对象，都能够调用它的任意一个方法和属性，这种动态获取的信息以及动态调用对象的方法的功能称为java语言的反射机制。
+Class类
+这个类用于操纵（反向解析）一个类的属性，方法，构造器等。
+Person: name,age,address(Class只要知道你这个Person类，那么它便可知道你所有的属性，不止属性，甚至方法上的注解等等，都会知道。)
+范例：获取一个Class对象
+import java.lang.reflect.Constructor; import java.lang.reflect.Field; import java.lang.reflect.Method; import java.util.Arrays; public class Test01 { public static void main(String[] args) throws ClassNotFoundException { String a = &amp;#34;java.lang.String&amp;#34;; // String a = &amp;#34;java.lang.HashMap&amp;#34;; // 根据一类的全名字符串来获得一个类的类对象 Class&amp;lt;?&amp;gt; clazz = Class.forName(a); // 获得传递过来的类的所有方法 Method[] methods = clazz.getDeclaredMethods(); // String s = Arrays.toString(methods); for (Method m: methods) { System.out.println(m); } System.out.println(&amp;#34;------------------------------------------&amp;#34;); // 获得类的所有属性 Field[] declaredFields = clazz.getDeclaredFields(); for(Field d : declaredFields) { System.'>
+<title>Java（10）反射</title>
+
+<link rel='canonical' href='https://haolovelin.com/post/java10%E5%8F%8D%E5%B0%84/'>
+
+<link rel="stylesheet" href="/scss/style.min.5be32ca3f6e1a997c75795c4359147cc6d4fbd34948c0acd51e31d237033978a.css"><meta property='og:title' content='Java（10）反射'>
+<meta property='og:description' content='十、反射 1.什么是反射？ JAVA反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法，对于任意一个对象，都能够调用它的任意一个方法和属性，这种动态获取的信息以及动态调用对象的方法的功能称为java语言的反射机制。
+Class类
+这个类用于操纵（反向解析）一个类的属性，方法，构造器等。
+Person: name,age,address(Class只要知道你这个Person类，那么它便可知道你所有的属性，不止属性，甚至方法上的注解等等，都会知道。)
+范例：获取一个Class对象
+import java.lang.reflect.Constructor; import java.lang.reflect.Field; import java.lang.reflect.Method; import java.util.Arrays; public class Test01 { public static void main(String[] args) throws ClassNotFoundException { String a = &amp;#34;java.lang.String&amp;#34;; // String a = &amp;#34;java.lang.HashMap&amp;#34;; // 根据一类的全名字符串来获得一个类的类对象 Class&amp;lt;?&amp;gt; clazz = Class.forName(a); // 获得传递过来的类的所有方法 Method[] methods = clazz.getDeclaredMethods(); // String s = Arrays.toString(methods); for (Method m: methods) { System.out.println(m); } System.out.println(&amp;#34;------------------------------------------&amp;#34;); // 获得类的所有属性 Field[] declaredFields = clazz.getDeclaredFields(); for(Field d : declaredFields) { System.'>
+<meta property='og:url' content='https://haolovelin.com/post/java10%E5%8F%8D%E5%B0%84/'>
+<meta property='og:site_name' content='浩&amp;琳'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2021-06-07T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-06-07T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Java（10）反射">
+<meta name="twitter:description" content="十、反射 1.什么是反射？ JAVA反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法，对于任意一个对象，都能够调用它的任意一个方法和属性，这种动态获取的信息以及动态调用对象的方法的功能称为java语言的反射机制。
+Class类
+这个类用于操纵（反向解析）一个类的属性，方法，构造器等。
+Person: name,age,address(Class只要知道你这个Person类，那么它便可知道你所有的属性，不止属性，甚至方法上的注解等等，都会知道。)
+范例：获取一个Class对象
+import java.lang.reflect.Constructor; import java.lang.reflect.Field; import java.lang.reflect.Method; import java.util.Arrays; public class Test01 { public static void main(String[] args) throws ClassNotFoundException { String a = &amp;#34;java.lang.String&amp;#34;; // String a = &amp;#34;java.lang.HashMap&amp;#34;; // 根据一类的全名字符串来获得一个类的类对象 Class&amp;lt;?&amp;gt; clazz = Class.forName(a); // 获得传递过来的类的所有方法 Method[] methods = clazz.getDeclaredMethods(); // String s = Arrays.toString(methods); for (Method m: methods) { System.out.println(m); } System.out.println(&amp;#34;------------------------------------------&amp;#34;); // 获得类的所有属性 Field[] declaredFields = clazz.getDeclaredFields(); for(Field d : declaredFields) { System.">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu9f7a08366cc43f473c39f8f10558a931_55504_300x0_resize_box_3.png" width="300"
+                            height="332" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">浩&amp;琳</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+
+        <div class="menu-bottom-section">
+            
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>Dark Mode</span>
+                </li>
+            
+        </div>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/" style="background-color: #2a9d8f; color: #fff;">
+                编程学习
+            </a>
+        
+            <a href="/categories/javase/" style="background-color: #666666; color: #fff;">
+                JavaSE
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/java10%E5%8F%8D%E5%B0%84/">Java（10）反射</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jun 07, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    3 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="十反射">十、反射</h2>
+<h3 id="1什么是反射">1.什么是反射？</h3>
+<p>JAVA反射机制是在<strong>运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法，对于任意一个对象，都能够调用它的任意一个方法和属性，这种动态获取的信息以及动态调用对象的方法</strong>的功能称为java语言的反射机制。</p>
+<p>Class类</p>
+<p>这个类用于操纵（反向解析）一个类的属性，方法，构造器等。</p>
+<p>Person: name,age,address(Class只要知道你这个Person类，那么它便可知道你所有的属性，不止属性，甚至方法上的注解等等，都会知道。)</p>
+<p><strong>范例：获取一个Class对象</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.lang.reflect.Constructor<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.lang.reflect.Field<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.lang.reflect.Method<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.Arrays<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Test01</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> ClassNotFoundException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        String a <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;java.lang.String&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//        String a = &#34;java.lang.HashMap&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span> 
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 根据一类的全名字符串来获得一个类的类对象
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        Class<span style="color:#f92672">&lt;?&gt;</span> clazz <span style="color:#f92672">=</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span>a<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 获得传递过来的类的所有方法
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        Method<span style="color:#f92672">[]</span> methods <span style="color:#f92672">=</span> clazz<span style="color:#f92672">.</span><span style="color:#a6e22e">getDeclaredMethods</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//        String s = Arrays.toString(methods);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>Method m<span style="color:#f92672">:</span> methods<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>m<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;------------------------------------------&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 获得类的所有属性
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        Field<span style="color:#f92672">[]</span> declaredFields <span style="color:#f92672">=</span> clazz<span style="color:#f92672">.</span><span style="color:#a6e22e">getDeclaredFields</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span>Field d <span style="color:#f92672">:</span> declaredFields<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>d<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;-------------------------------------&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 获得类的所有构造器
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        Constructor<span style="color:#f92672">&lt;?&gt;[]</span> constructors <span style="color:#f92672">=</span> clazz<span style="color:#f92672">.</span><span style="color:#a6e22e">getDeclaredConstructors</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>Constructor c <span style="color:#f92672">:</span> constructors<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>c<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h3 id="2如何获取一个类的成员变量--成员方法--注解信息--">2.如何获取一个类的成员变量 &amp; 成员方法 &amp; 注解信息 &amp; …。</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">//获取类
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Class<span style="color:#f92672">&lt;?&gt;</span> clazz <span style="color:#f92672">=</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;java.lang.String&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 获得类的所有属性变量
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Field<span style="color:#f92672">[]</span> declaredFields <span style="color:#f92672">=</span> clazz<span style="color:#f92672">.</span><span style="color:#a6e22e">getDeclaredFields</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 获得传递过来的类的所有方法
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Method<span style="color:#f92672">[]</span> methods <span style="color:#f92672">=</span> clazz<span style="color:#f92672">.</span><span style="color:#a6e22e">getDeclaredMethods</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 获得类的所有构造器
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Constructor<span style="color:#f92672">&lt;?&gt;[]</span> constructors <span style="color:#f92672">=</span> clazz<span style="color:#f92672">.</span><span style="color:#a6e22e">getDeclaredConstructors</span><span style="color:#f92672">();</span>
+</span></span></code></pre></div><h3 id="3通常在项目当中用到反射多吗都是用来干嘛">3.通常在项目当中用到反射多吗？都是用来干嘛？</h3>
+<p>用于某些模块集成场合。</p>
+<p>当不能在开发时即得到其目标类完整接口定义，只能根据命名规则去进行集成时。</p>
+<p>不改版原有的类定义的时候，绕过private关键字获取成员变量和成员方法。</p>
+<p>Android热修复技术</p>
+<h3 id="4如何反射一个匿名内部类考察对匿名内部类的认识">4.如何反射一个匿名内部类(考察对匿名内部类的认识)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Field field <span style="color:#f92672">=</span> clazz<span style="color:#f92672">.</span><span style="color:#a6e22e">getDeclaredField</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;runnable&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>field<span style="color:#f92672">.</span><span style="color:#a6e22e">setAccessible</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>Runnable r <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>Runnable<span style="color:#f92672">)</span> field<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>container<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>r<span style="color:#f92672">.</span><span style="color:#a6e22e">run</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">private Runnable runnable = new Runnable() {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">        @Override
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">        public void run() {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">            System.out.println(&#34;cxx 匿名内部类run方法&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">        }
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    };
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span></code></pre></div><h3 id="5知识点总结">5.知识点总结</h3>
+<h4 id="1什么是反射框架设计的灵魂">1、什么是反射？——框架设计的灵魂</h4>
+<p>框架：半成品软件。可以在框架的基础上进行软件开发，简化代码。
+java代码在计算机中经历的阶段（三阶段）</p>
+<p>反射：就是把Java类中的各种成分映射成相应的Java类，然后对这些类进行操作。（如：类的成员属性-&gt;Field、类的成员方法-&gt;Method、类的构造方法-&gt;Constructor等等）
+反射的好处包括：
+（1）可以在程序运行过程中，操作这些对象。
+（2）可以解耦，提高程序可扩展性。
+Java反射说的是在运行状态中，对于任何一个类，我们都能够知道这个类有哪些方法和属性。对于任何一个对象，我们都能够对它的方法和属性进行调用。
+我们把这种动态获取对象信息和调用对象方法的功能称之为反射机制。</p>
+<h4 id="2字节码class对象">2、字节码Class对象</h4>
+<p>（1）Class类对象——描述.class字节码文件
+将（.java类文件）经过编译后的.class字节码文件（位于硬盘上）通过类加载器（ClassLoader）加载进内存，通过java.lang.Class类对象对字节码文件进行描述。每一个类都是一个Class类的实例对象。
+Class类对象是用来对.class文件进行描述。主要包括三个成员变量：</p>
+<p>类成员变量 Field[] fields
+类构造方法 Constructor[] constructors
+类成员方法 Method[] methods
+（2）获取Class对象的方式</p>
+<ol>
+<li>Class.forName(“全类名”)：将字节码文件加载进内存，返回class对象
+在Source源代码阶段，此时java类仍位于硬盘上。多用于配置文件，将类名定义在配置文件中。读取文件，并触发类构造器加载类。
+Class.forName() 方法如果写错类的路径会报 ClassNotFoundException 的异常。</li>
+<li>类名.class：通过类名的属性class获取
+在Class类对象阶段，此时java类位于内存中，但没有实际对象。多用于参数的传递。
+通过这种方式时，只会加载Dog类，并不会触发其类构造器的初始化。</li>
+<li>对象.getClass()：getClass（）方法在Object类中定义
+在运行阶段，此时已经获取类的实例对象，多用于对象的获取字节码的方式。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>		<span style="color:#75715e">// 方法1：Class.forName(&#34;全类名&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            Class cls1 <span style="color:#f92672">=</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;com.test.demo.Dog&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>ClassNotFoundException e<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 方法2：类名.class
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        Class cls2 <span style="color:#f92672">=</span> Dog<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 方法3：对象.getClass()
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        Dog dog <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Dog<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    	Class cls3 <span style="color:#f92672">=</span> dog<span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 用 == 比较3个对象是否为同一个对象（指向同一物理地址）
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">print</span><span style="color:#f92672">(</span>cls1 <span style="color:#f92672">==</span> cls2<span style="color:#f92672">);</span>	<span style="color:#75715e">//	true
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">print</span><span style="color:#f92672">(</span>cls1 <span style="color:#f92672">==</span> cls3<span style="color:#f92672">);</span>	<span style="color:#75715e">//	true
+</span></span></span></code></pre></div><p>结论：同一个字节码文件（*.class）在一次程序运行过程中，只会被加载一次，不论通过哪一种方式获取的class对象都是同一个。</p>
+<h4 id="3反射机制">3、反射机制</h4>
+<p>反射机制reflect可以在运行期间获取类的字段、方法、父类和接口等信息。</p>
+<h5 id="31类成员变量的反射">（3.1）类成员变量的反射</h5>
+<p>获取类成员变量：
+Field[] getFields()：获取所有public 修饰的成员变量
+Field getField(String name)：获取指定名称的public修饰的成员变量
+Field[] getDeclaredFields()：获取所有的成员变量，不考虑修饰符
+Filed getDeclaredField(String name)：获取指定名称的成员变量，不考虑修饰符
+Filed：成员变量
+get(Object object) ：获取值
+void set(Object obj, Object value)：设置值
+setAccessible(true) ：忽略访问权限修饰符的安全检查，用于暴力反射，修改私有成员变量的值</p>
+<h5 id="32类成员方法的反射">（3.2）类成员方法的反射</h5>
+<p>获取类成员方法：
+Method[] getMethods()：获取所有public修饰的成员方法
+Method getMethod(String name,类<!-- raw HTML omitted -->… parameterTypes)：获取指定的public修饰的成员方法，name 为方法名，parameterTypes为参数列表（重载）
+Method[] getDeclaredMethods()：获取所有成员方法
+Method getDeclaredMethod(String name,类<!-- raw HTML omitted -->… parameterTypes)：获取指定的成员方法，name 为方法名，parameterTypes为参数列表（重载）
+Method
+invoke(obj … args)：执行方法
+setAccessible(true) ：忽略访问权限修饰符的安全检查，用于暴力反射，修改私有成员方法的值</p>
+<h5 id="33类构造方法的反射">（3.3）类构造方法的反射</h5>
+<p>获取类构造方法：
+Constructor[] getConstructors()：获取public修饰的构造方法
+Constructor getConstructor(类<!-- raw HTML omitted -->… parameterTypes)：获取指定的public修饰的构造方法（构造方法的方法名 = 类名），parameterTypes为参数列表
+Constructor[] getDeclaredConstructors()：获取所有构造方法
+Constructor getDeclaredConstructor(类<!-- raw HTML omitted -->… parameterTypes)：获取指定的构造方法，name为方法名（构造方法的方法名 = 类名），parameterTypes为参数列表
+Constructor：构造方法
+T.newInstance(Object… init args)：创建对象
+Class.newInstance()：如果使用空参数构造方法创建对象，操作可以简化为：Class对象的newInstance方法
+setAccessible(true) ：忽略访问权限修饰符的安全检查，用于暴力反射，修改私有构造方法的值</p>
+<h5 id="34类名的获取">（3.4）类名的获取</h5>
+<p>String getName()</p>
+<h4 id="4反射案例">4、反射案例</h4>
+<h5 id="41class类的动态加载">（4.1）Class类的动态加载</h5>
+<p>编译时刻加载的类是静态加载类，运行时刻加载的类是动态加载类。
+写一个&quot;框架&quot;，在不能改变该类任何代码的前提下，可以帮我们创建任意类的对象，并且执行其中任意方法。
+实现:
+配置文件+反射
+步骤:
+将需要创建的对象的全类名和需要执行的方法定义在配置文件中
+在程序中加载读取配置文件
+使用反射奇数来加载类文件进内存
+创建对象，执行方法</p>
+<h5 id="42jdbc数据库连接">（4.2）JDBC数据库连接</h5>
+<p>在JDBC 的操作中，如果要想进行数据库的连接，则必须按照以上的几步完成</p>
+<p>通过Class.forName()加载数据库的驱动程序 （通过反射加载，前提是引入相关了Jar包）
+通过 DriverManager 类进行数据库的连接，连接的时候要输入数据库的连接地址、用户名、密码
+通过Connection 接口接收连接</p>
+<h5 id="43spring框架使用反射">（4.3）Spring框架使用——反射</h5>
+<p>在 Java的反射机制在做基础框架的时候非常有用，行内有一句这样的老话：反射机制是Java框架的基石。一般应用层面很少用，不过这种东西，现在很多开源框架基本都已经封装好了，自己基本用不着写。典型的除了hibernate之外，还有spring也用到很多反射机制。最经典的就是xml的配置模式。
+Spring通过XML配置模式装载Bean的过程：</p>
+<p>将程序内所有XML或Properties配置文件加载入内存中
+Java类里面解析xml或properties里面的内容，得到对应实体类的字节码字符串以及相关属性信息
+使用反射机制，根据这个字符串获得某个类的Class实例
+动态配置实例的属性
+通过反射，Spring框架可以在不改变代码的前提下，直接修改配置文件。模拟Spring加载XML配置文件：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BeanFactory</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">private</span> Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Object<span style="color:#f92672">&gt;</span> beanMap <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Object<span style="color:#f92672">&gt;();</span>
+</span></span><span style="display:flex;"><span>       <span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">       * bean工厂的初始化.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">       * @param xml xml配置文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">       */</span>
+</span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">init</span><span style="color:#f92672">(</span>String xml<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                     <span style="color:#75715e">//读取指定的配置文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                     SAXReader reader <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SAXReader<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                     ClassLoader classLoader <span style="color:#f92672">=</span> Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getContextClassLoader</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                     <span style="color:#75715e">//从class目录下获取指定的xml文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                     InputStream ins <span style="color:#f92672">=</span> classLoader<span style="color:#f92672">.</span><span style="color:#a6e22e">getResourceAsStream</span><span style="color:#f92672">(</span>xml<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                     Document doc <span style="color:#f92672">=</span> reader<span style="color:#f92672">.</span><span style="color:#a6e22e">read</span><span style="color:#f92672">(</span>ins<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                     Element root <span style="color:#f92672">=</span> doc<span style="color:#f92672">.</span><span style="color:#a6e22e">getRootElement</span><span style="color:#f92672">();</span>  
+</span></span><span style="display:flex;"><span>                     Element foo<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>                    
+</span></span><span style="display:flex;"><span>                     <span style="color:#75715e">//遍历bean
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                     <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>Iterator i <span style="color:#f92672">=</span> root<span style="color:#f92672">.</span><span style="color:#a6e22e">elementIterator</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;bean&#34;</span><span style="color:#f92672">);</span> i<span style="color:#f92672">.</span><span style="color:#a6e22e">hasNext</span><span style="color:#f92672">();)</span> <span style="color:#f92672">{</span>  
+</span></span><span style="display:flex;"><span>                            foo <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>Element<span style="color:#f92672">)</span> i<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">//获取bean的属性id和class
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                            Attribute id <span style="color:#f92672">=</span> foo<span style="color:#f92672">.</span><span style="color:#a6e22e">attribute</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;id&#34;</span><span style="color:#f92672">);</span>  
+</span></span><span style="display:flex;"><span>                            Attribute cls <span style="color:#f92672">=</span> foo<span style="color:#f92672">.</span><span style="color:#a6e22e">attribute</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;class&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                           
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">//利用Java反射机制，通过class的名称获取Class对象
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                            Class bean <span style="color:#f92672">=</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span>cls<span style="color:#f92672">.</span><span style="color:#a6e22e">getText</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>                           
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">//获取对应class的信息
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                            java<span style="color:#f92672">.</span><span style="color:#a6e22e">beans</span><span style="color:#f92672">.</span><span style="color:#a6e22e">BeanInfo</span> info <span style="color:#f92672">=</span> java<span style="color:#f92672">.</span><span style="color:#a6e22e">beans</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Introspector</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getBeanInfo</span><span style="color:#f92672">(</span>bean<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">//获取其属性描述
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                            java<span style="color:#f92672">.</span><span style="color:#a6e22e">beans</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PropertyDescriptor</span> pd<span style="color:#f92672">[]</span> <span style="color:#f92672">=</span> info<span style="color:#f92672">.</span><span style="color:#a6e22e">getPropertyDescriptors</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">//设置值的方法
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                            Method mSet <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">//创建一个对象
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                            Object obj <span style="color:#f92672">=</span> bean<span style="color:#f92672">.</span><span style="color:#a6e22e">newInstance</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                           
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">//遍历该bean的property属性
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                            <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>Iterator ite <span style="color:#f92672">=</span> foo<span style="color:#f92672">.</span><span style="color:#a6e22e">elementIterator</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;property&#34;</span><span style="color:#f92672">);</span> ite<span style="color:#f92672">.</span><span style="color:#a6e22e">hasNext</span><span style="color:#f92672">();)</span> <span style="color:#f92672">{</span>  
+</span></span><span style="display:flex;"><span>                                   Element foo2 <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>Element<span style="color:#f92672">)</span> ite<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                                   <span style="color:#75715e">//获取该property的name属性
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                                   Attribute name <span style="color:#f92672">=</span> foo2<span style="color:#f92672">.</span><span style="color:#a6e22e">attribute</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;name&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                                   String value <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>                                  
+</span></span><span style="display:flex;"><span>                                   <span style="color:#75715e">//获取该property的子元素value的值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                                   <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span>Iterator ite1 <span style="color:#f92672">=</span> foo2<span style="color:#f92672">.</span><span style="color:#a6e22e">elementIterator</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;value&#34;</span><span style="color:#f92672">);</span> ite1<span style="color:#f92672">.</span><span style="color:#a6e22e">hasNext</span><span style="color:#f92672">();)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                                          Element node <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>Element<span style="color:#f92672">)</span> ite1<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                                          value <span style="color:#f92672">=</span> node<span style="color:#f92672">.</span><span style="color:#a6e22e">getText</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                                          <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>                                   <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>                                  
+</span></span><span style="display:flex;"><span>                                   <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> k <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">;</span> k <span style="color:#f92672">&lt;</span> pd<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span> k<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                                          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>pd<span style="color:#f92672">[</span>k<span style="color:#f92672">].</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">().</span><span style="color:#a6e22e">equalsIgnoreCase</span><span style="color:#f92672">(</span>name<span style="color:#f92672">.</span><span style="color:#a6e22e">getText</span><span style="color:#f92672">()))</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                                                 mSet <span style="color:#f92672">=</span> pd<span style="color:#f92672">[</span>k<span style="color:#f92672">].</span><span style="color:#a6e22e">getWriteMethod</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                                                 <span style="color:#75715e">//利用Java的反射极致调用对象的某个set方法，并将值设置进去
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                                                 mSet<span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span>obj<span style="color:#f92672">,</span> value<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                                          <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>                                   <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>                           
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">//将对象放入beanMap中，其中key为id值，value为对象
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                            beanMap<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>id<span style="color:#f92672">.</span><span style="color:#a6e22e">getText</span><span style="color:#f92672">(),</span> obj<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                     <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                     System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>e<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>       <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>      
+</span></span><span style="display:flex;"><span>       <span style="color:#75715e">//other codes
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h3 id="heading"></h3>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2023 浩&amp;琳
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

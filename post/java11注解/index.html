@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='十一、注解 1.什么是注解 &amp;amp; 它和注释的区别？ 注解 ：参与代码编译，以@开头的。它是给应用程序看的，单独使用注解毫无意义，一定要跟工具一起使用,这个所谓的工具实际就是能读懂注解的应用程序 。 注释 ：对代码没有影响。对代码起到解释、说明的作用；
+2.注解的工作机制是什么？ 做Java开发我们常常用到注解，如@Service、@Overrided、@Autowired、@Param等，但这些注解的工作原理是怎么样的恐怕不是每个人都说的清楚，在没了解注解的工作原理之前倒是可以大致推断一下：当注解标注到某个类或者方法或者某个成员变量或者某个输入参数上的时候，一定有一个对应的机制来对注解标注的类、方法、成员变量和参数进行某些处理。比如Bean扫描、编译检查、注入值、约束是否为空等等。
+1、注解定义： 注解就是用来描述包、类、成员变量、方法或者参数的元数据，注解本身也是一个类（Java里一切都是对象）。配置过Spring的同学肯定很清楚，Spring中的Bean需要在xml里面声明，比如说一个Bean他的构造方法是啥，他依赖哪些其他bean，初始化变量值是多少，这些都是描述性的数据告知Spring按照这个描述去创建这个Bean。我们随便找个例子：
+&amp;lt;bean id=&amp;#34;Kenny&amp;#34; class=&amp;#34;com.springinaction.springidol.Instrumentalist&amp;#34;&amp;gt; &amp;lt;property name=&amp;#34;song&amp;#34; value=&amp;#34;Jingle Bells&amp;#34;&amp;gt;&amp;lt;/property&amp;gt; &amp;lt;property name=&amp;#34;age&amp;#34; value=&amp;#34;37&amp;#34;&amp;gt;&amp;lt;/property&amp;gt; &amp;lt;property name=&amp;#34;instrument&amp;#34; ref=&amp;#34;saxphone&amp;#34;&amp;gt;&amp;lt;/property&amp;gt; &amp;lt;property name=&amp;#34;instrument&amp;#34; ref=&amp;#34;piano&amp;#34;&amp;gt;&amp;lt;/property&amp;gt; &amp;lt;property name=&amp;#34;instrument&amp;#34;&amp;gt; &amp;lt;bean class=&amp;#34;com.springinaction.springidol.piano&amp;#34;&amp;gt;&amp;lt;/bean&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;/bean&amp;gt; 这些对类和变量等的描述实际上就是元数据，而这些都可以用注解取代，因为注解也是元数据。比如@Component注解标注在一个类上就可以说明该类是一个bean，@Autowire标注在成员变量上就直接给该成员变量赋值。看起来注解标注在代码上耦合性更强了，但实际上本着约定优于配置的原则，代码更加清晰，也容易维护。
+2、注解分类 注解大体上可以分成两类，一类是系统带的如@Override，这类注解对其标注的目标的处理在JVM层面进行；另一类是我们自定义的注解，自己定义的注解自己要进行解析。还有一类是描述注解的注解，共有4个，分别是： @Documented 注解信息是否添加到javadoc中 @Retention 注解的生命周期
+RetentionPolicy.SOURCE（编译结束后失效如@Override）、RetentionPolicy.CLASS（JVM加载类的时候失效，默认。不能通过反射获取）、RetentionPolicy.RUNTIME（始终不失效，一般用于自定义注解，可通过反射获取）
+@Target 注解用在什么地方，分别有几个地方：
+ElementType.TYPE:类上 ElementType.FIELD:成员变量 ElementType.METHOD 方法 ElementType.PARAMETER 参数 ElementType.CONSTRUCTOR 构造方法 ElementType.LOCAL_VARIABLE 本地变量 ElementType.ANNOTATION_TYPE 另一个注释 ElementType.PACKAGE 包上
+@Inherited 注解作用被子类继承
+3、自定义注解 3.1 定义一个注解需要几步？ 首先、@Target肯定要有； 其次、生命周期尽量RUNTIME； 然后、使用@interface声明； 再次、内部只支持基本类型、String类型和枚举类型； 最后、所有属性都必须写成field（），并可提供默认值default；
+3.2 如何使用注解？ 首先、在对应位置（@Target）标注； 然后、给注解中的属性赋值；'>
+<title>Java（11）注解</title>
+
+<link rel='canonical' href='https://haolovelin.com/post/java11%E6%B3%A8%E8%A7%A3/'>
+
+<link rel="stylesheet" href="/scss/style.min.5be32ca3f6e1a997c75795c4359147cc6d4fbd34948c0acd51e31d237033978a.css"><meta property='og:title' content='Java（11）注解'>
+<meta property='og:description' content='十一、注解 1.什么是注解 &amp;amp; 它和注释的区别？ 注解 ：参与代码编译，以@开头的。它是给应用程序看的，单独使用注解毫无意义，一定要跟工具一起使用,这个所谓的工具实际就是能读懂注解的应用程序 。 注释 ：对代码没有影响。对代码起到解释、说明的作用；
+2.注解的工作机制是什么？ 做Java开发我们常常用到注解，如@Service、@Overrided、@Autowired、@Param等，但这些注解的工作原理是怎么样的恐怕不是每个人都说的清楚，在没了解注解的工作原理之前倒是可以大致推断一下：当注解标注到某个类或者方法或者某个成员变量或者某个输入参数上的时候，一定有一个对应的机制来对注解标注的类、方法、成员变量和参数进行某些处理。比如Bean扫描、编译检查、注入值、约束是否为空等等。
+1、注解定义： 注解就是用来描述包、类、成员变量、方法或者参数的元数据，注解本身也是一个类（Java里一切都是对象）。配置过Spring的同学肯定很清楚，Spring中的Bean需要在xml里面声明，比如说一个Bean他的构造方法是啥，他依赖哪些其他bean，初始化变量值是多少，这些都是描述性的数据告知Spring按照这个描述去创建这个Bean。我们随便找个例子：
+&amp;lt;bean id=&amp;#34;Kenny&amp;#34; class=&amp;#34;com.springinaction.springidol.Instrumentalist&amp;#34;&amp;gt; &amp;lt;property name=&amp;#34;song&amp;#34; value=&amp;#34;Jingle Bells&amp;#34;&amp;gt;&amp;lt;/property&amp;gt; &amp;lt;property name=&amp;#34;age&amp;#34; value=&amp;#34;37&amp;#34;&amp;gt;&amp;lt;/property&amp;gt; &amp;lt;property name=&amp;#34;instrument&amp;#34; ref=&amp;#34;saxphone&amp;#34;&amp;gt;&amp;lt;/property&amp;gt; &amp;lt;property name=&amp;#34;instrument&amp;#34; ref=&amp;#34;piano&amp;#34;&amp;gt;&amp;lt;/property&amp;gt; &amp;lt;property name=&amp;#34;instrument&amp;#34;&amp;gt; &amp;lt;bean class=&amp;#34;com.springinaction.springidol.piano&amp;#34;&amp;gt;&amp;lt;/bean&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;/bean&amp;gt; 这些对类和变量等的描述实际上就是元数据，而这些都可以用注解取代，因为注解也是元数据。比如@Component注解标注在一个类上就可以说明该类是一个bean，@Autowire标注在成员变量上就直接给该成员变量赋值。看起来注解标注在代码上耦合性更强了，但实际上本着约定优于配置的原则，代码更加清晰，也容易维护。
+2、注解分类 注解大体上可以分成两类，一类是系统带的如@Override，这类注解对其标注的目标的处理在JVM层面进行；另一类是我们自定义的注解，自己定义的注解自己要进行解析。还有一类是描述注解的注解，共有4个，分别是： @Documented 注解信息是否添加到javadoc中 @Retention 注解的生命周期
+RetentionPolicy.SOURCE（编译结束后失效如@Override）、RetentionPolicy.CLASS（JVM加载类的时候失效，默认。不能通过反射获取）、RetentionPolicy.RUNTIME（始终不失效，一般用于自定义注解，可通过反射获取）
+@Target 注解用在什么地方，分别有几个地方：
+ElementType.TYPE:类上 ElementType.FIELD:成员变量 ElementType.METHOD 方法 ElementType.PARAMETER 参数 ElementType.CONSTRUCTOR 构造方法 ElementType.LOCAL_VARIABLE 本地变量 ElementType.ANNOTATION_TYPE 另一个注释 ElementType.PACKAGE 包上
+@Inherited 注解作用被子类继承
+3、自定义注解 3.1 定义一个注解需要几步？ 首先、@Target肯定要有； 其次、生命周期尽量RUNTIME； 然后、使用@interface声明； 再次、内部只支持基本类型、String类型和枚举类型； 最后、所有属性都必须写成field（），并可提供默认值default；
+3.2 如何使用注解？ 首先、在对应位置（@Target）标注； 然后、给注解中的属性赋值；'>
+<meta property='og:url' content='https://haolovelin.com/post/java11%E6%B3%A8%E8%A7%A3/'>
+<meta property='og:site_name' content='浩&amp;琳'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2021-06-08T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-06-08T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Java（11）注解">
+<meta name="twitter:description" content="十一、注解 1.什么是注解 &amp;amp; 它和注释的区别？ 注解 ：参与代码编译，以@开头的。它是给应用程序看的，单独使用注解毫无意义，一定要跟工具一起使用,这个所谓的工具实际就是能读懂注解的应用程序 。 注释 ：对代码没有影响。对代码起到解释、说明的作用；
+2.注解的工作机制是什么？ 做Java开发我们常常用到注解，如@Service、@Overrided、@Autowired、@Param等，但这些注解的工作原理是怎么样的恐怕不是每个人都说的清楚，在没了解注解的工作原理之前倒是可以大致推断一下：当注解标注到某个类或者方法或者某个成员变量或者某个输入参数上的时候，一定有一个对应的机制来对注解标注的类、方法、成员变量和参数进行某些处理。比如Bean扫描、编译检查、注入值、约束是否为空等等。
+1、注解定义： 注解就是用来描述包、类、成员变量、方法或者参数的元数据，注解本身也是一个类（Java里一切都是对象）。配置过Spring的同学肯定很清楚，Spring中的Bean需要在xml里面声明，比如说一个Bean他的构造方法是啥，他依赖哪些其他bean，初始化变量值是多少，这些都是描述性的数据告知Spring按照这个描述去创建这个Bean。我们随便找个例子：
+&amp;lt;bean id=&amp;#34;Kenny&amp;#34; class=&amp;#34;com.springinaction.springidol.Instrumentalist&amp;#34;&amp;gt; &amp;lt;property name=&amp;#34;song&amp;#34; value=&amp;#34;Jingle Bells&amp;#34;&amp;gt;&amp;lt;/property&amp;gt; &amp;lt;property name=&amp;#34;age&amp;#34; value=&amp;#34;37&amp;#34;&amp;gt;&amp;lt;/property&amp;gt; &amp;lt;property name=&amp;#34;instrument&amp;#34; ref=&amp;#34;saxphone&amp;#34;&amp;gt;&amp;lt;/property&amp;gt; &amp;lt;property name=&amp;#34;instrument&amp;#34; ref=&amp;#34;piano&amp;#34;&amp;gt;&amp;lt;/property&amp;gt; &amp;lt;property name=&amp;#34;instrument&amp;#34;&amp;gt; &amp;lt;bean class=&amp;#34;com.springinaction.springidol.piano&amp;#34;&amp;gt;&amp;lt;/bean&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;/bean&amp;gt; 这些对类和变量等的描述实际上就是元数据，而这些都可以用注解取代，因为注解也是元数据。比如@Component注解标注在一个类上就可以说明该类是一个bean，@Autowire标注在成员变量上就直接给该成员变量赋值。看起来注解标注在代码上耦合性更强了，但实际上本着约定优于配置的原则，代码更加清晰，也容易维护。
+2、注解分类 注解大体上可以分成两类，一类是系统带的如@Override，这类注解对其标注的目标的处理在JVM层面进行；另一类是我们自定义的注解，自己定义的注解自己要进行解析。还有一类是描述注解的注解，共有4个，分别是： @Documented 注解信息是否添加到javadoc中 @Retention 注解的生命周期
+RetentionPolicy.SOURCE（编译结束后失效如@Override）、RetentionPolicy.CLASS（JVM加载类的时候失效，默认。不能通过反射获取）、RetentionPolicy.RUNTIME（始终不失效，一般用于自定义注解，可通过反射获取）
+@Target 注解用在什么地方，分别有几个地方：
+ElementType.TYPE:类上 ElementType.FIELD:成员变量 ElementType.METHOD 方法 ElementType.PARAMETER 参数 ElementType.CONSTRUCTOR 构造方法 ElementType.LOCAL_VARIABLE 本地变量 ElementType.ANNOTATION_TYPE 另一个注释 ElementType.PACKAGE 包上
+@Inherited 注解作用被子类继承
+3、自定义注解 3.1 定义一个注解需要几步？ 首先、@Target肯定要有； 其次、生命周期尽量RUNTIME； 然后、使用@interface声明； 再次、内部只支持基本类型、String类型和枚举类型； 最后、所有属性都必须写成field（），并可提供默认值default；
+3.2 如何使用注解？ 首先、在对应位置（@Target）标注； 然后、给注解中的属性赋值；">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu9f7a08366cc43f473c39f8f10558a931_55504_300x0_resize_box_3.png" width="300"
+                            height="332" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">浩&amp;琳</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+
+        <div class="menu-bottom-section">
+            
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>Dark Mode</span>
+                </li>
+            
+        </div>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/" style="background-color: #2a9d8f; color: #fff;">
+                编程学习
+            </a>
+        
+            <a href="/categories/javase/" style="background-color: #666666; color: #fff;">
+                JavaSE
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/java11%E6%B3%A8%E8%A7%A3/">Java（11）注解</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jun 08, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    2 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="十一注解">十一、注解</h2>
+<h3 id="1什么是注解--它和注释的区别">1.什么是注解 &amp; 它和注释的区别？</h3>
+<p>注解 ：参与代码编译，以@开头的。它是给应用程序看的，单独使用注解毫无意义，一定要跟工具一起使用,这个所谓的工具实际就是能读懂注解的应用程序 。
+注释 ：对代码没有影响。对代码起到解释、说明的作用；</p>
+<h3 id="2注解的工作机制是什么">2.注解的工作机制是什么？</h3>
+<p>做Java开发我们常常用到注解，如@Service、@Overrided、@Autowired、@Param等，但这些注解的工作原理是怎么样的恐怕不是每个人都说的清楚，在没了解注解的工作原理之前倒是可以大致推断一下：当注解标注到某个类或者方法或者某个成员变量或者某个输入参数上的时候，一定有一个对应的机制来对注解标注的类、方法、成员变量和参数进行某些处理。比如Bean扫描、编译检查、注入值、约束是否为空等等。</p>
+<h5 id="1注解定义">1、注解定义：</h5>
+<p>注解就是用来描述包、类、成员变量、方法或者参数的元数据，注解本身也是一个类（Java里一切都是对象）。配置过Spring的同学肯定很清楚，Spring中的Bean需要在xml里面声明，比如说一个Bean他的构造方法是啥，他依赖哪些其他bean，初始化变量值是多少，这些都是描述性的数据告知Spring按照这个描述去创建这个Bean。我们随便找个例子：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span>&lt;<span style="color:#f92672">bean</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Kenny&#34;</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.springinaction.springidol.Instrumentalist&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">property</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;song&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Jingle Bells&#34;</span>&gt;&lt;/<span style="color:#f92672">property</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">property</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;age&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;37&#34;</span>&gt;&lt;/<span style="color:#f92672">property</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">property</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;instrument&#34;</span> <span style="color:#a6e22e">ref</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;saxphone&#34;</span>&gt;&lt;/<span style="color:#f92672">property</span>&gt; 
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">property</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;instrument&#34;</span> <span style="color:#a6e22e">ref</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;piano&#34;</span>&gt;&lt;/<span style="color:#f92672">property</span>&gt; 
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">property</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;instrument&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#f92672">bean</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.springinaction.springidol.piano&#34;</span>&gt;&lt;/<span style="color:#f92672">bean</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;/<span style="color:#f92672">property</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">bean</span>&gt;
+</span></span></code></pre></div><p>这些对类和变量等的描述实际上就是元数据，而这些都可以用注解取代，因为注解也是元数据。比如@Component注解标注在一个类上就可以说明该类是一个bean，@Autowire标注在成员变量上就直接给该成员变量赋值。看起来注解标注在代码上耦合性更强了，但实际上本着约定优于配置的原则，代码更加清晰，也容易维护。</p>
+<h5 id="2注解分类">2、注解分类</h5>
+<p>注解大体上可以分成两类，一类是系统带的如@Override，这类注解对其标注的目标的处理在JVM层面进行；另一类是我们自定义的注解，自己定义的注解自己要进行解析。还有一类是描述注解的注解，共有4个，分别是：
+@Documented 注解信息是否添加到javadoc中
+@Retention 注解的生命周期</p>
+<blockquote>
+<p>RetentionPolicy.SOURCE（编译结束后失效如@Override）、RetentionPolicy.CLASS（JVM加载类的时候失效，默认。不能通过反射获取）、RetentionPolicy.RUNTIME（始终不失效，一般用于自定义注解，可通过反射获取）</p>
+</blockquote>
+<p>@Target 注解用在什么地方，分别有几个地方：</p>
+<blockquote>
+<p>ElementType.TYPE:类上
+ElementType.FIELD:成员变量
+ElementType.METHOD 方法
+ElementType.PARAMETER 参数
+ElementType.CONSTRUCTOR 构造方法
+ElementType.LOCAL_VARIABLE 本地变量
+ElementType.ANNOTATION_TYPE 另一个注释
+ElementType.PACKAGE 包上</p>
+</blockquote>
+<p>@Inherited 注解作用被子类继承</p>
+<h5 id="3自定义注解">3、自定义注解</h5>
+<h6 id="31-定义一个注解需要几步">3.1 定义一个注解需要几步？</h6>
+<p>首先、@Target肯定要有；
+其次、生命周期尽量RUNTIME；
+然后、使用@interface声明；
+再次、内部只支持基本类型、String类型和枚举类型；
+最后、所有属性都必须写成field（），并可提供默认值default；</p>
+<h6 id="32-如何使用注解">3.2 如何使用注解？</h6>
+<p>首先、在对应位置（@Target）标注；
+然后、给注解中的属性赋值；</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-tsx" data-lang="tsx"><span style="display:flex;"><span><span style="color:#66d9ef">@Target</span>(<span style="color:#a6e22e">ElementType</span>.<span style="color:#a6e22e">METHOD</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">@Retention</span>(<span style="color:#a6e22e">RetentionPolicy</span>.<span style="color:#a6e22e">RUNTIME</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">@interface</span> <span style="color:#a6e22e">Company</span> {
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">Status</span> {<span style="color:#a6e22e">RUNNING</span>, <span style="color:#a6e22e">CLOSED</span>}
+</span></span><span style="display:flex;"><span>   String <span style="color:#a6e22e">name</span>() <span style="color:#66d9ef">default</span> <span style="color:#e6db74">&#34;NETEASE&#34;</span><span style="color:#960050;background-color:#1e0010">；</span> <span style="color:#75715e">//有默认值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">Status</span> <span style="color:#a6e22e">status</span>() <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">Status</span>.<span style="color:#a6e22e">RIUNNING</span>;
+</span></span><span style="display:flex;"><span>   String <span style="color:#a6e22e">location</span><span style="color:#960050;background-color:#1e0010">（）；</span><span style="color:#75715e">//没有默认值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Demo</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">@Company</span><span style="color:#960050;background-color:#1e0010">（</span><span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;阿里巴巴&#34;</span><span style="color:#960050;background-color:#1e0010">，</span><span style="color:#a6e22e">status</span><span style="color:#f92672">=</span><span style="color:#a6e22e">Company</span>.<span style="color:#a6e22e">Status</span>.<span style="color:#a6e22e">RUNNING</span>,<span style="color:#a6e22e">location</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;北京&#34;</span><span style="color:#960050;background-color:#1e0010">）</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">companyInfo</span><span style="color:#960050;background-color:#1e0010">（）</span>{}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">@interface</span> <span style="color:#a6e22e">Country</span>{
+</span></span><span style="display:flex;"><span>  String <span style="color:#a6e22e">value</span><span style="color:#960050;background-color:#1e0010">（）；</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">@Country</span><span style="color:#960050;background-color:#1e0010">（</span><span style="color:#e6db74">&#34;中国&#34;</span><span style="color:#960050;background-color:#1e0010">）</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">method</span>(){};
+</span></span></code></pre></div><p>上面是第一个自定义注解的例子，该注解需要标注在方法上，在运行期间一直存在。如果注解中只有一个属性可以命名为value（）这种的好处是注解标注的时候不用写value=xxx而是直接写xxx即可。</p>
+<h6 id="33-注解标注完如何处理">3.3 注解标注完如何处理？</h6>
+<p>首先、定义一个注解处理类和注解处理方法；
+然后、通过反射获取注解标注的类或者方法或者变量等等并对其做相应处理；</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">java</span>.<span style="color:#a6e22e">lang</span>.<span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">Field</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AnnotationProccessor</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span>  <span style="color:#66d9ef">static</span> void process(Demo demo){
+</span></span><span style="display:flex;"><span>        Class demoClazz = Demo.<span style="color:#66d9ef">class</span>;
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">for</span>(Method method : demoClazz.getMethods()) {
+</span></span><span style="display:flex;"><span>             Company companyAnnotation = (Company)method.getAnnotation(Company.<span style="color:#66d9ef">class</span>);
+</span></span><span style="display:flex;"><span>             <span style="color:#66d9ef">if</span>(companyAnnotation <span style="color:#f92672">!=</span>null) {
+</span></span><span style="display:flex;"><span>                System.out.println(<span style="color:#e6db74">&#34; Method Name : &#34;</span><span style="color:#f92672">+</span> method.getName());
+</span></span><span style="display:flex;"><span>                System.out.println(<span style="color:#e6db74">&#34; name : &#34;</span><span style="color:#f92672">+</span> companyAnnotation.name());
+</span></span><span style="display:flex;"><span>                System.out.println(<span style="color:#e6db74">&#34; Status : &#34;</span><span style="color:#f92672">+</span> companyAnnotation.status());
+</span></span><span style="display:flex;"><span>     }
+</span></span><span style="display:flex;"><span>  } 
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>上面的类只对特定的类进行了处理，在Spring中一个如@Service这种注解，Spring在启动IOC容器的时候会对每个类进行扫描，把所有标注@Component及其子注解如@Service的类进行Bean处理。</p>
+<h5 id="总结">总结：</h5>
+<p>以上就是注解的相关原理和机制，我们前面的猜测是正确的，其处理机制主要是JVM内部处理和使用反射的自定义处理。</p>
+<h3 id="3如何解析注解">3.如何解析注解？</h3>
+<p>其处理机制主要是JVM内部处理和使用反射的自定义处理。</p>
+<p>首先、定义一个注解处理类和注解处理方法；
+然后、通过反射获取注解标注的类或者方法或者变量等等并对其做相应处理；</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">java</span>.<span style="color:#a6e22e">lang</span>.<span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">Field</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AnnotationProccessor</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span>  <span style="color:#66d9ef">static</span> void process(Demo demo){
+</span></span><span style="display:flex;"><span>        Class demoClazz = Demo.<span style="color:#66d9ef">class</span>;
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">for</span>(Method method : demoClazz.getMethods()) {
+</span></span><span style="display:flex;"><span>             Company companyAnnotation = (Company)method.getAnnotation(Company.<span style="color:#66d9ef">class</span>);
+</span></span><span style="display:flex;"><span>             <span style="color:#66d9ef">if</span>(companyAnnotation <span style="color:#f92672">!=</span>null) {
+</span></span><span style="display:flex;"><span>                System.out.println(<span style="color:#e6db74">&#34; Method Name : &#34;</span><span style="color:#f92672">+</span> method.getName());
+</span></span><span style="display:flex;"><span>                System.out.println(<span style="color:#e6db74">&#34; name : &#34;</span><span style="color:#f92672">+</span> companyAnnotation.name());
+</span></span><span style="display:flex;"><span>                System.out.println(<span style="color:#e6db74">&#34; Status : &#34;</span><span style="color:#f92672">+</span> companyAnnotation.status());
+</span></span><span style="display:flex;"><span>     }
+</span></span><span style="display:flex;"><span>  } 
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>上面的类只对特定的类进行了处理。</p>
+<h3 id="4知识点总结">4.知识点总结</h3>
+<h4 id="1什么是注解">1、什么是注解</h4>
+<p>注解与注释：
+注解：说明程序的。给计算机看得。
+注释：用文字描述程序，给程序员看的。方便程序员理解。
+注解(Annotation)是插入代码中的元数据，一种代码级别的说明。它是在JDK5.0及以后版本引入的一个特性，与类、接口、枚举是在同一个层次。它可以声明在包、类、字段、方法、局部变量、方法参数等的前面，用来对这些元素进行说明，注释。
+（1）JDK 1.5 之后的新特性
+（2）用来说明程序
+（3）使用注解：@注解名称
+Annotation的作用大致可分为三类：</p>
+<p>编写文档：通过代码里标识的注解生成文档（生成java doc文档(api)）</p>
+<p>代码分析：通过代码里标识的注解对代码进行分析（使用反射）</p>
+<p>编译检查：通过代码里标识的注解让编译器能实现基本的编译检查</p>
+<p>Java提供了一种源程序中的元素关联任何信息和任何元数据的途径和方法。
+它可以在编译期使用预编译工具进行处理, 也可以在运行期使用 Java 反射机制进行处理，用于创建文档，跟踪代码中的依赖性，甚至执行基本编译时检查。
+本质上，Annotion是一种特殊的接口，程序可以通过反射来获取指定程序元素的Annotion对象，然后通过Annotion对象来获取注解里面的元数据。（元数据metadata:关于数据的数据）</p>
+<ol>
+<li>注解很常用</li>
+<li>注解一般给编译器、解析程序使用</li>
+<li>注解不是程序的一部分，可理解为一个标签</li>
+</ol>
+<h4 id="2常见注解">2、常见注解</h4>
+<p><strong>JDK注解</strong></p>
+<p>@Override重写、@Deprecated废弃、@SuppressWarnnings压制警告</p>
+<p><strong>Java第三方注解</strong>
+Spring:@Autowired、@Service、@Repository
+Mybatis:@InsertProvider、@UpdateProvider、@Options</p>
+<p><strong>自定义注解</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#a6e22e">@interface</span> <span style="color:#960050;background-color:#1e0010">注解名称</span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span> <span style="color:#960050;background-color:#1e0010">属性列表</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>注解本质上就是一个接口，该接口默认继承java.lang.annotation.Annotation接口。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">MyAnno</span> <span style="color:#66d9ef">extends</span> java<span style="color:#f92672">.</span><span style="color:#a6e22e">lang</span><span style="color:#f92672">.</span><span style="color:#a6e22e">annotation</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Annotation</span><span style="color:#f92672">{}</span>
+</span></span></code></pre></div><p>元注解
+元注解的作用就是负责注解其他注解。Java5.0定义了4个标准的meta-annotation类型，它们被用来提供对其它 annotation类型作说明。</p>
+<p>@Target
+作用：
+描述注解能够作用的位置
+取值(ElementType)：
+1.CONSTRUCTOR:用于描述构造器
+2.FIELD:用于描述域
+3.LOCAL_VARIABLE:用于描述局部变量
+4.METHOD:用于描述方法
+5.PACKAGE:用于描述包
+6.PARAMETER:用于描述参数
+7.TYPE:用于描述类、接口(包括注解类型) 或enum声明
+@Retention
+作用：
+描述该注解的生命周期，表示在什么编译级别上保存该注解的信息。Annotation被保留的时间有长短：某些Annotation仅出现在源代码中，而被编译器丢弃；而另一些却被编译在class文件中；编译在class文件中的Annotation可能会被虚拟机忽略，而另一些在class被装载时将被读取（请注意并不影响class的执行，因为Annotation与class在使用上是被分离的）。
+取值（RetentionPoicy）：
+1.SOURCE:当前被描述的注解只在源文件中有效，不会保留到class字节码文件中，也不会被JVM读取到。
+2.CLASS:当前被描述的注解，会保留到class字节码文件中，不会被JVM读取到。
+3.RUNTIME:当前被描述的注解，会保留到class字节码文件中，并被JVM读取到。
+@Documented
+@Documented 用来描述注解是否被抽取到api文档中。在生成javadoc文档的时候将该Annotation也写入到文档中。
+@Inherited
+@Inherited 元注解是一个标记注解，@Inherited用来描述注解是否被子类继承。如果一个使用了@Inherited修饰的annotation类型被用于一个class，则这个annotation将被用于该class的子类。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#a6e22e">@Target</span><span style="color:#f92672">({</span>ElementType<span style="color:#f92672">.</span><span style="color:#a6e22e">TYPE</span><span style="color:#f92672">,</span>ElementType<span style="color:#f92672">.</span><span style="color:#a6e22e">METHOD</span><span style="color:#f92672">,</span>ElementType<span style="color:#f92672">.</span><span style="color:#a6e22e">FIELD</span><span style="color:#f92672">})</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Retention</span><span style="color:#f92672">(</span>RetentionPolicy<span style="color:#f92672">.</span><span style="color:#a6e22e">RUNTIME</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Documented</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Inherited</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#a6e22e">@interface</span> MyAnno<span style="color:#f92672">{}</span>
+</span></span></code></pre></div><p>反射框架、测试框架、数据库框架都可以使用注解实现</p>
+<h3 id="heading"></h3>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2023 浩&amp;琳
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

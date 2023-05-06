@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='十五、高级Java知识点 1.AOP是什么 &amp;amp; 和OOP区别？实现的方式有哪些？Android中如何实现？ 一、AOP概念 百度百科中对AOP的解释如下: 在软件业，AOP为Aspect Oriented Programming的缩写，意为：面向切面编程，通过预编译方式和运行期动态代理实现程序功能的统一维护的一种技术。
+AOP是OOP的延续，是软件开发中的一个热点，也是很多框架如 java中的Spring框架中的一个重要内容，是函数式编程的一种衍生范型。 利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。
+AOP只是一种思想的统称，实现这种思想的方法有挺多。AOP通过预编译方式和运行期动态代理实现程序功能的统一维护的一种技术。利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，提高开发效率。
+二、AOP主要应用场景 日志记录，性能统计，安全控制，事务处理，异常处理等等。
+主要目标：将日志记录，性能统计，安全控制，事务处理，异常处理等代码从业务逻辑代码中划分出来，通过对这些行为的分离，我们希望可以将它们独立到非指导业务逻辑的方法中，进而改变这些行为的时候不影响业务逻辑的代码。
+AOP代码注入时机
+代码注入主要注解机制，根据注解时机的不同，主要分为运行时、加载时和编译时。
+运行时：你的代码对增强代码的需求很明确，比如，必须使用动态代理（这可以说并不是真正的代码注入）。 加载时：当目标类被Dalvik或者ART加载的时候修改才会被执行。这是对Java字节码文件或者Android的dex文件进行的注入操作。 编译时：在打包发布程序之前，通过向编译过程添加额外的步骤来修改被编译的类。aspect切面编程正是运用到编译时
+AOP的几种实现方式
+Java 中的动态代理，运行时动态创建 Proxy 类实例 APT，注解处理器，编译时生成 .java 代码 Javassist for Android：一个移植到Android平台的非常知名的操纵字节码的java库，对 class 字节码进行修改 AspectJ：和Java语言无缝衔接的面向切面的编程的扩展工具（可用于Android）。 Android中使用 AspectJ 代表项目：Hugo(打印每个方法的执行时间) sa-sdk-android（全埋点技术）
+（1）原理 AspectJ 意思就是Java的Aspect，Java的AOP。它的核心是ajc（编译器 aspectjtools）和 weaver（织入器 aspectjweaver）。
+ajc编译器：基于Java编译器之上的，它是用来编译.aj文件，aspectj在Java编译器的基础上增加了一些它自己的关键字和方法。因此，ajc也可以编译Java代码。
+weaver织入器：为了在java编译器上使用AspectJ而不依赖于Ajc编译器，aspectJ 5出现了 @AspectJ，使用注释的方式编写AspectJ代码，可以在任何Java编译器上使用。 由于AndroidStudio默认是没有ajc编译器的，所以在Android中使用@AspectJ来编写。它在代码的编译期间扫描目标程序，根据切点（PointCut）匹配,将开发者编写的Aspect程序编织（Weave）到目标程序的.class文件中，对目标程序作了重构（重构单位是JoinPoint），目的就是建立目标程序与Aspect程序的连接（获得执行的对象、方法、参数等上下文信息），从而达到AOP的目的。
+（2）AspectJ 术语 切面（Aspect）：一个关注点的模块化，这个关注点实现可能另外横切多个对象。其实就是共有功能的实现。如日志切面、权限切面、事务切面等。
+通知（Advice）：是切面的具体实现。以目标方法为参照点，根据放置的地方不同，可分为
+前置通知（Before）、 后置通知（AfterReturning）、 异常通知（AfterThrowing）、 最终通知（After） 环绕通知（Around）5种。 在实际应用中通常是切面类中的一个方法，具体属于哪类通知由配置指定的。
+切入点（Pointcut）：用于定义通知应该切入到哪些连接点上。不同的通知通常需要切入到不同的连接点上，这种精准的匹配是由切入点的正则表达式来定义的。 连接点（JoinPoint）：就是程序在运行过程中能够插入切面的地点。例如，方法调用、异常抛出或字段修改等。
+目标对象（Target Object）：包含连接点的对象，也被称作被通知或被代理对象。这些对象中已经只剩下干干净净的核心业务逻辑代码了，所有的共有功能等代码则是等待AOP容器的切入。
+AOP代理（AOP Proxy）：将通知应用到目标对象之后被动态创建的对象。可以简单地理解为，代理对象的功能等于目标对象的核心业务逻辑功能加上共有功能。代理对象对于使用者而言是透明的，是程序运行过程中的产物。
+编织（Weaving）：将切面应用到目标对象从而创建一个新的代理对象的过程。这个过程可以发生在编译期、类装载期及运行期，当然不同的发生点有着不同的前提条件。譬如发生在编译期的话，就要求有一个支持这种AOP实现的特殊编译器（如AspectJ编译器）；
+发生在类装载期，就要求有一个支持AOP实现的特殊类装载器；只有发生在运行期，则可直接通过Java语言的反射机制与动态代理机制来动态实现（如摇一摇）。
+**引入（Introduction）：**添加方法或字段到被通知的类。
+Aspectj：'>
+<title>Java（15）高级Java知识点</title>
+
+<link rel='canonical' href='https://haolovelin.com/post/java15%E9%AB%98%E7%BA%A7java%E7%9F%A5%E8%AF%86%E7%82%B9/'>
+
+<link rel="stylesheet" href="/scss/style.min.5be32ca3f6e1a997c75795c4359147cc6d4fbd34948c0acd51e31d237033978a.css"><meta property='og:title' content='Java（15）高级Java知识点'>
+<meta property='og:description' content='十五、高级Java知识点 1.AOP是什么 &amp;amp; 和OOP区别？实现的方式有哪些？Android中如何实现？ 一、AOP概念 百度百科中对AOP的解释如下: 在软件业，AOP为Aspect Oriented Programming的缩写，意为：面向切面编程，通过预编译方式和运行期动态代理实现程序功能的统一维护的一种技术。
+AOP是OOP的延续，是软件开发中的一个热点，也是很多框架如 java中的Spring框架中的一个重要内容，是函数式编程的一种衍生范型。 利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。
+AOP只是一种思想的统称，实现这种思想的方法有挺多。AOP通过预编译方式和运行期动态代理实现程序功能的统一维护的一种技术。利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，提高开发效率。
+二、AOP主要应用场景 日志记录，性能统计，安全控制，事务处理，异常处理等等。
+主要目标：将日志记录，性能统计，安全控制，事务处理，异常处理等代码从业务逻辑代码中划分出来，通过对这些行为的分离，我们希望可以将它们独立到非指导业务逻辑的方法中，进而改变这些行为的时候不影响业务逻辑的代码。
+AOP代码注入时机
+代码注入主要注解机制，根据注解时机的不同，主要分为运行时、加载时和编译时。
+运行时：你的代码对增强代码的需求很明确，比如，必须使用动态代理（这可以说并不是真正的代码注入）。 加载时：当目标类被Dalvik或者ART加载的时候修改才会被执行。这是对Java字节码文件或者Android的dex文件进行的注入操作。 编译时：在打包发布程序之前，通过向编译过程添加额外的步骤来修改被编译的类。aspect切面编程正是运用到编译时
+AOP的几种实现方式
+Java 中的动态代理，运行时动态创建 Proxy 类实例 APT，注解处理器，编译时生成 .java 代码 Javassist for Android：一个移植到Android平台的非常知名的操纵字节码的java库，对 class 字节码进行修改 AspectJ：和Java语言无缝衔接的面向切面的编程的扩展工具（可用于Android）。 Android中使用 AspectJ 代表项目：Hugo(打印每个方法的执行时间) sa-sdk-android（全埋点技术）
+（1）原理 AspectJ 意思就是Java的Aspect，Java的AOP。它的核心是ajc（编译器 aspectjtools）和 weaver（织入器 aspectjweaver）。
+ajc编译器：基于Java编译器之上的，它是用来编译.aj文件，aspectj在Java编译器的基础上增加了一些它自己的关键字和方法。因此，ajc也可以编译Java代码。
+weaver织入器：为了在java编译器上使用AspectJ而不依赖于Ajc编译器，aspectJ 5出现了 @AspectJ，使用注释的方式编写AspectJ代码，可以在任何Java编译器上使用。 由于AndroidStudio默认是没有ajc编译器的，所以在Android中使用@AspectJ来编写。它在代码的编译期间扫描目标程序，根据切点（PointCut）匹配,将开发者编写的Aspect程序编织（Weave）到目标程序的.class文件中，对目标程序作了重构（重构单位是JoinPoint），目的就是建立目标程序与Aspect程序的连接（获得执行的对象、方法、参数等上下文信息），从而达到AOP的目的。
+（2）AspectJ 术语 切面（Aspect）：一个关注点的模块化，这个关注点实现可能另外横切多个对象。其实就是共有功能的实现。如日志切面、权限切面、事务切面等。
+通知（Advice）：是切面的具体实现。以目标方法为参照点，根据放置的地方不同，可分为
+前置通知（Before）、 后置通知（AfterReturning）、 异常通知（AfterThrowing）、 最终通知（After） 环绕通知（Around）5种。 在实际应用中通常是切面类中的一个方法，具体属于哪类通知由配置指定的。
+切入点（Pointcut）：用于定义通知应该切入到哪些连接点上。不同的通知通常需要切入到不同的连接点上，这种精准的匹配是由切入点的正则表达式来定义的。 连接点（JoinPoint）：就是程序在运行过程中能够插入切面的地点。例如，方法调用、异常抛出或字段修改等。
+目标对象（Target Object）：包含连接点的对象，也被称作被通知或被代理对象。这些对象中已经只剩下干干净净的核心业务逻辑代码了，所有的共有功能等代码则是等待AOP容器的切入。
+AOP代理（AOP Proxy）：将通知应用到目标对象之后被动态创建的对象。可以简单地理解为，代理对象的功能等于目标对象的核心业务逻辑功能加上共有功能。代理对象对于使用者而言是透明的，是程序运行过程中的产物。
+编织（Weaving）：将切面应用到目标对象从而创建一个新的代理对象的过程。这个过程可以发生在编译期、类装载期及运行期，当然不同的发生点有着不同的前提条件。譬如发生在编译期的话，就要求有一个支持这种AOP实现的特殊编译器（如AspectJ编译器）；
+发生在类装载期，就要求有一个支持AOP实现的特殊类装载器；只有发生在运行期，则可直接通过Java语言的反射机制与动态代理机制来动态实现（如摇一摇）。
+**引入（Introduction）：**添加方法或字段到被通知的类。
+Aspectj：'>
+<meta property='og:url' content='https://haolovelin.com/post/java15%E9%AB%98%E7%BA%A7java%E7%9F%A5%E8%AF%86%E7%82%B9/'>
+<meta property='og:site_name' content='浩&amp;琳'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2021-06-12T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-06-12T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Java（15）高级Java知识点">
+<meta name="twitter:description" content="十五、高级Java知识点 1.AOP是什么 &amp;amp; 和OOP区别？实现的方式有哪些？Android中如何实现？ 一、AOP概念 百度百科中对AOP的解释如下: 在软件业，AOP为Aspect Oriented Programming的缩写，意为：面向切面编程，通过预编译方式和运行期动态代理实现程序功能的统一维护的一种技术。
+AOP是OOP的延续，是软件开发中的一个热点，也是很多框架如 java中的Spring框架中的一个重要内容，是函数式编程的一种衍生范型。 利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。
+AOP只是一种思想的统称，实现这种思想的方法有挺多。AOP通过预编译方式和运行期动态代理实现程序功能的统一维护的一种技术。利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，提高开发效率。
+二、AOP主要应用场景 日志记录，性能统计，安全控制，事务处理，异常处理等等。
+主要目标：将日志记录，性能统计，安全控制，事务处理，异常处理等代码从业务逻辑代码中划分出来，通过对这些行为的分离，我们希望可以将它们独立到非指导业务逻辑的方法中，进而改变这些行为的时候不影响业务逻辑的代码。
+AOP代码注入时机
+代码注入主要注解机制，根据注解时机的不同，主要分为运行时、加载时和编译时。
+运行时：你的代码对增强代码的需求很明确，比如，必须使用动态代理（这可以说并不是真正的代码注入）。 加载时：当目标类被Dalvik或者ART加载的时候修改才会被执行。这是对Java字节码文件或者Android的dex文件进行的注入操作。 编译时：在打包发布程序之前，通过向编译过程添加额外的步骤来修改被编译的类。aspect切面编程正是运用到编译时
+AOP的几种实现方式
+Java 中的动态代理，运行时动态创建 Proxy 类实例 APT，注解处理器，编译时生成 .java 代码 Javassist for Android：一个移植到Android平台的非常知名的操纵字节码的java库，对 class 字节码进行修改 AspectJ：和Java语言无缝衔接的面向切面的编程的扩展工具（可用于Android）。 Android中使用 AspectJ 代表项目：Hugo(打印每个方法的执行时间) sa-sdk-android（全埋点技术）
+（1）原理 AspectJ 意思就是Java的Aspect，Java的AOP。它的核心是ajc（编译器 aspectjtools）和 weaver（织入器 aspectjweaver）。
+ajc编译器：基于Java编译器之上的，它是用来编译.aj文件，aspectj在Java编译器的基础上增加了一些它自己的关键字和方法。因此，ajc也可以编译Java代码。
+weaver织入器：为了在java编译器上使用AspectJ而不依赖于Ajc编译器，aspectJ 5出现了 @AspectJ，使用注释的方式编写AspectJ代码，可以在任何Java编译器上使用。 由于AndroidStudio默认是没有ajc编译器的，所以在Android中使用@AspectJ来编写。它在代码的编译期间扫描目标程序，根据切点（PointCut）匹配,将开发者编写的Aspect程序编织（Weave）到目标程序的.class文件中，对目标程序作了重构（重构单位是JoinPoint），目的就是建立目标程序与Aspect程序的连接（获得执行的对象、方法、参数等上下文信息），从而达到AOP的目的。
+（2）AspectJ 术语 切面（Aspect）：一个关注点的模块化，这个关注点实现可能另外横切多个对象。其实就是共有功能的实现。如日志切面、权限切面、事务切面等。
+通知（Advice）：是切面的具体实现。以目标方法为参照点，根据放置的地方不同，可分为
+前置通知（Before）、 后置通知（AfterReturning）、 异常通知（AfterThrowing）、 最终通知（After） 环绕通知（Around）5种。 在实际应用中通常是切面类中的一个方法，具体属于哪类通知由配置指定的。
+切入点（Pointcut）：用于定义通知应该切入到哪些连接点上。不同的通知通常需要切入到不同的连接点上，这种精准的匹配是由切入点的正则表达式来定义的。 连接点（JoinPoint）：就是程序在运行过程中能够插入切面的地点。例如，方法调用、异常抛出或字段修改等。
+目标对象（Target Object）：包含连接点的对象，也被称作被通知或被代理对象。这些对象中已经只剩下干干净净的核心业务逻辑代码了，所有的共有功能等代码则是等待AOP容器的切入。
+AOP代理（AOP Proxy）：将通知应用到目标对象之后被动态创建的对象。可以简单地理解为，代理对象的功能等于目标对象的核心业务逻辑功能加上共有功能。代理对象对于使用者而言是透明的，是程序运行过程中的产物。
+编织（Weaving）：将切面应用到目标对象从而创建一个新的代理对象的过程。这个过程可以发生在编译期、类装载期及运行期，当然不同的发生点有着不同的前提条件。譬如发生在编译期的话，就要求有一个支持这种AOP实现的特殊编译器（如AspectJ编译器）；
+发生在类装载期，就要求有一个支持AOP实现的特殊类装载器；只有发生在运行期，则可直接通过Java语言的反射机制与动态代理机制来动态实现（如摇一摇）。
+**引入（Introduction）：**添加方法或字段到被通知的类。
+Aspectj：">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu9f7a08366cc43f473c39f8f10558a931_55504_300x0_resize_box_3.png" width="300"
+                            height="332" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">浩&amp;琳</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+
+        <div class="menu-bottom-section">
+            
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>Dark Mode</span>
+                </li>
+            
+        </div>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/" style="background-color: #2a9d8f; color: #fff;">
+                编程学习
+            </a>
+        
+            <a href="/categories/javase/" style="background-color: #666666; color: #fff;">
+                JavaSE
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/java15%E9%AB%98%E7%BA%A7java%E7%9F%A5%E8%AF%86%E7%82%B9/">Java（15）高级Java知识点</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jun 12, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    1 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="十五高级java知识点">十五、高级Java知识点</h2>
+<h3 id="1aop是什么--和oop区别实现的方式有哪些android中如何实现">1.AOP是什么 &amp; 和OOP区别？实现的方式有哪些？Android中如何实现？</h3>
+<h5 id="一aop概念">一、AOP概念</h5>
+<p>百度百科中对AOP的解释如下: 在软件业，AOP为Aspect Oriented Programming的缩写，意为：面向切面编程，通过预编译方式和运行期动态代理实现程序功能的统一维护的一种技术。</p>
+<p><strong>AOP是OOP的延续</strong>，是软件开发中的一个热点，也是很多框架如 java中的Spring框架中的一个重要内容，是函数式编程的一种衍生范型。 利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。</p>
+<p>AOP只是一种思想的统称，实现这种思想的方法有挺多。AOP通过<strong>预编译方式和运行期动态代理</strong>实现程序功能的统一维护的一种技术。利用AOP可以<strong>对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，提高开发效率</strong>。</p>
+<h5 id="二aop主要应用场景">二、AOP主要应用场景</h5>
+<p>日志记录，性能统计，安全控制，事务处理，异常处理等等。</p>
+<p>主要目标：<strong>将日志记录，性能统计，安全控制，事务处理，异常处理等代码从业务逻辑代码中划分出来，通过对这些行为的分离，我们希望可以将它们独立到非指导业务逻辑的方法中，进而改变这些行为的时候不影响业务逻辑的代码。</strong></p>
+<p><img src="/post/java15%E9%AB%98%E7%BA%A7java%E7%9F%A5%E8%AF%86%E7%82%B9/index.assets/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8xNDE0MDI0OC02MzQzMjgxOTA3MmU2Y2FmLnBuZw.png"
+	width="643"
+	height="115"
+	srcset="/post/java15%E9%AB%98%E7%BA%A7java%E7%9F%A5%E8%AF%86%E7%82%B9/index.assets/_hu745ba985cf8c4a2a82b104eb45bd4625_16390_1e964c187bdc43ff1cae4d6f8903fd15.png 480w, /post/java15%E9%AB%98%E7%BA%A7java%E7%9F%A5%E8%AF%86%E7%82%B9/index.assets/_hu745ba985cf8c4a2a82b104eb45bd4625_16390_ada913df015b274477c290cfd9cc2d9f.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="559"
+		data-flex-basis="1341px"
+	
+></p>
+<p>AOP代码注入时机</p>
+<p>代码注入主要注解机制，根据注解时机的不同，主要分为运行时、加载时和编译时。</p>
+<p><strong>运行时</strong>：你的代码对增强代码的需求很明确，比如，必须<strong>使用动态代理</strong>（这可以说并不是真正的代码注入）。 <strong>加载时</strong>：当目标类被Dalvik或者ART加载的时候修改才会被执行。这是<strong>对Java字节码文件或者Android的dex文件进行的注入操作</strong>。 <strong>编译时</strong>：在打包发布程序之前，通过<strong>向编译过程添加额外的步骤来修改被编译的类</strong>。<strong>aspect切面编程正是运用到编译时</strong></p>
+<p>AOP的几种实现方式</p>
+<ul>
+<li>Java 中的动态代理，运行时动态创建 Proxy 类实例</li>
+<li>APT，注解处理器，编译时生成 .java 代码</li>
+<li>Javassist for Android：一个移植到Android平台的非常知名的操纵字节码的java库，对 class 字节码进行修改</li>
+<li><strong>AspectJ：和Java语言无缝衔接的面向切面的编程的扩展工具（可用于Android）。</strong></li>
+</ul>
+<h5 id="android中使用-aspectj">Android中使用 AspectJ</h5>
+<p>代表项目：Hugo(打印每个方法的执行时间) sa-sdk-android（全埋点技术）</p>
+<h5 id="1原理">（1）原理</h5>
+<p>AspectJ 意思就是Java的Aspect，Java的AOP。它的核心是ajc（编译器 aspectjtools）和 weaver（织入器 aspectjweaver）。</p>
+<p>ajc编译器：基于Java编译器之上的，它是用来编译.aj文件，aspectj在Java编译器的基础上增加了一些它自己的关键字和方法。因此，ajc也可以编译Java代码。</p>
+<p>weaver织入器：为了在java编译器上使用AspectJ而不依赖于Ajc编译器，aspectJ 5出现了 @AspectJ，使用注释的方式编写AspectJ代码，可以在任何Java编译器上使用。 由于AndroidStudio默认是没有ajc编译器的，所以在Android中使用@AspectJ来编写。它在代码的编译期间扫描目标程序，根据切点（PointCut）匹配,将开发者编写的Aspect程序编织（Weave）到目标程序的.class文件中，对目标程序作了重构（重构单位是JoinPoint），目的就是建立目标程序与Aspect程序的连接（获得执行的对象、方法、参数等上下文信息），从而达到AOP的目的。</p>
+<h5 id="2aspectj-术语">（2）AspectJ 术语</h5>
+<p><strong>切面（Aspect）</strong>：一个关注点的<strong>模块化</strong>，这个关注点实现可能另外横切多个对象。其实就是共有功能的实现。如日志切面、权限切面、事务切面等。</p>
+<p><strong>通知（Advice）</strong>：是切面的具体实现。以目标方法为参照点，根据放置的地方不同，可分为</p>
+<ol>
+<li>前置通知（Before）、</li>
+<li>后置通知（AfterReturning）、</li>
+<li>异常通知（AfterThrowing）、</li>
+<li>最终通知（After）</li>
+<li>环绕通知（Around）5种。</li>
+</ol>
+<p>在实际应用中通常是切面类中的一个方法，具体属于哪类通知由配置指定的。</p>
+<p><strong>切入点（Pointcut）</strong>：用于定义通知应该切入到哪些连接点上。不同的通知通常需要切入到不同的连接点上，这种精准的匹配是由切入点的正则表达式来定义的。 <strong>连接点（JoinPoint）</strong>：就是程序在运行过程中能够插入切面的地点。例如，方法调用、异常抛出或字段修改等。</p>
+<p><strong>目标对象（Target Object）</strong>：包含连接点的对象，也被称作被通知或被代理对象。这些对象中已经只剩下干干净净的核心业务逻辑代码了，所有的共有功能等代码则是等待AOP容器的切入。</p>
+<p><strong>AOP代理（AOP Proxy）</strong>：将通知应用到目标对象之后被动态创建的对象。可以简单地理解为，代理对象的功能等于目标对象的核心业务逻辑功能加上共有功能。代理对象对于使用者而言是透明的，是程序运行过程中的产物。</p>
+<p><strong>编织（Weaving）</strong>：将切面应用到目标对象从而创建一个新的代理对象的过程。这个过程可以发生在编译期、类装载期及运行期，当然不同的发生点有着不同的前提条件。譬如发生在编译期的话，就要求有一个支持这种AOP实现的特殊编译器（如AspectJ编译器）；</p>
+<p>发生在类装载期，就要求有一个支持AOP实现的特殊类装载器；只有发生在运行期，则可直接通过Java语言的反射机制与动态代理机制来动态实现（如摇一摇）。</p>
+<p>**引入（Introduction）：**添加方法或字段到被通知的类。</p>
+<p>Aspectj：</p>
+<ul>
+<li>AspectJ除了hook之外，AspectJ还可以为目标类添加变量，接口。另外，AspectJ也有抽象，继承等各种更高级的玩法。它能够在编译期间直接修改源代码生成class。</li>
+<li>AspectJ语法比较多，但是掌握几个简单常用的，就能实现绝大多数切片，完全兼容Java（纯Java语言开发，然后使用AspectJ注解，简称@AspectJ。）</li>
+</ul>
+<h3 id="2apt是什么例举一些基于它实现的轮子--自己有玩过它吗--做了些什么">2.APT是什么？例举一些基于它实现的轮子 &amp; 自己有玩过它吗 &amp; 做了些什么？</h3>
+<p>1.什么是APT
+Apt<strong>编译时注解-是javac的一个工具，中文名字注解处理器</strong>。APT可以用来在编译期间扫描和处理注解。通过APT可以获取注解和备注解的相关信息，通过这些信息
+<strong>动态的生成代码省去手动编写。反射是在运行时处理注解，相比反射APT效率更高。APT的核心类的是AbstractProcessor</strong>
+2.用到的APT的框架
+<strong>ButterKnife，EventBus，Dragger2，ARouter等</strong>
+3.如何构建一个APT项目
+<strong>APT项目至少需要2个Java libaray</strong>组成。
+1.首先<strong>需要Annotation模块，用来存放自定义注解</strong>。
+2.另外需要一个<strong>Compiler模块，这个模块依赖Annotation模块</strong>。
+3.项目的<strong>App模块和其它业务模块都需要依赖Annotation模块，同时需要通过annotationProcessor依赖Complier模块</strong>。
+注意：android是基于openJDK，<strong>openJDK不包括APT的相关代码</strong>。因此<strong>APT必须在java libaray中进行。</strong></p>
+<h3 id="3字节码篡改技术了解吗">3.字节码篡改技术了解吗？</h3>
+<h5 id="字节码修改技术">字节码修改技术</h5>
+<p>对Java Class字节码分析，我们应该能够比较清楚的认识到整个字节码的结构。</p>
+<p>那通过了解字节码，我们可以做些什么呢？</p>
+<p>其实<strong>通过字节码能做很多平时我们无法完成的工作。比如，在类加载之前添加某些操作或者直接动态的生成字节。</strong></p>
+<p>ASM 是一个 Java 字节码操控框架。它能够以二进制形式修改已有类或者动态生成类。ASM 可以直接产生二进制 class 文件，也可以在类被加载入 Java 虚拟机之前动态改变类行为。ASM 从类文件中读入信息后，能够改变类行为，分析类信息，甚至能够根据用户要求生成新类。不过ASM在创建class字节码的过程中，操纵的级别是底层JVM的汇编指令级别，这要求ASM使用者要对class组织结构和JVM汇编指令有一定的了解。</p>
+<p>目前字节码修改技术有ASM，javassist，cglib，BCEL等。cglib就是基于封装的Asm. Spring 就是使用cglib代理库。</p>
+<p>Javassist是一个开源的分析、编辑和创建Java字节码的类库。是由东京工业大学的数学和计算机科学系的 Shigeru Chiba （千叶 滋）所创建的。它已加入了开放源代码JBoss 应用服务器项目,通过使用Javassist对字节码操作为JBoss实现动态AOP框架。javassist是jboss的一个子项目，其主要的优点，在于简单，而且快速。直接使用java编码的形式，而不需要了解虚拟机指令，就能动态改变类的结构，或者动态生成类。</p>
+<h3 id="4依赖倒置dip依赖注入di和控制反转ioc">4.依赖倒置（DIP）、依赖注入（DI）和控制反转（IOC）</h3>
+<h4 id="1依赖dependency">1、依赖（Dependency）</h4>
+<p>定义
+依赖是类与类之间的连接，依赖关系表示一个类依赖于另一个类的定义，通俗来讲就是需要</p>
+<h4 id="2依赖倒置dependence-inversion-principle">2、依赖倒置(Dependence Inversion Principle)</h4>
+<p>定义
+高层模块不应该依赖低层模块，二者都该依赖其抽象；抽象不应该依赖细节；细节应该依赖抽象；通俗来讲，依赖倒置原则的本质就是通过抽象（接口或抽象类）使个各类或模块的实现彼此独立，互不影响，实现模块间的松耦合。
+类A直接依赖类B，假如要将类A改为依赖类C，则必须通过修改类A的代码来达成。这种场景下，类A一般是高层模块，负责复杂的业务逻辑；类B和类C是低层模块，负责基本的原子操作；假如修改类A，会给程序带来不必要的风险。此时将类A修改为依赖接口interface，类B和类C各自实现接口interface，类A通过接口interface间接与类B或者类C发生联系，则会大大降低修改类A的几率。</p>
+<h4 id="3控制反转inversion-of-control">3、控制反转(Inversion of Control)</h4>
+<p>定义
+IoC 是一种新的设计模式，它对上层模块与底层模块进行了更进一步的解耦。控制反转的意思是反转了上层模块对于底层模块的依赖控制。</p>
+<h4 id="4依赖注入dependency-injection">4、依赖注入(Dependency injection)</h4>
+<p>为了不因为依赖实现的变动而去修改 Person，也就是说以可能在 Driveable 实现类的改变下不改动 Person 这个类的代码，尽可能减少两者之间的耦合需要采用IoC 模式来进行改写代码。
+这个需要我们移交出对于依赖实例化的控制权，Person 无法实例化依赖了，它就需要在外部（IoC 容器）赋值给它，这个赋值的动作有个专门的术语叫做注入（injection），需要注意的是在 IoC 概念中，这个注入依赖的地方被称为 IoC 容器，但在依赖注入概念中，一般被称为注射器 （injector)。
+表达通俗一点就是：我不想自己实例化依赖，你（injector）创建它们，然后在合适的时候注入给我</p>
+<p>实现依赖注入有 3 种方式：</p>
+<p>构造函数中注入
+setter 方式注入
+接口注入</p>
+<h3 id="5代理模式">5.代理模式</h3>
+<p>1、代理模式基本概念及分类</p>
+<p>（1.1）基本概念</p>
+<p>为其他对象提供一种代理以控制对这个对象的访问。代理类和委托类有共同的父类或父接口，这样在任何使用委托类对象的地方都可以用代理对象替代。代理对象起到中介的作用，可去掉功能服务或增加额外的服务。负责为委托类预处理消息，过滤消息并将请求分派给委托类处理，以及进行消息被委托类执行后的后续操作。
+例如火车票代售处是火车站的代理，相对于火车站，可以提供额外的服务，如电话预约，提供额外服务的同时，会收取一定金额的手续费。也可以将原有的功能去掉，如代售处不能提供退票服务。</p>
+<p>（1.2）代理模式模型</p>
+<p>代理模式一般设计到角色有4 种：
+1、抽象角色：对应代理接口（&laquo; interface &raquo;Subject），用来定义代理类和委托类的公共对外方法/接口；
+2、真实角色：对应委托类（接口实现类RealSubject），真正实现业务逻辑的类，是代理角色所代表的真实对象，是最终要引用的对象；
+3、代理角色：对应代理类（Proxy），用来代理和封装真实角色。代理角色内部含有对真实对象的引用，从而可以操作真实对象。同时，代理对象可以在执行真是对象操作时，添加或去除其他操作，相当于对真实对象进行封装；
+4、客户角色：对应客户端，使用代理类和主题接口完成一些工作。在代理模式中真实角色对于客户端角色来说的透明的，也就是客户端不知道也无需知道真实角色的存在。 为了保持行为的一致性，代理角色和真实角色通常会实现相同的接口，所以在访问者看来两者没有丝毫的区别。
+通过代理角色这中间一层，能有效控制对真实角色（委托类对象）的直接访问，也可以很好地隐藏和保护委托类对象，同时也为实施不同控制策略预留了空间，从而在设计上获得了更大的灵活性。</p>
+<p>（1.3）代理模式特点</p>
+<p>（1.3.1）代理模式优点</p>
+<p>隐藏委托类的实现，调用者只需要和代理类进行交互即可。
+解耦，在不改变委托类代码情况下做一些额外处理，比如添加初始判断及其他公共操作</p>
+<p>（1.3.2）代理模式应用场景</p>
+<p>代理的使用场景很多，struts2中的 action 调用， hibernate的懒加载， spring的 AOP无一不用到代理。总结起来可分为以下几类：
+1、在原方法执行之前和之后做一些操作，可以用代理来实现（比如记录Log，做事务控制等）。
+2、封装真实的主题类，将真实的业务逻辑隐藏，只暴露给调用者公共的主题接口。
+3、在延迟加载上的应用。</p>
+<p>（1.4）常见代理模式</p>
+<p>（1）远程代理：为不同地理的对象，提供局域网代表对象。类似客户端-服务器代理模式。
+（2）虚拟代理：根据需要将资源消耗很大的对象进行延迟，真正需要的时候进行创建。如网络图片缓存。
+（3）保护代理：控制用户的访问权限，如网页需要注册才能浏览发帖。
+（4）智能引用代理：提供对目标对象额外的服务。如日志处理、权限管理、事务处理……</p>
+<p>根据代理类的<strong>生成时间</strong>不同可以将代理分为静态代理和动态代理。</p>
+<p>所谓静态代理也就是在程序运行前就已经存在代理类的.class文件，代理类和委托类的关系在运行前就确定了。</p>
+<p>通过动态代码可实现对不同类、不同方法的代理。动态代理的源码是在程序运行期间由JVM根据反射等机制动态的生成，所以不存在代理类的字节码文件（.class）。代理类和委托类的关系在程序运行时确定。</p>
+<p><strong>JDK动态代理与cglib动态代理的区别</strong>
+JDK动态代理：只能代理实现了接口的类，没有实现接口的类不能实现JDK的动态代理
+CGLIB动态代理：针对类来实现代理，对指定目标类产生一个子类，通过方法拦截技术拦截所有父类方法的调用。</p>
+<p>静态代理与动态代理对比：</p>
+<p>1、静态代理
+优点：
+业务类只需要关注业务逻辑本身，保证了业务类的重用性。这是代理的共有优点。
+缺点：
+（1）代理对象的一个接口只服务于一种类型的对象，如果要代理的方法很多，势必要为每一种方法都进行代理，静态代理在程序规模稍大时就无法胜任了。
+（2）如果接口增加一个方法，除了所有实现类需要实现这个方法外，所有代理类也需要实现此方法。增加了代码维护的复杂度。
+（3）采用静态代理模式，那么真实角色（委托类）必须事先已经存在的，并将其作为代理对象代理对象内部属性。但是实际使用时，一个真实角色必须对应一个代理角色，如果大量使用会导致类的急剧膨胀。
+2、动态代理
+优点
+1、动态代理类的字节码在程序运行时由Java反射机制动态生成，无需程序员手工编写它的源代码。
+2、动态代理类不仅简化了编程工作，而且提高了软件系统的可扩展性，因为Java 反射机制可以生成任意类型的动态代理类。
+缺点
+JDK的动态代理机制只能代理实现了接口的类，而不能实现接口的类就不能实现JDK的动态代理，cglib是针对类来实现代理的，他的原理是对指定的目标类生成一个子类，并覆盖其中方法实现增强，但因为采用的是继承，所以不能对final修饰的类进行代理。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2023 浩&amp;琳
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

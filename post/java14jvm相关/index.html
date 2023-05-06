@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='十四、JVM相关 1.JVM定义 JVM（虚拟机）：指以软件的方式模拟具有完整硬件系统功能、运行在一个完全隔离环境中的计算机系统，是物理机的软件实现。常见虚拟机有VMWare、VirtualBox、Java Virtual Machine… Java虚拟机阵营：Sun HotSpot VM、BEA JRockit VM（JDK1.8合并）… Java虚拟机是采用虚拟化技术，隔离出一块独立的子操作系统，使Java软件不受任何影响在虚拟机内进行执行。 JVM由三个主要的子系统构成：
+类加载子系统：装载具有适合名称的类或接口 运行时数据区（内存结构）：包含方法区、Java堆、Java栈、本地方法栈、指令计数器及其他隐含寄存器 执行引擎：负责执行包含在已装载的类或接口中的指令
+JVM实现了Java平台的无关性
+Java是一种技术，由四个方面组成：Java编程语言、Java类文件格式、Java虚拟机和Java应用程序接口（Java API） 开发人员编写Java代码，并将Java源代码文件（.java文件）通过Java编译器进行编译后形成java字节码文件（.class文件），通过类加载子系统加载到运行时数据区（内存空间），再通过JVM执行引擎进行执行。 运行期环境称为Java平台。Java平台由Java虚拟机和Java应用程序接口搭建，Java语言是进入这个平台的通道，用Java语言编写的Java源文件可以运行在这个平台上。这个平台的结构如下：
+在Java平台的结构中, 可以看出，Java虚拟机(JVM) 处在核心的位置，是程序与底层操作系统和硬件无关的关键。它的下方是移植接口，移植接口由两部分组成：适配器和Java操作系统, 其中依赖于平台的部分称为适配器；JVM 通过移植接口在具体的平台和操作系统上实现；在JVM 的上方是Java的基本类库和扩展类库以及它们的API， 利用Java API编写的应用程序(application) 和小程序(Java applet) 可以在任何Java平台上运行而无需考虑底层平台, 就是因为有Java虚拟机(JVM)实现了程序与操作系统的分离，从而实现了Java 的平台无关性。 JVM在它的生存周期中有一个明确的任务，那就是运行Java程序，因此当Java程序启动的时候，就产生JVM的一个实例；当程序运行结束的时候，该实例也跟着消失了。
+2.类加载子系统 （1）什么是类的加载
+类的加载指的是将类的.class文件中的二进制数据读入到内存中，将其放在运行时数据区的方法区内，然后在堆区创建一个java.lang.Class对象，用来封装类在方法区内的数据结构。类的加载的最终产品是位于堆区中的Class对象，Class对象封装了类在方法区内的数据结构，并且向Java程序员提供了访问方法区内的数据结构的接口。
+（2）类的生命周期
+类的生命周期包括加载、连接、初始化、使用和卸载：
+加载，查找并加载类的二进制数据，在Java堆中也创建一个java.lang.Class类的对象 连接，连接又包含三块内容：验证、准备、初始化。1）验证，文件格式、元数据、字节码、符号引用验证；2）准备，为类的静态变量分配内存，并将其初始化为默认值；3）解析，把类中的符号引用转换为直接引用 初始化，为类的静态变量赋予正确的初始值 使用，new出对象程序中使用 卸载，执行垃圾回收
+（3）类加载器
+启动类加载器：Bootstrap ClassLoader，负责加载存放在JDK\jre\lib(JDK代表JDK的安装目录，下同)下，或被-Xbootclasspath参数指定的路径中的，并且能被虚拟机识别的类库 扩展类加载器：Extension ClassLoader，该加载器由sun.misc.Launcher$ExtClassLoader实现，它负责加载DK\jre\lib\ext目录中，或者由java.ext.dirs系统变量指定的路径中的所有类库（如javax.*开头的类），开发者可以直接使用扩展类加载器。 应用程序类加载器：Application ClassLoader，该类加载器由sun.misc.Launcher$AppClassLoader来实现，它负责加载用户类路径（ClassPath）所指定的类，开发者可以直接使用该类加载器
+（4）类加载机制
+全盘负责，当一个类加载器负责加载某个Class时，该Class所依赖的和引用的其他Class也将由该类加载器负责载入，除非显示使用另外一个类加载器来载入 父类委托，先让父类加载器试图加载该类，只有在父类加载器无法加载该类时才尝试从自己的类路径中加载该类 缓存机制，缓存机制将会保证所有加载过的Class都会被缓存，当程序中需要使用某个Class时，类加载器先从缓存区寻找该Class，只有缓存区不存在，系统才会读取该类对应的二进制数据，并将其转换成Class对象，存入缓存区。这就是为什么修改了Class后，必须重启JVM，程序的修改才会生效
+3.JVM内存管理 （1）JVM内存结构（运行时数据区）
+方法区和堆是所有线程共享的内存区域；而java栈、本地方法栈和程序计数器是运行时线程私有的内存区域。 一个.class文件装载到内存后会划分为以下五部分： 方法区（method），栈内存（stack），堆内存（heap），本地方法栈（java中的jni调用），程序计数器
+（1.1）Java堆（Heap） 堆是Java虚拟机所管理的内存中最大的一块。Java堆是被所有线程共享的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的就是存放对象实例，几乎所有的通过new创建的对象实例都在这里分配内存。当对象无法在该空间申请到内存时抛出OutOfMemoryEroor异常。同时也是垃圾收集器管理的主要区域。
+Java的堆内存基于Generation算法（Generational Collector）划分为新生代、年老代和持久代。新生代又被进一步划分为Eden和Survivor区，最后Survivor由FromSpace（Survivor0）和ToSpace（Survivor1）组成。所有通过new创建的对象的内存都在堆中分配，其大小可以通过-Xmx和-Xms来控制。 分代收集，是基于这样一个事实：不同的对象的生命周期是不一样的。因此，可以将不同生命周期的对象分代，不同的代采取不同的回收算法进行垃圾回收（GC），以便提高回收效率。 三区域及对象的迁移过程： （1）新生代Young Generation（1/3堆空间） 几乎所有新生成的对象首先都是放在年轻代的。新生代内存按照8:1:1的比例分为一个Eden区和两个Survivor(Survivor0,Survivor1)区。大部分对象在Eden区中生成。当新对象生成，Eden Space申请失败（因为空间不足等），则会发起一次GC(Scavenge GC)。回收时先将Eden区存活对象复制到一个Survivor0区，然后清空Eden区，当这个Survivor0区也存放满了时，则将Eden区和Survivor0区存活对象复制到另一个Survivor1区，然后清空Eden和这个Survivor0区，此时Survivor0区是空的，然后将Survivor0区和Survivor1区交换，即保持Survivor1区为空， 如此往复。当Survivor1区不足以存放 Eden和Survivor0的存活对象时，就将存活对象直接存放到老年代。当对象在Survivor区躲过一次GC的话，其对象年龄便会加1，默认情况下，如果对象年龄达到15岁，就会移动到老年代中。若是老年代也满了就会触发一次Full GC，也就是新生代、老年代都进行回收。新生代大小可以由-Xmn来控制，也可以用-XX:SurvivorRatio来控制Eden和Survivor的比例。 （2）老年代Old Generation（2/3堆空间） 在年轻代中经历了N次垃圾回收后仍然存活的对象，就会被放到年老代中。因此，可以认为年老代中存放的都是一些生命周期较长的对象。内存比新生代也大很多(大概比例是1:2)，当老年代内存满时触发Major GC即Full GC，Full GC发生频率比较低，老年代对象存活时间比较长，存活率标记高。一般来说，大对象会被直接分配到老年代。所谓的大对象是指需要大量连续存储空间的对象。 （3）元数据MetaData Space（直接内存JDK1.'>
+<title>Java（14）JVM相关</title>
+
+<link rel='canonical' href='https://haolovelin.com/post/java14jvm%E7%9B%B8%E5%85%B3/'>
+
+<link rel="stylesheet" href="/scss/style.min.5be32ca3f6e1a997c75795c4359147cc6d4fbd34948c0acd51e31d237033978a.css"><meta property='og:title' content='Java（14）JVM相关'>
+<meta property='og:description' content='十四、JVM相关 1.JVM定义 JVM（虚拟机）：指以软件的方式模拟具有完整硬件系统功能、运行在一个完全隔离环境中的计算机系统，是物理机的软件实现。常见虚拟机有VMWare、VirtualBox、Java Virtual Machine… Java虚拟机阵营：Sun HotSpot VM、BEA JRockit VM（JDK1.8合并）… Java虚拟机是采用虚拟化技术，隔离出一块独立的子操作系统，使Java软件不受任何影响在虚拟机内进行执行。 JVM由三个主要的子系统构成：
+类加载子系统：装载具有适合名称的类或接口 运行时数据区（内存结构）：包含方法区、Java堆、Java栈、本地方法栈、指令计数器及其他隐含寄存器 执行引擎：负责执行包含在已装载的类或接口中的指令
+JVM实现了Java平台的无关性
+Java是一种技术，由四个方面组成：Java编程语言、Java类文件格式、Java虚拟机和Java应用程序接口（Java API） 开发人员编写Java代码，并将Java源代码文件（.java文件）通过Java编译器进行编译后形成java字节码文件（.class文件），通过类加载子系统加载到运行时数据区（内存空间），再通过JVM执行引擎进行执行。 运行期环境称为Java平台。Java平台由Java虚拟机和Java应用程序接口搭建，Java语言是进入这个平台的通道，用Java语言编写的Java源文件可以运行在这个平台上。这个平台的结构如下：
+在Java平台的结构中, 可以看出，Java虚拟机(JVM) 处在核心的位置，是程序与底层操作系统和硬件无关的关键。它的下方是移植接口，移植接口由两部分组成：适配器和Java操作系统, 其中依赖于平台的部分称为适配器；JVM 通过移植接口在具体的平台和操作系统上实现；在JVM 的上方是Java的基本类库和扩展类库以及它们的API， 利用Java API编写的应用程序(application) 和小程序(Java applet) 可以在任何Java平台上运行而无需考虑底层平台, 就是因为有Java虚拟机(JVM)实现了程序与操作系统的分离，从而实现了Java 的平台无关性。 JVM在它的生存周期中有一个明确的任务，那就是运行Java程序，因此当Java程序启动的时候，就产生JVM的一个实例；当程序运行结束的时候，该实例也跟着消失了。
+2.类加载子系统 （1）什么是类的加载
+类的加载指的是将类的.class文件中的二进制数据读入到内存中，将其放在运行时数据区的方法区内，然后在堆区创建一个java.lang.Class对象，用来封装类在方法区内的数据结构。类的加载的最终产品是位于堆区中的Class对象，Class对象封装了类在方法区内的数据结构，并且向Java程序员提供了访问方法区内的数据结构的接口。
+（2）类的生命周期
+类的生命周期包括加载、连接、初始化、使用和卸载：
+加载，查找并加载类的二进制数据，在Java堆中也创建一个java.lang.Class类的对象 连接，连接又包含三块内容：验证、准备、初始化。1）验证，文件格式、元数据、字节码、符号引用验证；2）准备，为类的静态变量分配内存，并将其初始化为默认值；3）解析，把类中的符号引用转换为直接引用 初始化，为类的静态变量赋予正确的初始值 使用，new出对象程序中使用 卸载，执行垃圾回收
+（3）类加载器
+启动类加载器：Bootstrap ClassLoader，负责加载存放在JDK\jre\lib(JDK代表JDK的安装目录，下同)下，或被-Xbootclasspath参数指定的路径中的，并且能被虚拟机识别的类库 扩展类加载器：Extension ClassLoader，该加载器由sun.misc.Launcher$ExtClassLoader实现，它负责加载DK\jre\lib\ext目录中，或者由java.ext.dirs系统变量指定的路径中的所有类库（如javax.*开头的类），开发者可以直接使用扩展类加载器。 应用程序类加载器：Application ClassLoader，该类加载器由sun.misc.Launcher$AppClassLoader来实现，它负责加载用户类路径（ClassPath）所指定的类，开发者可以直接使用该类加载器
+（4）类加载机制
+全盘负责，当一个类加载器负责加载某个Class时，该Class所依赖的和引用的其他Class也将由该类加载器负责载入，除非显示使用另外一个类加载器来载入 父类委托，先让父类加载器试图加载该类，只有在父类加载器无法加载该类时才尝试从自己的类路径中加载该类 缓存机制，缓存机制将会保证所有加载过的Class都会被缓存，当程序中需要使用某个Class时，类加载器先从缓存区寻找该Class，只有缓存区不存在，系统才会读取该类对应的二进制数据，并将其转换成Class对象，存入缓存区。这就是为什么修改了Class后，必须重启JVM，程序的修改才会生效
+3.JVM内存管理 （1）JVM内存结构（运行时数据区）
+方法区和堆是所有线程共享的内存区域；而java栈、本地方法栈和程序计数器是运行时线程私有的内存区域。 一个.class文件装载到内存后会划分为以下五部分： 方法区（method），栈内存（stack），堆内存（heap），本地方法栈（java中的jni调用），程序计数器
+（1.1）Java堆（Heap） 堆是Java虚拟机所管理的内存中最大的一块。Java堆是被所有线程共享的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的就是存放对象实例，几乎所有的通过new创建的对象实例都在这里分配内存。当对象无法在该空间申请到内存时抛出OutOfMemoryEroor异常。同时也是垃圾收集器管理的主要区域。
+Java的堆内存基于Generation算法（Generational Collector）划分为新生代、年老代和持久代。新生代又被进一步划分为Eden和Survivor区，最后Survivor由FromSpace（Survivor0）和ToSpace（Survivor1）组成。所有通过new创建的对象的内存都在堆中分配，其大小可以通过-Xmx和-Xms来控制。 分代收集，是基于这样一个事实：不同的对象的生命周期是不一样的。因此，可以将不同生命周期的对象分代，不同的代采取不同的回收算法进行垃圾回收（GC），以便提高回收效率。 三区域及对象的迁移过程： （1）新生代Young Generation（1/3堆空间） 几乎所有新生成的对象首先都是放在年轻代的。新生代内存按照8:1:1的比例分为一个Eden区和两个Survivor(Survivor0,Survivor1)区。大部分对象在Eden区中生成。当新对象生成，Eden Space申请失败（因为空间不足等），则会发起一次GC(Scavenge GC)。回收时先将Eden区存活对象复制到一个Survivor0区，然后清空Eden区，当这个Survivor0区也存放满了时，则将Eden区和Survivor0区存活对象复制到另一个Survivor1区，然后清空Eden和这个Survivor0区，此时Survivor0区是空的，然后将Survivor0区和Survivor1区交换，即保持Survivor1区为空， 如此往复。当Survivor1区不足以存放 Eden和Survivor0的存活对象时，就将存活对象直接存放到老年代。当对象在Survivor区躲过一次GC的话，其对象年龄便会加1，默认情况下，如果对象年龄达到15岁，就会移动到老年代中。若是老年代也满了就会触发一次Full GC，也就是新生代、老年代都进行回收。新生代大小可以由-Xmn来控制，也可以用-XX:SurvivorRatio来控制Eden和Survivor的比例。 （2）老年代Old Generation（2/3堆空间） 在年轻代中经历了N次垃圾回收后仍然存活的对象，就会被放到年老代中。因此，可以认为年老代中存放的都是一些生命周期较长的对象。内存比新生代也大很多(大概比例是1:2)，当老年代内存满时触发Major GC即Full GC，Full GC发生频率比较低，老年代对象存活时间比较长，存活率标记高。一般来说，大对象会被直接分配到老年代。所谓的大对象是指需要大量连续存储空间的对象。 （3）元数据MetaData Space（直接内存JDK1.'>
+<meta property='og:url' content='https://haolovelin.com/post/java14jvm%E7%9B%B8%E5%85%B3/'>
+<meta property='og:site_name' content='浩&amp;琳'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2021-06-11T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-06-11T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Java（14）JVM相关">
+<meta name="twitter:description" content="十四、JVM相关 1.JVM定义 JVM（虚拟机）：指以软件的方式模拟具有完整硬件系统功能、运行在一个完全隔离环境中的计算机系统，是物理机的软件实现。常见虚拟机有VMWare、VirtualBox、Java Virtual Machine… Java虚拟机阵营：Sun HotSpot VM、BEA JRockit VM（JDK1.8合并）… Java虚拟机是采用虚拟化技术，隔离出一块独立的子操作系统，使Java软件不受任何影响在虚拟机内进行执行。 JVM由三个主要的子系统构成：
+类加载子系统：装载具有适合名称的类或接口 运行时数据区（内存结构）：包含方法区、Java堆、Java栈、本地方法栈、指令计数器及其他隐含寄存器 执行引擎：负责执行包含在已装载的类或接口中的指令
+JVM实现了Java平台的无关性
+Java是一种技术，由四个方面组成：Java编程语言、Java类文件格式、Java虚拟机和Java应用程序接口（Java API） 开发人员编写Java代码，并将Java源代码文件（.java文件）通过Java编译器进行编译后形成java字节码文件（.class文件），通过类加载子系统加载到运行时数据区（内存空间），再通过JVM执行引擎进行执行。 运行期环境称为Java平台。Java平台由Java虚拟机和Java应用程序接口搭建，Java语言是进入这个平台的通道，用Java语言编写的Java源文件可以运行在这个平台上。这个平台的结构如下：
+在Java平台的结构中, 可以看出，Java虚拟机(JVM) 处在核心的位置，是程序与底层操作系统和硬件无关的关键。它的下方是移植接口，移植接口由两部分组成：适配器和Java操作系统, 其中依赖于平台的部分称为适配器；JVM 通过移植接口在具体的平台和操作系统上实现；在JVM 的上方是Java的基本类库和扩展类库以及它们的API， 利用Java API编写的应用程序(application) 和小程序(Java applet) 可以在任何Java平台上运行而无需考虑底层平台, 就是因为有Java虚拟机(JVM)实现了程序与操作系统的分离，从而实现了Java 的平台无关性。 JVM在它的生存周期中有一个明确的任务，那就是运行Java程序，因此当Java程序启动的时候，就产生JVM的一个实例；当程序运行结束的时候，该实例也跟着消失了。
+2.类加载子系统 （1）什么是类的加载
+类的加载指的是将类的.class文件中的二进制数据读入到内存中，将其放在运行时数据区的方法区内，然后在堆区创建一个java.lang.Class对象，用来封装类在方法区内的数据结构。类的加载的最终产品是位于堆区中的Class对象，Class对象封装了类在方法区内的数据结构，并且向Java程序员提供了访问方法区内的数据结构的接口。
+（2）类的生命周期
+类的生命周期包括加载、连接、初始化、使用和卸载：
+加载，查找并加载类的二进制数据，在Java堆中也创建一个java.lang.Class类的对象 连接，连接又包含三块内容：验证、准备、初始化。1）验证，文件格式、元数据、字节码、符号引用验证；2）准备，为类的静态变量分配内存，并将其初始化为默认值；3）解析，把类中的符号引用转换为直接引用 初始化，为类的静态变量赋予正确的初始值 使用，new出对象程序中使用 卸载，执行垃圾回收
+（3）类加载器
+启动类加载器：Bootstrap ClassLoader，负责加载存放在JDK\jre\lib(JDK代表JDK的安装目录，下同)下，或被-Xbootclasspath参数指定的路径中的，并且能被虚拟机识别的类库 扩展类加载器：Extension ClassLoader，该加载器由sun.misc.Launcher$ExtClassLoader实现，它负责加载DK\jre\lib\ext目录中，或者由java.ext.dirs系统变量指定的路径中的所有类库（如javax.*开头的类），开发者可以直接使用扩展类加载器。 应用程序类加载器：Application ClassLoader，该类加载器由sun.misc.Launcher$AppClassLoader来实现，它负责加载用户类路径（ClassPath）所指定的类，开发者可以直接使用该类加载器
+（4）类加载机制
+全盘负责，当一个类加载器负责加载某个Class时，该Class所依赖的和引用的其他Class也将由该类加载器负责载入，除非显示使用另外一个类加载器来载入 父类委托，先让父类加载器试图加载该类，只有在父类加载器无法加载该类时才尝试从自己的类路径中加载该类 缓存机制，缓存机制将会保证所有加载过的Class都会被缓存，当程序中需要使用某个Class时，类加载器先从缓存区寻找该Class，只有缓存区不存在，系统才会读取该类对应的二进制数据，并将其转换成Class对象，存入缓存区。这就是为什么修改了Class后，必须重启JVM，程序的修改才会生效
+3.JVM内存管理 （1）JVM内存结构（运行时数据区）
+方法区和堆是所有线程共享的内存区域；而java栈、本地方法栈和程序计数器是运行时线程私有的内存区域。 一个.class文件装载到内存后会划分为以下五部分： 方法区（method），栈内存（stack），堆内存（heap），本地方法栈（java中的jni调用），程序计数器
+（1.1）Java堆（Heap） 堆是Java虚拟机所管理的内存中最大的一块。Java堆是被所有线程共享的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的就是存放对象实例，几乎所有的通过new创建的对象实例都在这里分配内存。当对象无法在该空间申请到内存时抛出OutOfMemoryEroor异常。同时也是垃圾收集器管理的主要区域。
+Java的堆内存基于Generation算法（Generational Collector）划分为新生代、年老代和持久代。新生代又被进一步划分为Eden和Survivor区，最后Survivor由FromSpace（Survivor0）和ToSpace（Survivor1）组成。所有通过new创建的对象的内存都在堆中分配，其大小可以通过-Xmx和-Xms来控制。 分代收集，是基于这样一个事实：不同的对象的生命周期是不一样的。因此，可以将不同生命周期的对象分代，不同的代采取不同的回收算法进行垃圾回收（GC），以便提高回收效率。 三区域及对象的迁移过程： （1）新生代Young Generation（1/3堆空间） 几乎所有新生成的对象首先都是放在年轻代的。新生代内存按照8:1:1的比例分为一个Eden区和两个Survivor(Survivor0,Survivor1)区。大部分对象在Eden区中生成。当新对象生成，Eden Space申请失败（因为空间不足等），则会发起一次GC(Scavenge GC)。回收时先将Eden区存活对象复制到一个Survivor0区，然后清空Eden区，当这个Survivor0区也存放满了时，则将Eden区和Survivor0区存活对象复制到另一个Survivor1区，然后清空Eden和这个Survivor0区，此时Survivor0区是空的，然后将Survivor0区和Survivor1区交换，即保持Survivor1区为空， 如此往复。当Survivor1区不足以存放 Eden和Survivor0的存活对象时，就将存活对象直接存放到老年代。当对象在Survivor区躲过一次GC的话，其对象年龄便会加1，默认情况下，如果对象年龄达到15岁，就会移动到老年代中。若是老年代也满了就会触发一次Full GC，也就是新生代、老年代都进行回收。新生代大小可以由-Xmn来控制，也可以用-XX:SurvivorRatio来控制Eden和Survivor的比例。 （2）老年代Old Generation（2/3堆空间） 在年轻代中经历了N次垃圾回收后仍然存活的对象，就会被放到年老代中。因此，可以认为年老代中存放的都是一些生命周期较长的对象。内存比新生代也大很多(大概比例是1:2)，当老年代内存满时触发Major GC即Full GC，Full GC发生频率比较低，老年代对象存活时间比较长，存活率标记高。一般来说，大对象会被直接分配到老年代。所谓的大对象是指需要大量连续存储空间的对象。 （3）元数据MetaData Space（直接内存JDK1.">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu9f7a08366cc43f473c39f8f10558a931_55504_300x0_resize_box_3.png" width="300"
+                            height="332" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">浩&amp;琳</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+
+        <div class="menu-bottom-section">
+            
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>Dark Mode</span>
+                </li>
+            
+        </div>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/" style="background-color: #2a9d8f; color: #fff;">
+                编程学习
+            </a>
+        
+            <a href="/categories/javase/" style="background-color: #666666; color: #fff;">
+                JavaSE
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/java14jvm%E7%9B%B8%E5%85%B3/">Java（14）JVM相关</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jun 11, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    5 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="十四jvm相关">十四、JVM相关</h2>
+<h3 id="1jvm定义">1.JVM定义</h3>
+<p>JVM（虚拟机）：指以软件的方式模拟具有完整硬件系统功能、运行在一个完全隔离环境中的计算机系统，是物理机的软件实现。常见虚拟机有VMWare、VirtualBox、Java Virtual Machine…
+Java虚拟机阵营：Sun HotSpot VM、BEA JRockit VM（JDK1.8合并）…
+Java虚拟机是采用虚拟化技术，隔离出一块独立的子操作系统，使Java软件不受任何影响在虚拟机内进行执行。
+JVM由三个主要的子系统构成：</p>
+<p>类加载子系统：装载具有适合名称的类或接口
+运行时数据区（内存结构）：包含方法区、Java堆、Java栈、本地方法栈、指令计数器及其他隐含寄存器
+执行引擎：负责执行包含在已装载的类或接口中的指令</p>
+<p>JVM实现了Java平台的无关性</p>
+<p>Java是一种技术，由四个方面组成：Java编程语言、Java类文件格式、Java虚拟机和Java应用程序接口（Java API）
+开发人员编写Java代码，并将Java源代码文件（.java文件）通过Java编译器进行编译后形成java字节码文件（.class文件），通过类加载子系统加载到运行时数据区（内存空间），再通过JVM执行引擎进行执行。
+运行期环境称为Java平台。Java平台由Java虚拟机和Java应用程序接口搭建，Java语言是进入这个平台的通道，用Java语言编写的Java源文件可以运行在这个平台上。这个平台的结构如下：</p>
+<p>在Java平台的结构中, 可以看出，Java虚拟机(JVM) 处在核心的位置，是程序与底层操作系统和硬件无关的关键。它的下方是移植接口，移植接口由两部分组成：适配器和Java操作系统, 其中依赖于平台的部分称为适配器；JVM 通过移植接口在具体的平台和操作系统上实现；在JVM 的上方是Java的基本类库和扩展类库以及它们的API， 利用Java API编写的应用程序(application) 和小程序(Java applet) 可以在任何Java平台上运行而无需考虑底层平台, 就是因为有Java虚拟机(JVM)实现了程序与操作系统的分离，从而实现了Java 的平台无关性。
+JVM在它的生存周期中有一个明确的任务，那就是运行Java程序，因此当Java程序启动的时候，就产生JVM的一个实例；当程序运行结束的时候，该实例也跟着消失了。</p>
+<h3 id="2类加载子系统">2.类加载子系统</h3>
+<p>（1）什么是类的加载</p>
+<p>类的加载指的是将类的.class文件中的二进制数据读入到内存中，将其放在运行时数据区的方法区内，然后在堆区创建一个java.lang.Class对象，用来封装类在方法区内的数据结构。类的加载的最终产品是位于堆区中的Class对象，Class对象封装了类在方法区内的数据结构，并且向Java程序员提供了访问方法区内的数据结构的接口。</p>
+<p>（2）类的生命周期</p>
+<p>类的生命周期包括加载、连接、初始化、使用和卸载：</p>
+<p>加载，查找并加载类的二进制数据，在Java堆中也创建一个java.lang.Class类的对象
+连接，连接又包含三块内容：验证、准备、初始化。1）验证，文件格式、元数据、字节码、符号引用验证；2）准备，为类的静态变量分配内存，并将其初始化为默认值；3）解析，把类中的符号引用转换为直接引用
+初始化，为类的静态变量赋予正确的初始值
+使用，new出对象程序中使用
+卸载，执行垃圾回收</p>
+<p>（3）类加载器</p>
+<p>启动类加载器：Bootstrap ClassLoader，负责加载存放在JDK\jre\lib(JDK代表JDK的安装目录，下同)下，或被-Xbootclasspath参数指定的路径中的，并且能被虚拟机识别的类库
+扩展类加载器：Extension ClassLoader，该加载器由sun.misc.Launcher$ExtClassLoader实现，它负责加载DK\jre\lib\ext目录中，或者由java.ext.dirs系统变量指定的路径中的所有类库（如javax.*开头的类），开发者可以直接使用扩展类加载器。
+应用程序类加载器：Application ClassLoader，该类加载器由sun.misc.Launcher$AppClassLoader来实现，它负责加载用户类路径（ClassPath）所指定的类，开发者可以直接使用该类加载器</p>
+<p>（4）类加载机制</p>
+<p>全盘负责，当一个类加载器负责加载某个Class时，该Class所依赖的和引用的其他Class也将由该类加载器负责载入，除非显示使用另外一个类加载器来载入
+父类委托，先让父类加载器试图加载该类，只有在父类加载器无法加载该类时才尝试从自己的类路径中加载该类
+缓存机制，缓存机制将会保证所有加载过的Class都会被缓存，当程序中需要使用某个Class时，类加载器先从缓存区寻找该Class，只有缓存区不存在，系统才会读取该类对应的二进制数据，并将其转换成Class对象，存入缓存区。这就是为什么修改了Class后，必须重启JVM，程序的修改才会生效</p>
+<h3 id="3jvm内存管理">3.JVM内存管理</h3>
+<p>（1）JVM内存结构（运行时数据区）</p>
+<p>方法区和堆是所有线程共享的内存区域；而java栈、本地方法栈和程序计数器是运行时线程私有的内存区域。
+一个.class文件装载到内存后会划分为以下五部分：
+方法区（method），栈内存（stack），堆内存（heap），本地方法栈（java中的jni调用），程序计数器</p>
+<p>（1.1）Java堆（Heap）
+堆是Java虚拟机所管理的内存中最大的一块。Java堆是被所有线程共享的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的就是存放对象实例，几乎所有的通过new创建的对象实例都在这里分配内存。当对象无法在该空间申请到内存时抛出OutOfMemoryEroor异常。同时也是垃圾收集器管理的主要区域。</p>
+<p>Java的堆内存基于Generation算法（Generational Collector）划分为新生代、年老代和持久代。新生代又被进一步划分为Eden和Survivor区，最后Survivor由FromSpace（Survivor0）和ToSpace（Survivor1）组成。所有通过new创建的对象的内存都在堆中分配，其大小可以通过-Xmx和-Xms来控制。
+分代收集，是基于这样一个事实：不同的对象的生命周期是不一样的。因此，可以将不同生命周期的对象分代，不同的代采取不同的回收算法进行垃圾回收（GC），以便提高回收效率。
+三区域及对象的迁移过程：
+（1）新生代Young Generation（1/3堆空间）
+几乎所有新生成的对象首先都是放在年轻代的。新生代内存按照8:1:1的比例分为一个Eden区和两个Survivor(Survivor0,Survivor1)区。大部分对象在Eden区中生成。当新对象生成，Eden Space申请失败（因为空间不足等），则会发起一次GC(Scavenge GC)。回收时先将Eden区存活对象复制到一个Survivor0区，然后清空Eden区，当这个Survivor0区也存放满了时，则将Eden区和Survivor0区存活对象复制到另一个Survivor1区，然后清空Eden和这个Survivor0区，此时Survivor0区是空的，然后将Survivor0区和Survivor1区交换，即保持Survivor1区为空， 如此往复。当Survivor1区不足以存放 Eden和Survivor0的存活对象时，就将存活对象直接存放到老年代。当对象在Survivor区躲过一次GC的话，其对象年龄便会加1，默认情况下，如果对象年龄达到15岁，就会移动到老年代中。若是老年代也满了就会触发一次Full GC，也就是新生代、老年代都进行回收。新生代大小可以由-Xmn来控制，也可以用-XX:SurvivorRatio来控制Eden和Survivor的比例。
+（2）老年代Old Generation（2/3堆空间）
+在年轻代中经历了N次垃圾回收后仍然存活的对象，就会被放到年老代中。因此，可以认为年老代中存放的都是一些生命周期较长的对象。内存比新生代也大很多(大概比例是1:2)，当老年代内存满时触发Major GC即Full GC，Full GC发生频率比较低，老年代对象存活时间比较长，存活率标记高。一般来说，大对象会被直接分配到老年代。所谓的大对象是指需要大量连续存储空间的对象。
+（3）元数据MetaData Space（直接内存JDK1.8后）
+不属于堆内存，属于内存空间。真正与堆隔离。方法区是类逻辑上的一个抽象模板，而元空间是方法区的实现，是真实存在的内存。</p>
+<p>对象会首先会进入年轻代的Eden中.在GC之前对象是存在Eden和from中的，进行GC的时候Eden中的对象被拷贝到To这样一个survive空间中，From中的对象到一定次数会被复制到老年代。如果没到次数From中的对象会被复制到To中，复制完成后To中保存的是有效的对象，Eden和From中剩下的都是无效的对象，这个时候就把Eden和From中所有的对象清空。在复制的时候Eden中的对象进入To中，To可能已经满了，这个时候Eden和From中的对象就会被直接复制到Old Generation中.复制完成后，To和From的名字会对调一下，因为Eden和From都是空的，对调后Eden和To都是空的，下次分配就会分配到Eden。一直循环这个流程。好处：使用对象最多和效率最高的就是在Young Generation中，通过From to就避免过于频繁的产生FullGC（Old Generation满了一般都会产生FullGC）</p>
+<p>虚拟机在进行MinorGC（新生代的GC）的时候，会判断要进入OldGeneration区域对象的大小，是否大于Old Generation剩余空间大小，如果大于就会发生Full GC。
+刚分配对象在Eden中，如果空间不足尝试进行GC，回收空间，如果进行了MinorGC空间依旧不够就放入Old Generation，如果OldGeneration空间还不够就OOM了。
+比较大的对象，数组等，大于某值（可配置）就直接分配到老年代，（避免频繁内存拷贝）
+年轻代和年老代属于Heap空间的，Permanent Generation（永久代）可以理解成方法区，（它属于方法区）也有可能发生GC，例如类的实例对象全部被GC了，同时它的类加载器也被GC掉了，这个时候就会触发永久代中对象的GC。
+如果OldGeneration满了就会产生FullGC。老年代满原因：1、from survive中对象的生命周期到一定阈值2、分配的对象直接是大对象3、由于To 空间不够，进行GC直接把对象拷贝到年老代（年老代GC时候采用不同的算法）
+如果Young Generation大小分配不合理或空间比较小，这个时候导致对象很容易进入Old Generation中，而Old Generation中回收具体对象的时候速度是远远低于Young Generation回收速度。
+因此实际分配要考虑年老代和新生代的比例，考虑Eden和survives的比例，提升系统性能。
+Permanent Generation中发生GC的时候也对性能影响非常大，也是Full GC。
+（1.2）方法区（Method Area）
+方法区（Method Area）与Java堆一样，是各个线程共享的内存区域，类的所有字段和方法的字节码，以及一些特殊方法如构造函数，接口代码也在此定义。简单说，所有定义的方法的信息都保存在该区域，静态变量+常量+类信息（构造方法/接口定义）+运行时常量池都存在方法区中</p>
+<p>（1.3）程序计数器（Program Counter Register）
+程序计数器（Program Counter Register）是一块较小的内存空间，它的作用可以看做是当前线程所执行的字节码的行号指示器。他是线程私有的。可看做一个指针，指向方法区中的方法字节码（用来存储指向下一跳指令的地址，也即将要执行的指令代码），由执行引擎读取下一条指令，是一个非常小的内存空间，几乎可以忽略不计。
+每个方法在运行时都存储着一个独立的程序计数器，程序计数器是指定程序运行的行数指针。</p>
+<p>（1.4）JVM栈（JVM Stacks）
+与程序计数器一样，Java虚拟机栈（Java Virtual Machine Stacks）也是线程私有的，它的生命周期与线程相同。Java栈描述的是Java方法执行的内存模型：一个线程对应一个栈，每个方法被执行的时候都会同时创建一个栈帧（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法被调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中从入栈到出栈的过程。不存在垃圾回收问题，只要线程已结束栈就出栈，生命周期与线程一致。
+方法出口指向下次执行的栈帧（方法）</p>
+<p>内存说明：
+基础数据类型直接在栈空间分配
+方法的形式参数直接在栈空间分配，方法调用完成后从栈空间回收
+引用数据类型，需要用new来创建，既在栈空间分配一个地址空间，又在堆空间分配对象的类变量。栈中的地址空间指向堆空间的对象区。
+方法的引用参数，在栈空间分配一个地址空间，指向堆空间的对象区，方法调用完成后从栈空间回收。
+创建new的局部变量，在栈中和堆中分配空间，当局部变量生命周期结束后，栈空间立刻回收，堆空间区域等待GC回收。
+字符串常量,static静态变量在方法区分配空间。</p>
+<p>（1.5）本地方法栈（Native Method Stacks）
+线程私有，可理解为java中jni调用。用于支持native方法执行，存储了每个native方法调用的状态。本地方法栈（Native Method Stacks）与虚拟机栈所发挥的作用是非常相似的，其区别不过是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的Native方法服务。执行引擎通过本地方法接口，利用本地方法库（C语言库）执行。</p>
+<p>（2）对象分配规则
+对象优先分配在Eden区，如果Eden区没有足够的空间时，虚拟机执行一次Minor GC。
+大对象直接进入老年代（大对象是指需要大量连续内存空间的对象）。这样做的目的是避免在Eden区和两个Survivor区之间发生大量的内存拷贝（新生代采用复制算法收集内存）。
+长期存活的对象进入老年代。虚拟机为每个对象定义了一个年龄计数器，如果对象经过了1次Minor GC那么对象会进入Survivor区，之后每经过一次Minor GC那么对象的年龄加1，知道达到阀值对象进入老年区。
+动态判断对象的年龄。如果Survivor区中相同年龄的所有对象大小的总和大于Survivor空间的一半，年龄大于或等于该年龄的对象可以直接进入老年代。
+空间分配担保。每次进行Minor GC时，JVM会计算Survivor区移至老年区的对象的平均大小，如果这个值大于老年区的剩余值大小则进行一次Full GC，如果小于检查HandlePromotionFailure设置，如果true则只进行Monitor GC,如果false则进行Full GC。</p>
+<h3 id="4gc算法-垃圾回收">4.GC算法 垃圾回收</h3>
+<p>垃圾回收(Garbage Collection)是Java虚拟机(JVM)垃圾回收器提供的一种用于在空闲时间不定时回收无任何对象引用的对象占据的内存空间的一种机制。 注意：垃圾回收回收的是无任何引用的对象占据的内存空间而不是对象本身。换言之，垃圾回收只会负责释放那些对象占有的内存。对象是个抽象的词，包括引用和其占据的内存空间。当对象没有任何引用时其占据的内存空间随即被收回备用，此时对象也就被销毁。但不能说是回收对象，可以理解为一种文字游戏。
+引用：如果Reference类型的数据中存储的数值代表的是另外一块内存的起始地址，就称这块内存代表着一个引用。
+垃圾：无任何对象引用的对象。
+回收：清理“垃圾”占用的内存空间而非对象本身。
+发生地点：一般发生在堆内存中，因为大部分的对象都储存在堆内存中。
+发生时间：程序空闲时间不定时回收。</p>
+<p>（1）对象的生命周期
+创建阶段(Created)
+在创建阶段系统通过下面的几个步骤来完成对象的创建过程：
+（1）为对象分配存储空间
+（2）开始构造对象
+（3）从超类到子类对static成员进行初始化
+（4）超累成员变量按顺序初始化，递归调用超累的构造方法
+（5）子类成员变量按顺序初始化，子类构造方法调用
+一旦对象被创建，并被分派给某些变量赋值，这个对象的状态就切换到应用状态
+应用阶段(In Use)
+对象至少被一个强引用持有。
+不可见阶段(Invisible)
+当一个对象处于不可见阶段时，说明程序本身不再持有该对象的任何强引用，虽然该这些引用仍然是存在着的。
+简单说就是程序的执行已经超出了该对象的作用域了。
+不可达阶段(Unreachable)
+对象处于不可达阶段是指该对象不再被任何强引用所持有。
+与“不可见阶段”相比，“不可见阶段”是指程序不再持有该对象的任何强引用，这种情况下，该对象仍可能被JVM等系统下的某些已装载的静态变量或线程或JNI等强引用持有着，这些特殊的强引用被称为”GC root”。存在着这些GC root会导致对象的内存泄露情况，无法被回收。
+收集阶段(Collected)
+当垃圾回收器发现该对象已经处于“不可达阶段”并且垃圾回收器已经对该对象的内存空间重新分配做好准备时，则对象进入了“收集阶段”。如果该对象已经重写了finalize()方法，则会去执行该方法的终端操作。
+不要重载finazlie()方法！原因有两点：
+（1）会影响JVM的对象分配与回收速度
+在分配该对象时，JVM需要在垃圾回收器上注册该对象，以便在回收时能够执行该重载方法；在该方法的执行时需要消耗CPU时间且在执行完该方法后才会重新执行回收操作，即至少需要垃圾回收器对该对象执行两次GC。
+（2）可能造成该对象的再次“复活”
+在finalize()方法中，如果有其它的强引用再次持有该对象，则会导致对象的状态由“收集阶段”又重新变为“应用阶段”。这个已经破坏了Java对象的生命周期进程，且“复活”的对象不利用后续的代码管理。</p>
+<p>终结阶段(Finalized)
+当对象执行完finalize()方法后仍然处于不可达状态时，则该对象进入终结阶段。在该阶段是等待垃圾回收器对该对象空间进行回收。
+对象空间重分配阶段(De-allocated)
+垃圾回收器对该对象的所占用的内存空间进行回收或者再分配了，则该对象彻底消失了，称之为“对象空间重新分配阶段”。
+（2）判断对象是否是垃圾算法
+（2.1）引用计数算法
+堆中每个对象（不是引用）都有一个引用计数器。当一个对象被创建并初始化赋值后，该变量计数设置为1。每当有一个地方引用它时，计数器值就加1（a = b， b被引用，则b引用的对象计数+1）。当引用失效时（一个对象的某个引用超过了生命周期（出作用域后）或者被设置为一个新值时），计数器值就减1。任何引用计数为0的对象可以被当作垃圾收集。当一个对象被垃圾收集时，它引用的任何对象计数减1。</p>
+<p>（2.2）根搜索算法
+首先了解一个概念：根集(Root Set)
+所谓根集(Root Set)就是正在执行的Java程序可以访问的引用变量（注意：不是对象）的集合(包括局部变量、参数、类变量)，程序可以使用引用变量访问对象的属性和调用对象的方法。 这种算法的基本思路：
+（1）通过一系列名为“GC Roots”的对象作为起始点，寻找对应的引用节点。
+（2）找到这些引用节点后，从这些节点开始向下继续寻找它们的引用节点。
+（3）重复（2）。
+（4）搜索所走过的路径称为引用链，当一个对象到GC Roots没有任何引用链相连时，就证明此对象是不可用的。
+Java和C#中都是采用根搜索算法来判定对象是否存活的。</p>
+<p>首先，垃圾回收器将某些特殊的对象定义为GC根对象。所谓的GC根对象包括：
+（1）虚拟机栈中引用的对象（栈帧中的本地变量表）；
+（2）方法区中的常量引用的对象；
+（3）方法区中的类静态属性引用的对象；
+（4）本地方法栈中JNI（Native方法）的引用对象。
+（5）活跃线程。</p>
+<p>接下来，垃圾回收器会对内存中的整个对象图进行遍历，它先从GC根对象开始，然后是根对象引用的其它对象，比如实例变量。回收器将访问到的所有对象都标记为存活。 存活对象在上图中被标记为蓝色。当标记阶段完成了之后，所有的存活对象都已经被标记完了。其它的那些（上图中灰色的那些）也就是GC根对象不可达的对象，也就是说你的应用不会再用到它们了。这些就是垃圾对象，回收器将会在接下来的阶段中清除它们。</p>
+<p>（3）GC算法
+GC最基础的算法有三种：标记 -清除算法、复制算法、标记-压缩算法，我们常用的垃圾回收器一般都采用分代收集算法。</p>
+<p>（3.1）标记 -清除算法
+“标记-清除”（Mark-Sweep）算法，如它的名字一样，算法分为“标记”和“清除”两个阶段：首先标记出所有需要回收的对象，在标记完成后统一回收掉所有被标记的对象。
+内存中的对象构成一棵树，当有效的内存被耗尽的时候，程序就会停止，做两件事，第一：标记，标记从树根可达的对象（途中水红色），第二：清除（清楚不可达的对象）。标记清除的时候有停止程序运行，如果不停止，此时如果存在新产生的对象，这个对象是树根可达的，但是没有被标记（标记已经完成了），会清除掉。</p>
+<p>缺点：递归效率低性能低；释放空间不连续容易导致内存碎片；会停止整个程序运行；</p>
+<p>（3.2）复制算法
+“复制”（Copying）的收集算法，它将可用内存按容量划分为大小相等的两块，每次只使用其中的一块。当这一块的内存用完了，就将还存活着的对象复制到另外一块上面，然后再把已使用过的内存空间一次清理掉。
+把内存分成两块区域：空闲区域和活动区域，第一还是标记（标记谁是可达的对象），标记之后把可达的对象复制到空闲区，将空闲区变成活动区，同时把以前活动区对象1，4清除掉，变成空闲区。</p>
+<p>速度快但耗费空间，假定活动区域全部是活动对象，这个时候进行交换的时候就相当于多占用了一倍空间，但是没啥用。</p>
+<p>（3.3）标记-压缩算法
+标记过程仍然与“标记-清除”算法一样，但后续步骤不是直接对可回收对象进行清理，而是让所有存活的对象都向一端移动，然后直接清理掉端边界以外的内存
+分代收集算法，“分代收集”（Generational Collection）算法，把Java堆分为新生代和老年代，这样就可以根据各个年代的特点采用最适当的收集算法。</p>
+<p>JVM垃圾回收分代收集算法：
+综合了上述算法优略
+1， 分代GC在新生代的算法：采用了GC的复制算法，速度快，因为新生代一般是新对象，都是瞬态的用了可能很快被释放的对象。
+2， 分代GC在年老代的算法 标记／整理算法，GC后会执行压缩，整理到一个连续的空间，这样就维护着下一次分配对象的指针，下一次对象分配就可以采用碰撞指针技术，将新对象分配在第一个空闲的区域。</p>
+<p>（4）垃圾回收器
+Java中Stop-The-World机制简称STW，是在执行垃圾收集算法时，Java应用程序的其他所有线程都被挂起（除了垃圾收集帮助器之外）。Java中一种全局暂停现象，全局停顿，所有Java代码停止，native代码可以执行，但不能与JVM交互；这些现象多半是由于gc引起。</p>
+<p>（4.1）串行垃圾回收器
+串行垃圾回收器通过持有应用程序所有的线程进行工作。它为单线程环境设计，只使用一个单独的线程进行垃圾回收，通过冻结所有应用程序线程进行工作，所以可能不适合服务器环境。它最适合的是简单的命令行程序（单CPU、新生代空间较小及对暂停时间要求不是非常高的应用）。是client级别默认的GC方式。</p>
+<p>（4.2）并行垃圾回收器
+并行垃圾回收器也叫做 throughput collector 。它是JVM的默认垃圾回收器。与串行垃圾回收器不同，它使用多线程进行垃圾回收。相似的是，当执行垃圾回收的时候它也会冻结所有的应用程序线程。
+适用于多CPU、对暂停时间要求较短的应用上，是server级别默认采用的GC方式。</p>
+<p>（4.3）并发标记扫描垃圾回收器
+并发标记垃圾回收使用多线程扫描堆内存，标记需要清理的实例并且清理被标记过的实例。并发标记垃圾回收器只会在下面两种情况持有应用程序所有线程。
+（1）当标记的引用对象在Tenured区域；
+（2）在进行垃圾回收的时候，堆内存的数据被并发的改变。
+相比并行垃圾回收器，并发标记扫描垃圾回收器使用更多的CPU来确保程序的吞吐量。如果我们可以为了更好的程序性能分配更多的CPU，那么并发标记上扫描垃圾回收器是更好的选择相比并发垃圾回收器。</p>
+<h3 id="5gc分析-命令调优">5.GC分析 命令调优</h3>
+<p>JVM调优，调的是什么？
+每一次Full GC都会使JVM停止运行–&gt;使Full GC不执行，使Minor GC尽可能少地执行</p>
+<p>（1）GC日志分析
+摘录GC日志一部分</p>
+<p>（2）调优命令
+Sun JDK监控和故障处理命令有jps jstat jmap jhat jstack jinfo</p>
+<p>jps，JVM Process Status Tool,显示指定系统内所有的HotSpot虚拟机进程。
+jstat，JVM statistics Monitoring是用于监视虚拟机运行时状态信息的命令，它可以显示出虚拟机进程中的类装载、内存、垃圾收集、JIT编译等运行数据。
+jmap，JVM Memory Map命令用于生成heap dump文件
+jhat，JVM Heap Analysis Tool命令是与jmap搭配使用，用来分析jmap生成的dump，jhat内置了一个微型的HTTP/HTML服务器，生成dump的分析结果后，可以在浏览器中查看
+jstack，用于生成java虚拟机当前时刻的线程快照。
+jinfo，JVM Configuration info 这个命令作用是实时查看和调整虚拟机运行参数。</p>
+<p>（3）调优工具
+常用调优工具分为两类,jdk自带监控工具：jconsole和jvisualvm，第三方有：MAT(Memory Analyzer Tool)、GChisto。</p>
+<p>jconsole，Java Monitoring and Management Console是从java5开始，在JDK中自带的java监控和管理控制台，用于对JVM中内存，线程和类等的监控
+jvisualvm，jdk自带全能工具，可以分析内存快照、线程快照；监控内存变化、GC变化等。
+MAT，Memory Analyzer Tool，一个基于Eclipse的内存分析工具，是一个快速、功能丰富的Java heap分析工具，它可以帮助我们查找内存泄漏和减少内存消耗
+GChisto，一款专业分析gc日志的工具</p>
+<p>（4）减少GC开销的措施
+根据上述GC的机制,程序的运行会直接影响系统环境的变化,从而影响GC的触发。若不针对GC的特点进行设计和编码,就会出现内存驻留等一系列负面影响。为了避免这些影响,基本的原则就是尽可能地减少垃圾和减少GC过程中的开销。具体措施包括以下几个方面:
+(1)不要显式调用System.gc()
+此函数建议JVM进行主GC,虽然只是建议而非一定,但很多情况下它会触发主GC,从而增加主GC的频率,也即增加了间歇性停顿的次数。
+(2)尽量减少临时对象的使用
+临时对象在跳出函数调用后,会成为垃圾,少用临时变量就相当于减少了垃圾的产生,从而延长了出现上述第二个触发条件出现的时间,减少了主GC的机会。
+(3)对象不用时最好显式置为Null
+一般而言,为Null的对象都会被作为垃圾处理,所以将不用的对象显式地设为Null,有利于GC收集器判定垃圾,从而提高了GC的效率。
+(4)尽量使用StringBuffer,而不用String来累加字符串
+由于String是固定长的字符串对象,累加String对象时,并非在一个String对象中扩增,而是重新创建新的String对象,如Str5=Str1+Str2+Str3+Str4,这条语句执行过程中会产生多个垃圾对象,因为对次作“+”操作时都必须创建新的String对象,但这些过渡对象对系统来说是没有实际意义的,只会增加更多的垃圾。避免这种情况可以改用StringBuffer来累加字符串,因StringBuffer是可变长的,它在原有基础上进行扩增,不会产生中间对象。
+(5)能用基本类型如Int,Long,就不用Integer,Long对象
+基本类型变量占用的内存资源比相应对象占用的少得多,如果没有必要,最好使用基本变量。
+(6)尽量少用静态对象变量
+静态变量属于全局变量,不会被GC回收,它们会一直占用内存。
+(7)分散对象创建或删除的时间
+集中在短时间内大量创建新对象,特别是大对象,会导致突然需要大量内存,JVM在面临这种情况时,只能进行主GC,以回收内存或整合内存碎片,从而增加主GC的频率。集中删除对象,道理也是一样的。它使得突然出现了大量的垃圾对象,空闲空间必然减少,从而大大增加了下一次创建新对象时强制主GC的机会。</p>
+<h3 id="6执行引擎">6.执行引擎</h3>
+<p>分配给运行时数据区的字节码将由执行引擎执行。执行引擎读取字节码并逐段执行。
+解释器能快速的解释字节码，但执行却很慢。 解释器的缺点就是,当一个方法被调用多次，每次都需要重新解释。</p>
+<h3 id="7java代码编译和执行整个过程">7.Java代码编译和执行整个过程</h3>
+<p>开发人员编写Java代码(.java文件)，然后将之编译成字节码(.class文件)，再然后字节码被类加载器装入内存，一旦字节码进入虚拟机，它就会被解释器（执行引擎）解释执行。
+步骤1：Java代码编译是由Java源码编译器来完成，也就是Java代码到JVM字节码（.class文件）的过程。</p>
+<p>步骤2：Java字节码的执行是由JVM执行引擎来完成</p>
+<p>Java代码编译和执行的整个过程包含了三个重要机制：</p>
+<p>Java源码编译机制
+类加载机制
+类执行机制</p>
+<p>1、Java源码编译机制
+Java源码编译由以下三个过程组成：</p>
+<p>分析和输入到符号表
+注解处理
+语义分析和生成class文件</p>
+<p>最后生成的class文件由以下部分组成：
+①结构信息：包括class文件格式版本号及各部分的数量与大小的信息
+②元数据：对应于Java源码中声明与常量的信息。包含类/继承的超类/实现的接口的声明信息、域与方法声明信息和常量池
+③方法信息：对应Java源码中语句和表达式对应的信息。包含字节码、异常处理器表、求值栈与局部变量区大小、求值栈的类型记录、调试符号信息
+例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">//Math.java
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Math</span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Integer CONSTANT_1 <span style="color:#f92672">=</span> <span style="color:#ae81ff">666</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Object obj <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Object<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">math</span><span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">int</span> a <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">int</span> b <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">int</span> c <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>a<span style="color:#f92672">+</span>b<span style="color:#f92672">)*</span><span style="color:#ae81ff">10</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> c<span style="color:#f92672">;</span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">){</span>
+</span></span><span style="display:flex;"><span>		Math math <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Math<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>		Math math2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Math<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>		System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>math<span style="color:#f92672">.</span><span style="color:#a6e22e">math</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>使用javac Math.java编译生成Math.class文件，再调用javap Math.class &gt; Math.txt进行反编译生成可读的字节码文件
+Math.txt</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Compiled from <span style="color:#e6db74">&#34;Math.java&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Math</span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>	Math<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>	Code<span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ae81ff">0</span><span style="color:#f92672">:</span>aload_0
+</span></span><span style="display:flex;"><span>	<span style="color:#ae81ff">1</span><span style="color:#f92672">:</span>invokespecial <span style="color:#960050;background-color:#1e0010">#</span><span style="color:#ae81ff">1</span>		<span style="color:#75715e">//Method java/lang/Object.&#34;&lt;init&gt;&#34;:()V
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#ae81ff">4</span><span style="color:#f92672">:</span><span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">math</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>  Code<span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">//int a = 1;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#ae81ff">0</span><span style="color:#f92672">:</span>iconst_1	<span style="color:#75715e">//将Int类型常量1压入操作数栈（操作数栈：操作数栈用于对操作数进行中间的承接）
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span>istore_1	<span style="color:#75715e">//将int类型值存入局部变量1 （将操作数1出栈并放入局部变量栈a）
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">//int b =2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#ae81ff">2</span><span style="color:#f92672">:</span>iconst_2
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">3</span><span style="color:#f92672">:</span>istore_2
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">4</span><span style="color:#f92672">:</span>iload_1	<span style="color:#75715e">//从局部变量1中装载int类型值（获得a的值1）将1压入操作数栈
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#ae81ff">5</span><span style="color:#f92672">:</span>iload_2 <span style="color:#75715e">//将2压入操作数栈
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#ae81ff">6</span><span style="color:#f92672">:</span>iadd	<span style="color:#75715e">//执行加法：操作数栈从栈中弹出2个操作数（1，2），执行加法操作数后得到结果3，重新压入栈
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#ae81ff">7</span><span style="color:#f92672">:</span>bipush	<span style="color:#ae81ff">10</span><span style="color:#75715e">//将整数10压入栈
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#ae81ff">9</span><span style="color:#f92672">:</span>imul	<span style="color:#75715e">//执行乘法运算
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#ae81ff">10</span><span style="color:#f92672">:</span>istore_3<span style="color:#75715e">//将int类型存入局部变量栈
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#ae81ff">11</span><span style="color:#f92672">:</span>iload_3<span style="color:#75715e">//加载局部变量3并返回
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#ae81ff">12</span><span style="color:#f92672">:</span>ireturn
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>java<span style="color:#f92672">.</span><span style="color:#a6e22e">lang</span><span style="color:#f92672">.</span><span style="color:#a6e22e">String</span><span style="color:#f92672">[]);</span>
+</span></span><span style="display:flex;"><span>  Code<span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">0</span><span style="color:#f92672">:</span><span style="color:#66d9ef">new</span> <span style="color:#960050;background-color:#1e0010">#</span><span style="color:#ae81ff">2</span>				<span style="color:#75715e">//class Math
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#ae81ff">3</span><span style="color:#f92672">:</span>dup
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">4</span><span style="color:#f92672">:</span>invokespecial <span style="color:#960050;background-color:#1e0010">#</span><span style="color:#ae81ff">3</span>	<span style="color:#75715e">//Method&#34;&lt;init&gt;&#34;:()V
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#ae81ff">7</span><span style="color:#f92672">:</span>astore_1
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">8</span><span style="color:#f92672">:</span>getstatic <span style="color:#960050;background-color:#1e0010">#</span><span style="color:#ae81ff">4</span>			<span style="color:#75715e">//Field java/lang/System.out:L java/io/PrintStream;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#ae81ff">11</span><span style="color:#f92672">:</span>aload_1
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">12</span><span style="color:#f92672">:</span>invokevirtual <span style="color:#960050;background-color:#1e0010">#</span><span style="color:#ae81ff">5</span>	<span style="color:#75715e">//Method math:()I
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#ae81ff">15</span><span style="color:#f92672">:</span>invokevirtual <span style="color:#960050;background-color:#1e0010">#</span><span style="color:#ae81ff">6</span>	<span style="color:#75715e">//Method java/io/PrintStream.println:(I)V
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#ae81ff">18</span><span style="color:#f92672">:</span><span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>2、类加载机制
+JVM类加载通过ClassLoader及其子类完成的，类的层次关系和加载顺序可以由下图描述：</p>
+<p>①Bootstrap ClassLoader
+负责加载JAVAHOME 中 jre/lib/rt.jar里所有的class ， 由C++实现 ， 不是ClassLoader子类 ② ExtensionClassLoader负责加载java平台中 扩展功能的一些jar包，包括JAVA_HOME中jre/lib/rt.jar里所有的class，由C++实现，不是ClassLoader子类 ②Extension ClassLoader 负责加载java平台中扩展功能的一些jar包，包括JAVAHOME中jre/lib/rt.jar里所有的class，由C++实现，不是ClassLoader子类②ExtensionClassLoader负责加载java平台中扩展功能的一些jar包，包括JAVA_HOME中jre/lib/*.jar或-Djava.ext.dirs指定目录下的jar包
+③App ClassLoader
+负责记载classpath中指定的jar包及目录中class
+④Custom ClassLoader
+属于应用程序根据自身需要自定义的ClassLoader，如tomcat、jboss都会根据j2ee规范自行实现ClassLoader</p>
+<p>加载过程中会先检查类是否被已加载，检查顺序是自底向上，从Custom ClassLoader到BootStrap ClassLoader逐层检查，只要某个classloader已加载就视为已加载此类，保证此类只所有ClassLoader加载一次。而加载的顺序是自顶向下，也就是由上层来逐层尝试加载此类。</p>
+<p>3、类执行机制
+JVM是基于堆栈的虚拟机。JVM为每个新创建的线程都分配一个堆栈.也就是说,对于一个Java程序来说，它的运行就是通过对堆栈的操作来完成的。堆栈以帧为单位保存线程的状态。JVM对堆栈只进行两种操作:以帧为单位的压栈和出栈操作。</p>
+<p>JVM执行class字节码，线程创建后，都会产生程序计数器（PC）和栈（Stack），程序计数器存放下一条要执行的指令在方法内的偏移量，栈中存放一个个栈帧，每个栈帧对应着每个方法的每次调用，而栈帧又是有局部变量区和操作数栈两部分组成，局部变量区用于存放方法中的局部变量和参数，操作数栈中用于存放方法执行过程中产生的中间结果。</p>
+<p>例：
+调用java Math.class，即采用执行引擎去执行Java文件。开启一个进程，其中主线程以main方法为入口执行执行Math类文件。线程在运行时，JVM为每一个线程分配一个独立的java栈，java栈里存储着栈帧，每个栈帧存储着每个方法运行时的局部变量、数据。本例Math.java存储着两个栈帧，一个为指向main方法的栈帧，一个为指向math函数的栈帧。</p>
+<h3 id="8java虚拟机和dalvik虚拟机区别">8.Java虚拟机和Dalvik虚拟机区别</h3>
+<p>java虚拟机运行的是Java字节码，Dalvik虚拟机运行的是Dalvik字节码；传统的Java程序经过编译，生成Java字节码保存在class文件中，java虚拟机通过解码class文件中的内容来运行程序。而Dalvik虚拟机运行的是Dalvik字节码，所有的Dalvik字节码由Java字节码转换而来，并被打包到一个DEX(Dalvik Executable)可执行文件中Dalvik虚拟机通过解释Dex文件来执行这些字节码。
+Dalvik可执行文件体积更小。SDK中有一个叫dx的工具负责将java字节码转换为Dalvik字节码。
+java虚拟机与Dalvik虚拟机架构不同。java虚拟机基于栈架构。程序在运行时虚拟机需要频繁的从栈上读取或写入数据。这过程需要更多的指令分派与内存访问次数，会耗费不少CPU时间，对于像手机设备资源有限的设备来说，这是相当大的一笔开销。Dalvik虚拟机基于寄存器架构，数据的访问通过寄存器间直接传递，这样的访问方式比基于栈方式快的多.</p>
+<h3 id="9面试题">9.面试题</h3>
+<h4 id="1什么是class文件">1.什么是class文件？</h4>
+<p>java编译出来的字节码文件，我们都知道 Java 源文件，通过编译器，能够生产相应的.Class 文件，也就是字节码文件， 而字节码文件又通过Java虚拟机中的解释器，编译成特定机器上的机器码 。</p>
+<h4 id="2java代码执行流程">2.Java代码执行流程？</h4>
+<p>源文件-&gt;.class字节码文件-&gt;机器码（虚拟机解析字节码文件）</p>
+<h4 id="3java内存结构--内存模型">3.Java内存结构 &amp; 内存模型。</h4>
+<p>内存结构：PC、java栈（创建线程的时候，存放栈帧）、堆内存、常量池（存放各种字符串常量等，jdk8之后运行时常量池放在方法区（元空间），字符串常量池放在堆中）、方法区（类的信息（名称、修饰符等）、类中的静态常量、类中定义为final类型的常量、类中的Field信息、类中的方法信息）、本地方法栈（本地方法）</p>
+<p>内存模型：Java内存模型的主要目标是定义程序中各个变量的访问规则，即在JVM中将变量存储到内存和从内存中取出变量这样的底层细节。此处的变量与Java编程里面的变量有所不同步，它包含了实例字段、静态字段和构成数组对象的元素，但不包含局部变量和方法参数，因为后者是线程私有的，不会共享，当然不存在数据竞争问题（如果局部变量是一个reference引用类型，它引用的对象在Java堆中可被各个线程共享，但是reference引用本身在Java栈的局部变量表中，是线程私有的）。为了获得较高的执行效能，Java内存模型并没有限制执行引起使用处理器的特定寄存器或者缓存来和主内存进行交互，也没有限制即时编译器进行调整代码执行顺序这类优化措施。</p>
+<p>　　JMM规定了所有的变量都存储在主内存（Main Memory）中。每个线程还有自己的工作内存（Working Memory）,线程的工作内存中保存了该线程使用到的变量的主内存的副本拷贝，线程对变量的所有操作（读取、赋值等）都必须在工作内存中进行，而不能直接读写主内存中的变量（volatile变量仍然有工作内存的拷贝，但是由于它特殊的操作顺序性规定，所以看起来如同直接在主内存中读写访问一般）。不同的线程之间也无法直接访问对方工作内存中的变量，线程之间值的传递都需要通过主内存来完成。</p>
+<p>　　线程1和线程2要想进行数据的交换一般要经历下面的步骤：</p>
+<p>　　1.线程1把工作内存1中的更新过的共享变量刷新到主内存中去。</p>
+<p>　　2.线程2到主内存中去读取线程1刷新过的共享变量，然后copy一份到工作内存2中去。</p>
+<p>Java内存模型是围绕着并发编程中原子性、可见性、有序性这三个特征来建立的</p>
+<h4 id="4gc回收机制">4.GC回收机制。</h4>
+<p><img src="/post/java14jvm%E7%9B%B8%E5%85%B3/index.assets/image-20201024211247995-1621678376662.png"
+	width="734"
+	height="353"
+	srcset="/post/java14jvm%E7%9B%B8%E5%85%B3/index.assets/image-20201024211247995-1621678376662_hu290d6ba565e1906cb0a005f7e1939070_338294_480x0_resize_box_3.png 480w, /post/java14jvm%E7%9B%B8%E5%85%B3/index.assets/image-20201024211247995-1621678376662_hu290d6ba565e1906cb0a005f7e1939070_338294_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="image-20201024211247995"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="207"
+		data-flex-basis="499px"
+	
+></p>
+<p>前面6种用于分代模型，后面3种用于分区模型，Epsilon用于debug，没用，跟踪垃圾回收过程。</p>
+<p>jdk1.8分代模型居多，可以用G1，默认PS+PO</p>
+<p><img src="/post/java14jvm%E7%9B%B8%E5%85%B3/index.assets/image-20201024213419019-1621678376662.png"
+	width="711"
+	height="321"
+	srcset="/post/java14jvm%E7%9B%B8%E5%85%B3/index.assets/image-20201024213419019-1621678376662_hu22bddfbd6a836415a94506d812babe1b_302878_480x0_resize_box_3.png 480w, /post/java14jvm%E7%9B%B8%E5%85%B3/index.assets/image-20201024213419019-1621678376662_hu22bddfbd6a836415a94506d812babe1b_302878_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="image-20201024213419019"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="221"
+		data-flex-basis="531px"
+	
+></p>
+<p>从计算机组成的角度来讲，所有的程序都是要驻留在内存中运行的。而内存是一个限制因素(大小)。除此之外，托管堆也有大小限制。因为地址空间和存储的限制因素，托管堆要通过垃圾回收机制，来维持它的正常运作，保证对象的分配，尽可能不造成“内存溢出”。</p>
+<p>GC如其名，就是<strong>垃圾收集，当然这里仅就内存而言</strong>。Garbage Collector（垃圾收集器）以应用程序的root为基础，遍历应用程序在Heap上动态分配的所有对象，通过识别它们是否被引用来确定哪些对象是已经死亡的、哪些仍需要被使用。已经不再被应用程序的root或者别的对象所引用的对象就是已经死亡的对象，即所谓的垃圾，垃圾判断方法：<strong>引用计数法和根可达算法</strong>。需要被回收（回收的是该对象占用的内存空间）。这就是GC工作的原理。为了实现这个原理，GC有多种算法。比较常见的算法有，<strong>Mark Sweep（标记清理法）</strong>，<strong>Copy Collection（复制收集法）</strong>,<strong>Mark Compress（标记压缩法）<strong>等等。目前主流的虚拟系统.NET CLR，Java VM和Rotor都是采用的</strong>Mark Sweep</strong>算法。</p>
+<p>JVM堆：分为**新生代、老年代（新域中的对象，经过了一定次数的GC循环后，被移入旧域 ）、元空间（永久代，存储类和方法对象，从配置的角度看，这个域是独立的，不包括在JVM堆内。默认为4M。）**其中新生代分为伊甸园、from幸存者区、to幸存者区（8：1：1）</p>
+<p><strong>垃圾回收的基本原理</strong>（算法思路都是一致的：把所有对象组成一个集合，或可以理解为树状结构，从树根开始找，只要可以找到的都是活动对象，如果找不到，这个对象就被回收了）</p>
+<p><strong>垃圾回收分为两个阶段：</strong></p>
+<p>标记 &ndash;&gt; 压缩标记的过程，其实就是判断对象是否可达的过程。当所有的根都检查完毕后，堆中将包含可达(已标记)与不可达(未标记)对象。标记完成后，进入压缩阶段。在这个阶段中，垃圾回收器线性的遍历堆，以寻找不可达对象的连续内存块。并把可达对象移动到这里以节约内存空间。</p>
+<p><strong>垃圾收集算法</strong></p>
+<p><strong>Mark-Sweep</strong> 标记清理算法</p>
+<p>阶段1: Mark-Sweep <strong>标记清除阶段</strong>，先假设heap中所有对象都可以回收，然后<strong>找出不能回收的对象，给这些对象打上标记</strong>，最后heap中没有打标记的对象都是可以被回收的；</p>
+<p>阶段2: Compact <strong>压缩阶段</strong>，对象回收之后heap内存<strong>空间变得不连续，在heap中移动这些对象，使他们重新从heap基地址开始连续排列（节省内存资源）</strong>。</p>
+<p>Heap内存经过回收、压缩之后，可以继续采用前面的heap内存分配方法， 即仅用一个指针记录heap分配的起始地址就可以。主要处理步骤：将线程挂起→确定roots→创建reachable objects graph→对象回收→heap压缩→指针修复。可以这样理解roots：heap中对象的引用关系错综复杂（交叉引用、循环引用），形成复杂的 graph，roots是CLR在heap之外可以找到的各种入口点。</p>
+<p>　　GC搜索roots的地方包括全局对象、静态变量、局部对象、函数调用参数、当前CPU寄存器中的对象指针（还有finalization queue）等。主要可以归为2种类型：已经初始化了的静态变量、线程仍在使用的对象（stack+CPU register）</p>
+<p>指针修复是因为compact过程移动了heap对象，对象地址发生变化，需要修复所有引用指针，包括stack、CPU register中的指针以及heap中其他对象的引用指针。</p>
+<p><strong>复制算法</strong></p>
+<p>新生代的内存被划分为一块较大的Eden空间和两块较小的Survivor空间，每次使用Eden和其中一块Survivor。每次回收时，将Eden和Survivor中还存活着的对象一次性复制到另外一块Survivor空间上，最后清理掉Eden和刚才用过的Survivor空间。HotSpot虚拟机默认Eden区和Survivor区的比例为8:1，意思是每次新生代中可用内存空间为整个新生代容量的90%。当然，我们没有办法保证每次回收都只有不多于10%的对象存活，当Survivor空间不够用时，需要依赖老年代进行分配担保（Handle Promotion）。</p>
+<p><strong>标记整理算法</strong></p>
+<p>与标记清理算法过程一样，只是不直接清理可回收对象，而是将所有存活对象移动到一端，之后清理边界之外的对象内存</p>
+<p>分代收集算法</p>
+<p>现代商用虚拟机基本都采用<strong>分代收集算法</strong>来进行垃圾回收。这种算法没什么特别的，无非是上面内容的<strong>结合</strong>罢了，根据对象的生命周期的不同将内存划分为几块，然后根据各块的特点采用最适当的收集算法。<strong>大批对象死去、少量对象存活的（新生代），使用复制算法</strong>，复制成本低；<strong>对象存活率高、没有额外空间进行分配担保的（老年代）</strong>，采用<strong>标记-清理算法或者标记-整理</strong>算法。</p>
+<p>CMS:并发标记清除</p>
+<h4 id="5java虚拟机是如何加载一个类的">5.Java虚拟机是如何加载一个类的？</h4>
+<p>Java 虚拟机将字节流转化为 Java 类的过程。这个过程可分为<strong>加载、链接以及初始化</strong>三大步骤。</p>
+<p>  加载是指查找字节流，并且据此创建类的过程。加载需要借助类加载器，在 Java 虚拟机中，类加载器使用了双亲委派模型，即<strong>接收到加载请求时，会先将请求转发给父类加载器。</strong></p>
+<p>  链接，是指<strong>将创建成的类合并至 Java 虚拟机</strong>中，使之能够执行的过程。链接还分验证、准备和解析三个阶段。其中，解析阶段为非必须的。</p>
+<p>  初始化，则是为标记为常量值的字段赋值**，以及执行 &lt; clinit &gt; 方法的过程。类的初始化仅会被执行一次，这个特性被用来实现单例的延迟初始化。**
+<img src="/post/java14jvm%E7%9B%B8%E5%85%B3/index.assets/20190505113300280.png"
+	width="442"
+	height="359"
+	srcset="/post/java14jvm%E7%9B%B8%E5%85%B3/index.assets/20190505113300280_hu0c8b0b4ebaec7ab8759ceafe5cec28ec_105768_480x0_resize_box_3.png 480w, /post/java14jvm%E7%9B%B8%E5%85%B3/index.assets/20190505113300280_hu0c8b0b4ebaec7ab8759ceafe5cec28ec_105768_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="在这里插入图片描述"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="123"
+		data-flex-basis="295px"
+	
+></p>
+<h4 id="6给我谈谈类加载器">6.给我谈谈类加载器。</h4>
+<p>每个编写的&quot;.java&quot;拓展名类文件都存储着需要执行的程序逻辑，这些&quot;.java&quot;文件经过Java编译器编译成拓展名为&quot;.class&quot;的文件，&quot;.class&quot;文件中保存着Java代码经转换后的虚拟机指令，当需要使用某个类时，虚拟机将会加载它的&quot;.class&quot;文件，并创建对应的class对象，将class文件加载到虚拟机的内存，这个过程称为类加载</p>
+<p><img src="/post/java14jvm%E7%9B%B8%E5%85%B3/index.assets/20170430160610299.png"
+	width="700"
+	height="317"
+	srcset="/post/java14jvm%E7%9B%B8%E5%85%B3/index.assets/20170430160610299_hudbc46bc2a915b54b328a421accfcdea0_111731_480x0_resize_box_3.png 480w, /post/java14jvm%E7%9B%B8%E5%85%B3/index.assets/20170430160610299_hudbc46bc2a915b54b328a421accfcdea0_111731_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="220"
+		data-flex-basis="529px"
+	
+></p>
+<ul>
+<li>
+<p>加载：类加载过程的一个阶段：通过一个类的完全限定查找此类字节码文件，并利用字节码文件创建一个Class对象</p>
+</li>
+<li>
+<p>验证：目的在于确保Class文件的字节流中包含信息符合当前虚拟机要求，不会危害虚拟机自身安全。主要包括四种验证，文件格式验证，元数据验证，字节码验证，符号引用验证。</p>
+</li>
+<li>
+<p>准备：为类变量(即static修饰的字段变量)分配内存并且设置该类变量的初始值即0(如static int i=5;这里只将i初始化为0，至于5的值将在初始化时赋值)，这里不包含用final修饰的static，因为final在编译的时候就会分配了，注意这里不会为实例变量分配初始化，类变量会分配在方法区中，而实例变量是会随着对象一起分配到Java堆中。</p>
+</li>
+<li>
+<p>解析：主要将常量池中的符号引用替换为直接引用的过程。符号引用就是一组符号来描述目标，可以是任何字面量，而直接引用就是直接指向目标的指针、相对偏移量或一个间接定位到目标的句柄。有类或接口的解析，字段解析，类方法解析，接口方法解析(这里涉及到字节码变量的引用，如需更详细了解，可参考《深入Java虚拟机》)。</p>
+</li>
+<li>
+<p>初始化：类加载最后阶段，若该类具有超类，则对其进行初始化，执行静态初始化器和静态初始化成员变量(如前面只初始化了默认值的static变量将会在这个阶段赋值，成员变量也将被初始化)。</p>
+<p>在虚拟机提供了3种类加载器，<strong>引导（Bootstrap）类加载器、扩展（Extension）类加载器、系统（System）类加载器（也称应用类加载器）</strong></p>
+<p>loadClass(String)</p>
+<p>该方法加载指定名称（包括包名）的二进制类型，该方法在JDK1.2之后不再建议用户重写但用户可以直接调用该方法，loadClass()方法是ClassLoader类自己实现的，该方法中的逻辑就是双亲委派模式的实现，其源码如下，loadClass(String name, boolean resolve)是一个重载方法，resolve参数代表是否生成class对象的同时进行解析相关操作。</p>
+<p>findClass(String)
+在JDK1.2之前，在自定义类加载时，总会去继承ClassLoader类并重写loadClass方法，从而实现自定义的类加载类，但是在JDK1.2之后已不再建议用户去覆盖loadClass()方法，而是建议把自定义的类加载逻辑写在findClass()方法中，从前面的分析可知，findClass()方法是在loadClass()方法中被调用的，当loadClass()方法中父加载器加载失败后，则会调用自己的findClass()方法来完成类加载，这样就可以保证自定义的类加载器也符合双亲委托模式。需要注意的是ClassLoader类中并没有实现findClass()方法的具体代码逻辑，取而代之的是抛出ClassNotFoundException异常，同时应该知道的是findClass方法通常是和defineClass方法一起使用的</p>
+<p>defineClass(byte[] b, int off, int len)
+defineClass()方法是用来将byte字节流解析成JVM能够识别的Class对象(ClassLoader中已实现该方法逻辑)，通过这个方法不仅能够通过class文件实例化class对象，也可以通过其他方式实例化class对象，如通过网络接收一个类的字节码，然后转换为byte字节流创建对应的Class对象，defineClass()方法通常与findClass()方法一起使用，一般情况下，在自定义类加载器时，会直接覆盖ClassLoader的findClass()方法并编写加载规则，取得要加载类的字节码后转换成流，然后调用defineClass()方法生成类的Class对象</p>
+<p>resolveClass(Class<!-- raw HTML omitted --> c)
+使用该方法可以使用类的Class对象创建完成也同时被解析。前面我们说链接阶段主要是对字节码进行验证，为类变量分配内存并设置初始值同时将字节码文件中的符号引用转换为直接引用。</p>
+<p>上述4个方法是ClassLoader类中的比较重要的方法，也是我们可能会经常用到的方法。</p>
+<p><strong>类加载器间的关系</strong>
+我们进一步了解类加载器间的关系(并非指继承关系)，主要可以分为以下4点</p>
+<ul>
+<li>启动类加载器，由C++实现，没有父类。</li>
+<li>拓展类加载器(ExtClassLoader)，由Java语言实现，父类加载器为null</li>
+<li>系统类加载器(AppClassLoader)，由Java语言实现，父类加载器为ExtClassLoader</li>
+<li>自定义类加载器，父类加载器肯定为AppClassLoader。</li>
+</ul>
+</li>
+</ul>
+<h4 id="7谈谈static编译运行时的流程在虚拟机中如何保存的">7.谈谈static编译运行时的流程，在虚拟机中如何保存的？</h4>
+<p>当类第一次被调用时加载（静态方法，静态属性的加载就是类加载）。保存在方法区中</p>
+<p>1、类中的静态属性会被加入到类对象（也可以叫做类的模板，是类的描述） 的构造器中，静态方法也会被加入到类对象中。</p>
+<p>2、当第一次使用类时，JVM会通过类加载器，加载类对象，从而初始化静态属性，并装入类的方法，包括静态方法和实例方法（方法不会被调用，只是加载，从这个意义上来说，静态方法和实例方法是类似的）。</p>
+<p>3、当创建类的实例对象时，JVM会调用类的构造器，从而初始化类的属性。</p>
+<h4 id="8说说java种的4种引用以及用法">8.说说Java种的4种引用以及用法？</h4>
+<p>强、软、弱、虚</p>
+<p>一般的写法就是强引用，只要有被强引用的对象，不会被GC回收</p>
+<p>软引用在内存充足的时候不会被GC回收，内存不足才会回收，可以用作缓存</p>
+<p>弱引用在GC必定会回收</p>
+<p>虚引用可以用来管理堆外内存，引用队列里面有对象的虚引用才可以回收该对象</p>
+<h4 id="9如何判断一个对象是死亡的">9.如何判断一个对象是死亡的？</h4>
+<p>有以下两种算法判断对象实例是否死亡：
+1、引用计数算法：给每个对象添加一个引用计数器，当有对象引用时加1，当引用失效时减1，任何<strong>引用计数器为0的对象实例</strong>就是不可能再被使用的——<strong>对象实例死亡</strong>。但它无法解决对象相互引用的情况。
+2、可达性分析算法：通过一系列被称为**“GC Roots”的对象作为起始点，从这些节点开始向下搜索，搜索所走过的路径称为引用链，当一个对象到GC Roots没有任何引用链相连时，则说明此对象不能再被使用——对象实例已死亡**。可作为GC Roots的对象包括：<strong>虚拟机栈中引用的对象，方法区中类静态属性引用的对象，方法区常量引用的对象，本地方法栈中本地方法引用的对象</strong>。</p>
+<h4 id="10代码中直接调用systemgc会发生什么">10.代码中直接调用System.gc()会发生什么？</h4>
+<p>System.gc(); //告诉垃圾收集器打算进行垃圾收集，而垃圾收集器进不进行收集是不确定的，<code>justRanFinalization=true</code>的时候才会执行
+System.runFinalization(); //调用runFinalization()的时候<code>justRanFinalization</code>变为<code>true</code>，强制调用已经失去引用的对象的<strong>finalize</strong>方法，<strong>回收掉失去引用的对象以及回收掉所有内存不足情况下的软引用以及被弱引用的对象</strong></p>
+<h4 id="11一个强引用直接被null赋值那么这个对象会被立刻回收吗">11.一个强引用直接被null赋值，那么这个对象会被立刻回收吗？</h4>
+<p><strong>不一定会，会在GC的时候才被回收，并不是说一定立刻去释放。</strong></p>
+<h4 id="12string-a--abc在内存中创建了几个对象">12.String a = “a”+“b”+“c”;在内存中创建了几个对象？</h4>
+<p><strong>1个String对象</strong>
+&ldquo;a&rdquo;+&ldquo;b&rdquo;+&ldquo;c&quot;在编译期已经常量折叠为&quot;abc&rdquo;</p>
+<p>变量a获得是&quot;abc&quot;。</p>
+<h4 id="13谈谈你对字符集的理解">13.谈谈你对字符集的理解。</h4>
+<p>字符集可以理解成一个对照表，某种编码规则的字符集规定：机器内某个长度一定二进制数表示代表一个对应的字符</p>
+<p><strong>ASCII</strong> 0-127</p>
+<p><em>At the first start, computer is invented. The data is stored in computer by byte. The character is represented by one byte from 0 - 127. So the ASCII sums up 128 characters.</em></p>
+<p><strong>ISO8859</strong> <em>0-255</em></p>
+<p><em>It is similar with ASCII.</em></p>
+<p>属于单字节编码，最多能表示的字符范围是<em>0-255</em>，应用于英文系列。比如，字母*&lsquo;a&rsquo;<em>的编码为</em>0x61=97*。</p>
+<p><em><strong>*GB2312/GBK*</strong></em></p>
+<p>这就是汉字的国标码，专门用来表示汉字，变长的编码，英文字母和<em>ASCII</em>一致（兼容<em>ASCII</em>编码，用一个字节（<em>0-127</em>）表示）<em>,</em> <strong>一个汉字用两个字节</strong>表示，事实上，第一个字节是用扩展的<em>ASCII</em>（<em>128-255</em>）表示，而第二个字节是任何字节（<em>0-255</em>）。</p>
+<p><em><strong>*Unicode*</strong></em></p>
+<p><strong><em>For all the character used in different counties, a character is represented by 2 bytes, for example, “*<strong><strong>中国</strong></strong></em>”*</strong> <em><strong>*is encoded &ldquo;4e2d 6587&rdquo;, it is not compatible with*</strong></em> <em>ASCII and ISO8859. By default, windows can not show it, but if the sign <strong>FF EE</strong> exists, it can be shown as usual. But it is suitable for the intern processing in computer. The windows can not show it by default if the sign <strong>FF EE</strong> is not specified, and windows only show the UTF8(ASCII) and GB2312(ASCII).</em></p>
+<p>这是最统一的编码，可以用来表示所有语言的字符，而且是定长双字节（也有四字节的）编码，包括英文字母在内。所以可以说它是不兼容<em>iso8859-1</em>编码的，也不兼容任何编码。不过，相对于<em>iso8859-1</em>编码来说，<em>unicode</em>编码只是在前面增加了一个<em>0</em>字节，比如字母*&lsquo;a&rsquo;<em>为</em>&ldquo;00 61&rdquo;*。</p>
+<p><em><strong>*UTF-8*</strong></em></p>
+<p><em><strong>*UTF is variant character set, for the English, it is compatible with ASCII, so it stands for the English with one byte. Then for the Chinese, it use the 3 bytes to show it. For example,*</strong></em> <em>“<em>中国</em>” is encoded as &ldquo;e4b8ad e69687&rdquo; as UTF-8</em>。</p>
+<p>考虑到<em>unicode</em>编码不兼容<em>iso8859-1</em>编码，而且容易占用更多的空间：因为对于英文字母，<em>unicode</em>也需要两个字节来表示。所以<em>unicode</em>不便于传输和存储。因此而产生了<em>utf</em>编码，<em>utf</em>编码兼容<em>iso8859-1</em>编码，同时也可以用来表示所有语言的字符，不过，<em>utf</em>编码是不定长编码，每一个字符的<strong>长度从<em>1-6</em>个字节不等</strong>。另外，<em>utf</em>编码自带简单的校验功能。一般来讲，<strong>英文字母都是用一个字节</strong>表示，而<strong>汉字使用三个字节</strong>。</p>
+<h4 id="14常见的编码格式有哪些">14.常见的编码格式有哪些？</h4>
+<ul>
+<li>
+<p>ASCII 码</p>
+<ul>
+<li>　学过计算机的人都知道 ASCII 码，总共有 128 个，用一个字节的低 7 位表示，0~31 是控制字符如换行回车删除等；32~126 是打印字符，可以通过键盘输入并且能够显示出来。　</li>
+</ul>
+</li>
+<li>
+<p>ISO-8859-1（扩展ASCII编码）</p>
+<ul>
+<li>128 个字符显然是不够用的，于是 ISO 组织在 ASCII 码基础上又制定了一些列标准用来扩展 ASCII 编码，它们是 ISO-8859-1~ISO-8859-15，其中 ISO-8859-1 涵盖了大多数西欧语言字符，所有应用的最广泛。ISO-8859-1 仍然是单字节编码，它总共能表示 256 个字符。　　</li>
+</ul>
+</li>
+<li>
+<p>GB2312</p>
+<ul>
+<li>它的全称是《信息交换用汉字编码字符集 基本集》，它是双字节编码，总的编码范围是 A1-F7，其中从 A1-A9 是符号区，总共包含 682 个符号，从 B0-F7 是汉字区，包含 6763 个汉字。　</li>
+</ul>
+</li>
+<li>
+<p>GBK（扩展GB2312）</p>
+<ul>
+<li>全称叫《汉字内码扩展规范》，是国家技术监督局为 windows95 所制定的新的汉字内码规范，它的出现是为了扩展 GB2312，加入更多的汉字，它的编码范围是 8140~FEFE（去掉 XX7F）总共有 23940 个码位，它能表示 21003 个汉字，它的编码是和 GB2312 兼容的，也就是说用 GB2312 编码的汉字可以用 GBK 来解码，并且不会有乱码。　　</li>
+</ul>
+</li>
+<li>
+<p>GB18030（兼容GB2312）</p>
+<ul>
+<li>全称是《信息交换用汉字编码字符集》，是我国的强制标准，它可能是单字节、双字节或者四字节编码，它的编码与 GB2312 编码兼容，这个虽然是国家标准，但是实际应用系统中使用的并不广泛。　　</li>
+</ul>
+</li>
+<li>
+<p>Unicode编码集</p>
+<ul>
+<li>ISO 试图想创建一个全新的超语言字典，世界上所有的语言都可以通过这本字典来相互翻译。可想而知这个字典是多么的复杂，关于 Unicode 的详细规范可以参考相应文档。Unicode 是 Java 和 XML 的基础，下面详细介绍 Unicode 在计算机中的存储形式。</li>
+<li>UTF-16
+<ul>
+<li>UTF-16 具体定义了 Unicode 字符在计算机中存取方法。UTF-16 用两个字节来表示 Unicode 转化格式，这个是定长的表示方法，不论什么字符都可以用两个字节表示，两个字节是 16 个 bit，所以叫 UTF-16。UTF-16 表示字符非常方便，每两个字节表示一个字符，这个在字符串操作时就大大简化了操作，这也是 Java 以 UTF-16 作为内存的字符存储格式的一个很重要的原因。</li>
+</ul>
+</li>
+<li>UTF-8
+<ul>
+<li>UTF-16 统一采用两个字节表示一个字符，虽然在表示上非常简单方便，但是也有其缺点，有很大一部分字符用一个字节就可以表示的现在要两个字节表示，存储空间放大了一倍，在现在的网络带宽还非常有限的今天，这样会增大网络传输的流量，而且也没必要。而 UTF-8 采用了一种变长技术，每个编码区域有不同的字码长度。不同类型的字符可以是由 1~6 个字节组成。</li>
+<li>UTF-8 有以下编码规则：
+<ol>
+<li>如果一个字节，最高位（第 8 位）为 0，表示这是一个 ASCII 字符（00 - 7F）。可见，所有 ASCII 编码已经是 UTF-8 了。</li>
+<li>如果一个字节，以 11 开头，连续的 1 的个数暗示这个字符的字节数，例如：110xxxxx 代表它是双字节 UTF-8 字符的首字节。</li>
+<li>如果一个字节，以 10 开始，表示它不是首字节，需要向前查找才能得到当前字符的首字节</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="15utf-8中的中文占几个字节int型占几个字节">15.utf-8中的中文占几个字节？int型占几个字节？</h4>
+<p>3字节、4字节</p>
+<h4 id="16谈谈你对逻辑地址和物理地址的理解">16.谈谈你对逻辑地址和物理地址的理解？</h4>
+<p>逻辑地址：虚拟地址</p>
+<p>物理地址：在（内存）磁盘的地址</p>
+<h4 id="17你知道对象什么时候会回调finalize方法吗">17.你知道对象什么时候会回调finalize方法吗？</h4>
+<p>被GC回收的时候会回调finalize方法，GC强制调用runFinalization()的时候</p>
+<h4 id="18什么是java内存模型--java789内存模型的区别">18.什么是Java内存模型 &amp; Java7、8、9内存模型的区别.</h4>
+<p>内存模型：Java内存模型的主要目标是定义程序中各个变量的访问规则，即在JVM中将变量存储到内存和从内存中取出变量这样的底层细节。此处的变量与Java编程里面的变量有所不同步，它包含了实例字段、静态字段和构成数组对象的元素，但不包含局部变量和方法参数，因为后者是线程私有的，不会共享，当然不存在数据竞争问题（如果局部变量是一个reference引用类型，它引用的对象在Java堆中可被各个线程共享，但是reference引用本身在Java栈的局部变量表中，是线程私有的）。为了获得较高的执行效能，Java内存模型并没有限制执行引起使用处理器的特定寄存器或者缓存来和主内存进行交互，也没有限制即时编译器进行调整代码执行顺序这类优化措施。</p>
+<p>　　JMM规定了所有的变量都存储在主内存（Main Memory）中。每个线程还有自己的工作内存（Working Memory）,线程的工作内存中保存了该线程使用到的变量的主内存的副本拷贝，线程对变量的所有操作（读取、赋值等）都必须在工作内存中进行，而不能直接读写主内存中的变量（volatile变量仍然有工作内存的拷贝，但是由于它特殊的操作顺序性规定，所以看起来如同直接在主内存中读写访问一般）。不同的线程之间也无法直接访问对方工作内存中的变量，线程之间值的传递都需要通过主内存来完成。</p>
+<p>​</p>
+<p>　　线程1和线程2要想进行数据的交换一般要经历下面的步骤：</p>
+<p>　　1.线程1把工作内存1中的更新过的共享变量刷新到主内存中去。</p>
+<p>　　2.线程2到主内存中去读取线程1刷新过的共享变量，然后copy一份到工作内存2中去。</p>
+<p>Java内存模型是围绕着并发编程中原子性、可见性、有序性这三个特征来建立的.</p>
+<p><strong>所以对于方法区，Java8之后的变化：</strong></p>
+<ul>
+<li>移除了永久代（PermGen），替换为元空间（Metaspace）；</li>
+<li>永久代中的 class metadata 转移到了 native memory（本地内存，而不是虚拟机）；</li>
+<li>永久代中的 interned Strings 和 class static variables 转移到了 Java heap；</li>
+<li>永久代参数 （PermSize MaxPermSize） -&gt; 元空间参数（MetaspaceSize MaxMetaspaceSize）</li>
+</ul>
+<p>JDK1.8对JVM架构的改造<strong>将类元数据放到本地内存中</strong>，另外，<strong>将常量池和静态变量放到Java堆里</strong>。HotSpot VM将会为<strong>类的元数据明确分配和释放本地内存</strong>。在这种架构下，类元信息就突破了原来-XX:MaxPermSize的限制，现在可以<strong>使用更多的本地内存</strong>。这样就从一定程度上解决了原来在运行时生成大量类造成经常Full GC问题，如运行时使用反射、代理等。所以升级以后Java堆空间可能会增加。</p>
+<p>元空间的本质和永久代类似，都是对JVM规范中方法区的实现。不过元空间与永久代之间的最大区别在于：元空间并不在虚拟机中，而是使用本地内存。因此，默认情况下，<strong>元空间的大小仅受本地内存限制</strong></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2023 浩&amp;琳
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

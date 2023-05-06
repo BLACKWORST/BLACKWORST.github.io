@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='七、集合(容器) 数据结构是以某种形式将数据组织在一起的集合，它不仅存储数据，还支持访问和处理数据的操作。JDK提供了几个能有效地组织和操作数据的数据结构（位于java.util包），这些数据结构通常称为Java集合框架。
+1.常见集合类概述 在Java容器中一共定义了2种集合, 顶层接口分别是Collection和Map。但是这2个接口都不能直接被实现使用，分别代表两种不同类型的容器。 简单来看，Collection代表的是单个元素对象的序列，（可以有序/无序，可重复/不可重复 等，具体依据具体的子接口Set，List，Queue等）；Map代表的是“键值对”对象的集合（同样可以有序/无序 等依据具体实现）
+（1）Collection 集合接口 Collection是最基本的集合接口，存储对象元素集合。一个Collection代表一组Object（元素）。有些容器允许重复元素有的不允许，有些有序有些无需。由Collection接口派生的两个接口是List和Set。这个接口的设计目的是希望能最大程度抽象出元素的操作。 定义
+public interface Collection extends Iterable { &amp;hellip; } 泛型即该Collection中元素对象的类型，继承的Iterable是定义的一个遍历操作接口，采用hasNext next的方式进行遍历。具体实现还是放在具体类中去实现。 主要方法
+boolean add(Object o) 添加对象到集合 boolean remove(Object o) 删除指定的对象 int size() 返回当前集合中元素的数量 boolean contains(Object o) 查找集合中是否有指定的对象 boolean isEmpty() 判断集合是否为空 Iterator iterator() 返回一个迭代器 boolean containsAll(Collection c) 查找集合中是否有集合c中的元素 boolean addAll(Collection c) 将集合c中所有的元素添加给该集合 void clear() 删除集合中所有元素 void removeAll(Collection c) 从集合中删除c集合中也有的元素 void retainAll(Collection c) 从集合中删除集合c中不包含的元素
+1.1 ArrayList 1.ArrayList有用过吗？它是一个什么东西？可以用来干嘛？
+有用过，ArrayList就是数组列表，主要用来装载数据，当我们装载的是基本类型的数据int，long，boolean，short，byte…的时候我们只能存储他们对应的包装类，它的主要底层实现是数组Object[] elementData。
+与它类似的是LinkedList，和LinkedList相比，它的查找和访问元素的速度较快，但新增，删除的速度较慢。
+小结：ArrayList底层是用数组实现的存储。'>
+<title>Java（7）集合（容器）</title>
+
+<link rel='canonical' href='https://haolovelin.com/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/'>
+
+<link rel="stylesheet" href="/scss/style.min.5be32ca3f6e1a997c75795c4359147cc6d4fbd34948c0acd51e31d237033978a.css"><meta property='og:title' content='Java（7）集合（容器）'>
+<meta property='og:description' content='七、集合(容器) 数据结构是以某种形式将数据组织在一起的集合，它不仅存储数据，还支持访问和处理数据的操作。JDK提供了几个能有效地组织和操作数据的数据结构（位于java.util包），这些数据结构通常称为Java集合框架。
+1.常见集合类概述 在Java容器中一共定义了2种集合, 顶层接口分别是Collection和Map。但是这2个接口都不能直接被实现使用，分别代表两种不同类型的容器。 简单来看，Collection代表的是单个元素对象的序列，（可以有序/无序，可重复/不可重复 等，具体依据具体的子接口Set，List，Queue等）；Map代表的是“键值对”对象的集合（同样可以有序/无序 等依据具体实现）
+（1）Collection 集合接口 Collection是最基本的集合接口，存储对象元素集合。一个Collection代表一组Object（元素）。有些容器允许重复元素有的不允许，有些有序有些无需。由Collection接口派生的两个接口是List和Set。这个接口的设计目的是希望能最大程度抽象出元素的操作。 定义
+public interface Collection extends Iterable { &amp;hellip; } 泛型即该Collection中元素对象的类型，继承的Iterable是定义的一个遍历操作接口，采用hasNext next的方式进行遍历。具体实现还是放在具体类中去实现。 主要方法
+boolean add(Object o) 添加对象到集合 boolean remove(Object o) 删除指定的对象 int size() 返回当前集合中元素的数量 boolean contains(Object o) 查找集合中是否有指定的对象 boolean isEmpty() 判断集合是否为空 Iterator iterator() 返回一个迭代器 boolean containsAll(Collection c) 查找集合中是否有集合c中的元素 boolean addAll(Collection c) 将集合c中所有的元素添加给该集合 void clear() 删除集合中所有元素 void removeAll(Collection c) 从集合中删除c集合中也有的元素 void retainAll(Collection c) 从集合中删除集合c中不包含的元素
+1.1 ArrayList 1.ArrayList有用过吗？它是一个什么东西？可以用来干嘛？
+有用过，ArrayList就是数组列表，主要用来装载数据，当我们装载的是基本类型的数据int，long，boolean，short，byte…的时候我们只能存储他们对应的包装类，它的主要底层实现是数组Object[] elementData。
+与它类似的是LinkedList，和LinkedList相比，它的查找和访问元素的速度较快，但新增，删除的速度较慢。
+小结：ArrayList底层是用数组实现的存储。'>
+<meta property='og:url' content='https://haolovelin.com/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/'>
+<meta property='og:site_name' content='浩&amp;琳'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2021-06-04T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-06-04T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Java（7）集合（容器）">
+<meta name="twitter:description" content="七、集合(容器) 数据结构是以某种形式将数据组织在一起的集合，它不仅存储数据，还支持访问和处理数据的操作。JDK提供了几个能有效地组织和操作数据的数据结构（位于java.util包），这些数据结构通常称为Java集合框架。
+1.常见集合类概述 在Java容器中一共定义了2种集合, 顶层接口分别是Collection和Map。但是这2个接口都不能直接被实现使用，分别代表两种不同类型的容器。 简单来看，Collection代表的是单个元素对象的序列，（可以有序/无序，可重复/不可重复 等，具体依据具体的子接口Set，List，Queue等）；Map代表的是“键值对”对象的集合（同样可以有序/无序 等依据具体实现）
+（1）Collection 集合接口 Collection是最基本的集合接口，存储对象元素集合。一个Collection代表一组Object（元素）。有些容器允许重复元素有的不允许，有些有序有些无需。由Collection接口派生的两个接口是List和Set。这个接口的设计目的是希望能最大程度抽象出元素的操作。 定义
+public interface Collection extends Iterable { &amp;hellip; } 泛型即该Collection中元素对象的类型，继承的Iterable是定义的一个遍历操作接口，采用hasNext next的方式进行遍历。具体实现还是放在具体类中去实现。 主要方法
+boolean add(Object o) 添加对象到集合 boolean remove(Object o) 删除指定的对象 int size() 返回当前集合中元素的数量 boolean contains(Object o) 查找集合中是否有指定的对象 boolean isEmpty() 判断集合是否为空 Iterator iterator() 返回一个迭代器 boolean containsAll(Collection c) 查找集合中是否有集合c中的元素 boolean addAll(Collection c) 将集合c中所有的元素添加给该集合 void clear() 删除集合中所有元素 void removeAll(Collection c) 从集合中删除c集合中也有的元素 void retainAll(Collection c) 从集合中删除集合c中不包含的元素
+1.1 ArrayList 1.ArrayList有用过吗？它是一个什么东西？可以用来干嘛？
+有用过，ArrayList就是数组列表，主要用来装载数据，当我们装载的是基本类型的数据int，long，boolean，short，byte…的时候我们只能存储他们对应的包装类，它的主要底层实现是数组Object[] elementData。
+与它类似的是LinkedList，和LinkedList相比，它的查找和访问元素的速度较快，但新增，删除的速度较慢。
+小结：ArrayList底层是用数组实现的存储。">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu9f7a08366cc43f473c39f8f10558a931_55504_300x0_resize_box_3.png" width="300"
+                            height="332" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">浩&amp;琳</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+
+        <div class="menu-bottom-section">
+            
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>Dark Mode</span>
+                </li>
+            
+        </div>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/" style="background-color: #2a9d8f; color: #fff;">
+                编程学习
+            </a>
+        
+            <a href="/categories/javase/" style="background-color: #666666; color: #fff;">
+                JavaSE
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/">Java（7）集合（容器）</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jun 04, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    5 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="七集合容器">七、集合(容器)</h2>
+<p>数据结构是以某种形式将数据组织在一起的集合，它不仅存储数据，还支持访问和处理数据的操作。JDK提供了几个能有效地组织和操作数据的数据结构（位于java.util包），这些数据结构通常称为Java集合框架。</p>
+<h3 id="1常见集合类概述">1.常见集合类概述</h3>
+<p>在Java容器中一共定义了2种集合, 顶层接口分别是Collection和Map。但是这2个接口都不能直接被实现使用，分别代表两种不同类型的容器。
+简单来看，Collection代表的是单个元素对象的序列，（可以有序/无序，可重复/不可重复 等，具体依据具体的子接口Set，List，Queue等）；Map代表的是“键值对”对象的集合（同样可以有序/无序 等依据具体实现）</p>
+<p>（1）Collection 集合接口
+Collection是最基本的集合接口，存储对象元素集合。一个Collection代表一组Object（元素）。有些容器允许重复元素有的不允许，有些有序有些无需。由Collection接口派生的两个接口是List和Set。这个接口的设计目的是希望能最大程度抽象出元素的操作。
+定义</p>
+<p>public interface Collection<!-- raw HTML omitted --> extends Iterable<!-- raw HTML omitted --> {
+&hellip;
+}
+泛型即该Collection中元素对象的类型，继承的Iterable是定义的一个遍历操作接口，采用hasNext next的方式进行遍历。具体实现还是放在具体类中去实现。
+主要方法</p>
+<p>boolean add(Object o) 添加对象到集合
+boolean remove(Object o) 删除指定的对象
+int size() 返回当前集合中元素的数量
+boolean contains(Object o) 查找集合中是否有指定的对象
+boolean isEmpty() 判断集合是否为空
+Iterator iterator() 返回一个迭代器
+boolean containsAll(Collection c) 查找集合中是否有集合c中的元素
+boolean addAll(Collection c) 将集合c中所有的元素添加给该集合
+void clear() 删除集合中所有元素
+void removeAll(Collection c) 从集合中删除c集合中也有的元素
+void retainAll(Collection c) 从集合中删除集合c中不包含的元素</p>
+<h4 id="11-arraylist">1.1 ArrayList</h4>
+<p>1.ArrayList有用过吗？它是一个什么东西？可以用来干嘛？</p>
+<p>有用过，ArrayList就是数组列表，主要用来装载数据，当我们装载的是基本类型的数据int，long，boolean，short，byte…的时候我们只能存储他们对应的包装类，它的主要底层实现是数组Object[] elementData。</p>
+<p>与它类似的是LinkedList，和LinkedList相比，它的查找和访问元素的速度较快，但新增，删除的速度较慢。</p>
+<p><strong>小结</strong>：ArrayList底层是用数组实现的存储。</p>
+<p><strong>特点</strong>：查询效率高，增删效率低，线程不安全。使用频率很高。</p>
+<p>为啥线程 不安全还使用他呢？</p>
+<p>因为我们正常使用的场景中，都是用来查询，不会涉及太频繁的增删，如果涉及频繁的增删，可以使用LinkedList，如果你需要线程安全就使用Vector，这就是三者的区别了，实际开发过程中还是ArrayList使用最多的。</p>
+<p>不存在一个集合工具是查询效率又高，增删效率也高的，还线程安全的，至于为啥大家看代码就知道了，因为数据结构的特性就是优劣共存的，想找个平衡点很难，牺牲了性能，那就安全，牺牲了安全那就快速。</p>
+<h4 id="12-hashmap">1.2 HashMap</h4>
+<p>首先HashMap是<strong>线程不安全</strong>的，其主要体现：</p>
+<p>#1.在jdk1.7中，在多线程环境下，扩容时会造成环形链或数据丢失。</p>
+<p>#2.在jdk1.8中，在多线程环境下，会发生数据覆盖的情况。</p>
+<h3 id="2集合的一些相关问题">2.集合的一些相关问题</h3>
+<h4 id="21-说说java中集合的框架">2.1 说说Java中集合的框架？</h4>
+<p><strong>一、Java集合框架概述</strong></p>
+<p><img src="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1362965-20190118094735724-2129767713.png"
+	width="766"
+	height="355"
+	srcset="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1362965-20190118094735724-2129767713_hu8661f22fbe4860395b54e0aea538c3f7_50446_480x0_resize_box_3.png 480w, /post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1362965-20190118094735724-2129767713_hu8661f22fbe4860395b54e0aea538c3f7_50446_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="215"
+		data-flex-basis="517px"
+	
+></p>
+<p><img src="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1362965-20190118095106326-273814633.png"
+	width="693"
+	height="243"
+	srcset="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1362965-20190118095106326-273814633_hua80af142b428180847915ed109376722_31091_480x0_resize_box_3.png 480w, /post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1362965-20190118095106326-273814633_hua80af142b428180847915ed109376722_31091_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="285"
+		data-flex-basis="684px"
+	
+></p>
+<p>　　集合可以看作是一种容器，用来存储对象信息。所有集合类都位于java.util包下，但支持多线程的集合类位于java.util.concurrent包下。</p>
+<p>　　数组与集合的区别如下：</p>
+<p>　　1）数组长度不可变化而且无法保存具有映射关系的数据；集合类用于保存数量不确定的数据，以及保存具有映射关系的数据。</p>
+<p>　　2）数组元素既可以是基本类型的值，也可以是对象；集合只能保存对象。</p>
+<p>　　Java集合类主要由两个根接口Collection和Map派生出来的，Collection派生出了三个子接口：List、Set、Queue（Java5新增的队列），因此Java集合大致也可分成List、Set、Queue、Map四种接口体系，（注意：Map不是Collection的子接口）。</p>
+<p>　　其中List代表了有序可重复集合，可直接根据元素的索引来访问；Set代表无序不可重复集合，只能根据元素本身来访问；Queue是队列集合；Map代表的是存储key-value对的集合，可根据元素的key来访问value。</p>
+<p>　　上图中淡绿色背景覆盖的是集合体系中常用的实现类，分别是ArrayList、LinkedList、ArrayQueue、HashSet、TreeSet、HashMap、TreeMap等实现类。</p>
+<p><strong>二、Java集合常见接口及实现类</strong></p>
+<p><strong>1. Collection接口常见方法（来源于Java API）</strong></p>
+<p><img src="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1362965-20190111153657049-1511371305.png"
+	width="997"
+	height="793"
+	srcset="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1362965-20190111153657049-1511371305_hu73852fcff793b9edaf8a17e0a42dc29a_94283_480x0_resize_box_3.png 480w, /post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1362965-20190111153657049-1511371305_hu73852fcff793b9edaf8a17e0a42dc29a_94283_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="125"
+		data-flex-basis="301px"
+	
+></p>
+<p><strong>2. Set集合</strong></p>
+<p>　Set集合与Collection的方法相同，由于Set集合不允许存储相同的元素，所以如果把两个相同元素添加到同一个Set集合，则添加操作失败，新元素不会被加入，add()方法返回false。为了帮助理解，请看下面代码示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Test</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        Set<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> set <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashSet<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;();</span>
+</span></span><span style="display:flex;"><span>        set<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;hello world&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        set<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;hello 冰湖一角&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        set<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;hello 冰湖一角&#34;</span><span style="color:#f92672">);</span><span style="color:#75715e">//添加不进去
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;集合中元素个数：&#34;</span><span style="color:#f92672">+</span>set<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;集合中元素为：&#34;</span><span style="color:#f92672">+</span>set<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>运行结果如下：</p>
+<p>集合中元素个数：2
+集合中元素为：[hello world, hello 冰湖一角]</p>
+<p>分析：由于String类中重写了hashCode()和equals()方法，用来比较指向的字符串对象所存储的字符串是否相等。所以这里的第二个&quot;hello 冰湖一角&quot;是加不进去的。</p>
+<p>下面着重介绍Set集合几个常用实现类：</p>
+<p><strong>1）HashSet类</strong></p>
+<p>　　HashSet是Set集合最常用实现类，是其经典实现。HashSet是按照hash算法来存储元素的，因此具有很好的存取和查找性能。</p>
+<p>　　HashSet具有如下特点：</p>
+<p>　　♦ 不能保证元素的顺序。</p>
+<p>　　♦ HashSet不是线程同步的，如果多线程操作HashSet集合，则应通过代码来保证其同步。</p>
+<p>　　♦ 集合元素值可以是null。</p>
+<p>　　HashSet存储原理如下：</p>
+<p>　　当向HashSet集合存储一个元素时，HashSet会调用该对象的hashCode()方法得到其hashCode值，然后根据hashCode值决定该对象的存储位置。HashSet集合判断两个元素相等的标准是(1)两个对象通过equals()方法比较返回true；(2)两个对象的hashCode()方法返回值相等。因此，如果(1)和(2)有一个不满足条件，则认为这两个对象不相等，可以添加成功。如果两个对象的hashCode()方法返回值相等，但是两个对象通过equals()方法比较返回false，HashSet会以链式结构将两个对象保存在同一位置，这将导致性能下降，因此在编码时应避免出现这种情况。</p>
+<p>　　HashSet查找原理如下：</p>
+<p>　　基于HashSet以上的存储原理，在查找元素时，HashSet先计算元素的HashCode值（也就是调用对象的hashCode方法的返回值），然后直接到hashCode值对应的位置去取出元素即可，这就是HashSet速度很快的原因。</p>
+<p>　重写hashCode()方法的基本原则如下：</p>
+<p>　♦ 在程序运行过程中，同一个对象的hashCode()方法返回值应相同。</p>
+<p>　　♦ 当两个对象通过equals()方法比较返回true时，这两个对象的hashCode()方法返回值应该相等。</p>
+<p>　　♦ 对象中用作equals()方法比较标准的实例变量，都应该用于计算hashCode值。</p>
+<p><strong>2）LinkedHashSet类</strong></p>
+<p>　LinkedHashSet是HashSet的一个子类，具有HashSet的特性，也是根据元素的hashCode值来决定元素的存储位置。但它使用链表维护元素的次序，元素的顺序与添加顺序一致。由于LinkedHashSet需要维护元素的插入顺序，因此性能略低于HashSet，但在迭代访问Set里的全部元素时由很好的性能。</p>
+<p><strong>3）TreeSet类</strong></p>
+<p>　　TreeSet时SortedSet接口的实现类，TreeSet可以保证元素处于排序状态，它采用红黑树的数据结构来存储集合元素。TreeSet支持两种排序方法：自然排序和定制排序，默认采用自然排序。</p>
+<p>　　<strong>♦ 自然排序</strong></p>
+<p>　　TreeSet会调用集合元素的compareTo(Object obj)方法来比较元素的大小关系，然后将元素按照升序排列，这就是自然排序。如果试图将一个对象添加到TreeSet集合中，则该对象必须实现Comparable接口，否则会抛出异常。当一个对象调用方法与另一个对象比较时，例如obj1.compareTo(obj2)，如果该方法返回0，则两个对象相等；如果返回一个正数，则obj1大于obj2；如果返回一个负数，则obj1小于obj2。</p>
+<p>　　Java常用类中已经实现了Comparable接口的类有以下几个：</p>
+<p>　　♦ BigDecimal、BigDecimal以及所有数值型对应的包装类：按照它们对应的数值大小进行比较。</p>
+<p>　　♦ Charchter：按照字符的unicode值进行比较。</p>
+<p>　　♦ Boolean：true对应的包装类实例大于false对应的包装类实例。</p>
+<p>　　♦ String：按照字符串中的字符的unicode值进行比较。</p>
+<p>　　♦ Date、Time：后面的时间、日期比前面的时间、日期大。</p>
+<p>　　对于TreeSet集合而言，它判断两个对象是否相等的标准是：两个对象通过compareTo(Object obj)方法比较是否返回0，如果返回0则相等。</p>
+<p>　<strong>♦ 定制排序</strong></p>
+<p>　　想要实现定制排序，需要在创建TreeSet集合对象时，提供一个Comparator对象与该TreeSet集合关联，由Comparator对象负责集合元素的排序逻辑。</p>
+<p>　　综上：自然排序实现的是Comparable接口，定制排序实现的是Comparator接口。（具体代码实现会在后续章节中讲解）</p>
+<p><strong>4）EnumSet类</strong></p>
+<p>　　EnumSet是一个专为枚举类设计的集合类，不允许添加null值。EnumSet的集合元素也是有序的，它以枚举值在Enum类内的定义顺序来决定集合元素的顺序。</p>
+<p><strong>5）各Set实现类的性能分析</strong></p>
+<p>　　HashSet的性能比TreeSet的性能好（特别是添加，查询元素时），因为TreeSet需要额外的红黑树算法维护元素的次序，如果需要一个保持排序的Set时才用TreeSet，否则应该使用HashSet。</p>
+<p>　　LinkedHashSet是HashSet的子类，由于需要链表维护元素的顺序，所以插入和删除操作比HashSet要慢，但遍历比HashSet快。</p>
+<p>　　EnumSet是所有Set实现类中性能最好的，但它只能 保存同一个枚举类的枚举值作为集合元素。</p>
+<p>　　以上几个Set实现类都是线程不安全的，如果多线程访问，必须手动保证集合的同步性，这在后面的章节中会讲到。</p>
+<p><strong>3. List集合</strong></p>
+<p>　　List集合代表一个有序、可重复集合，集合中每个元素都有其对应的顺序索引。List集合默认按照元素的添加顺序设置元素的索引，可以通过索引（类似数组的下标）来访问指定位置的集合元素。</p>
+<p>　　实现List接口的集合主要有：ArrayList、LinkedList、Vector、Stack。</p>
+<p><strong>1）ArrayList</strong></p>
+<p>ArrayList是一个动态数组，也是我们最常用的集合，是List类的典型实现。它允许任何符合规则的元素插入甚至包括null。每一个ArrayList都有一个初始容量（10），该容量代表了数组的大小。随着容器中的元素不断增加，容器的大小也会随着增加。在每次向容器中增加元素的同时都会进行容量检查，当快溢出时，就会进行扩容操作。所以如果我们明确所插入元素的多少，最好指定一个初始容量值，避免过多的进行扩容操作而浪费时间、效率。</p>
+<p>ArrayList擅长于随机访问。同时ArrayList是非同步的。</p>
+<p><strong>2）LinkedList</strong></p>
+<p>LinkedList是List接口的另一个实现，除了可以根据索引访问集合元素外，LinkedList还实现了Deque接口，可以当作双端队列来使用，也就是说，既可以当作“栈”使用，又可以当作队列使用。</p>
+<p>　　LinkedList的实现机制与ArrayList的实现机制完全不同，ArrayLiat内部以数组的形式保存集合的元素，所以随机访问集合元素有较好的性能；LinkedList内部以链表的形式保存集合中的元素，所以随机访问集合中的元素性能较差，但在插入删除元素时有较好的性能。</p>
+<p><strong>3）Vector</strong></p>
+<p>与ArrayList相似，但是Vector是同步的。所以说Vector是线程安全的动态数组。它的操作与ArrayList几乎一样。</p>
+<p><strong>4）Stack</strong></p>
+<p>Stack继承自Vector，实现一个后进先出的堆栈。Stack提供5个额外的方法使得Vector得以被当作堆栈使用。基本的push和pop 方法，还有peek方法得到栈顶的元素，empty方法测试堆栈是否为空，search方法检测一个元素在堆栈中的位置。Stack刚创建后是空栈。</p>
+<p><strong>5）Iterator接口和ListIterator接口</strong></p>
+<p>　　Iterator是一个接口，它是集合的迭代器。集合可以通过Iterator去遍历集合中的元素。Iterator提供的API接口如下：</p>
+<p>　　♦ boolean hasNext()：判断集合里是否存在下一个元素。如果有，hasNext()方法返回 true。
+　　♦ Object next()：返回集合里下一个元素。
+　　♦ void remove()：删除集合里上一次next方法返回的元素。</p>
+<p>　　ListIterator接口继承Iterator接口，提供了专门操作List的方法。ListIterator接口在Iterator接口的基础上增加了以下几个方法：</p>
+<p>　　♦ boolean hasPrevious()：判断集合里是否存在上一个元素。如果有，该方法返回 true。
+　　♦ Object previous()：返回集合里上一个元素。
+　　♦ void add(Object o)：在指定位置插入一个元素。</p>
+<p>　　以上两个接口相比较，不难发现，ListIterator增加了向前迭代的功能（Iterator只能向后迭代），ListIterator还可以通过add()方法向List集合中添加元素（Iterator只能删除元素）。</p>
+<p><strong>4. Map集合</strong></p>
+<p>　　Map接口采用键值对Map&lt;K,V&gt;的存储方式，保存具有映射关系的数据，因此，Map集合里保存两组值，一组值用于保存Map里的key，另外一组值用于保存Map里的value，key和value可以是任意引用类型的数据。key值不允许重复，可以为null。如果添加key-value对时Map中已经有重复的key，则新添加的value会覆盖该key原来对应的value。常用实现类有HashMap、LinkedHashMap、TreeMap等。</p>
+<p>　　Map常见方法（来源于API）如下：</p>
+<p><img src="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1362965-20190111155052064-620367509.png"
+	width="922"
+	height="736"
+	srcset="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1362965-20190111155052064-620367509_hu5f3c77f2008ce70078a7eafcfdd6422a_80889_480x0_resize_box_3.png 480w, /post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1362965-20190111155052064-620367509_hu5f3c77f2008ce70078a7eafcfdd6422a_80889_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="125"
+		data-flex-basis="300px"
+	
+></p>
+<p><strong>1）HashMap与Hashtable</strong></p>
+<p>　　HashMap与Hashtable是Map接口的两个典型实现，它们之间的关系完全类似于ArrayList与Vertor。HashTable是一个古老的Map实现类，它提供的方法比较繁琐，目前基本不用了，HashMap与Hashtable主要存在以下两个典型区别：</p>
+<p>　　♦ HashMap是线程不安全，HashTable是线程安全的。</p>
+<p>　　♦ HashMap可以使用null值最为key或value；Hashtable不允许使用null值作为key和value，如果把null放进HashTable中，将会发生空指针异常。</p>
+<p>　　为了成功的在HashMap和Hashtable中存储和获取对象，用作key的对象必须实现hashCode()方法和equals()方法。</p>
+<p>　　HashMap工作原理如下：</p>
+<p>　　HashMap基于hashing原理，通过put()和get()方法存储和获取对象。当我们将键值对传递给put()方法时，它调用建对象的hashCode()方法来计算hashCode值，然后找到bucket位置来储存值对象。当获取对象时，通过建对象的equals()方法找到正确的键值对，然后返回对象。HashMap使用链表来解决碰撞问题，当发生碰撞了，对象将会存储在链表的下一个节点中。</p>
+<p><strong>2）LinkedHashMap实现类</strong></p>
+<p>　　LinkedHashMap使用双向链表来维护key-value对的次序（其实只需要考虑key的次序即可），该链表负责维护Map的迭代顺序，与插入顺序一致，因此性能比HashMap低，但在迭代访问Map里的全部元素时有较好的性能。</p>
+<p><strong>3）Properties</strong></p>
+<p>　　Properties类时Hashtable类的子类，它相当于一个key、value都是String类型的Map，主要用于读取配置文件。</p>
+<p><strong>4）TreeMap实现类</strong></p>
+<p>　　TreeMap是SortedMap的实现类，是一个红黑树的数据结构，每个key-value对作为红黑树的一个节点。TreeMap存储key-value对时，需要根据key对节点进行排序。TreeMap也有两种排序方式：</p>
+<p>　　♦ 自然排序：TreeMap的所有key必须实现Comparable接口，而且所有的key应该是同一个类的对象，否则会抛出ClassCastException。</p>
+<p>　　♦ 定制排序：创建TreeMap时，传入一个Comparator对象，该对象负责对TreeMap中的所有key进行排序。</p>
+<p><strong>5）各Map实现类的性能分析</strong></p>
+<p>　　♦ HashMap通常比Hashtable（古老的线程安全的集合）要快</p>
+<p>　　♦ TreeMap通常比HashMap、Hashtable要慢，因为TreeMap底层采用红黑树来管理key-value。</p>
+<p>　　♦ LinkedHashMap比HashMap慢一点，因为它需要维护链表来爆出key-value的插入顺序。</p>
+<h4 id="22-collection--map区别">2.2 Collection &amp; Map区别</h4>
+<p>Collection 元素是单列的，Map是以键值对存在。</p>
+<h4 id="23-谈谈你常用的集合--它们底层的实现方式--优缺点--使用场景">2.3 谈谈你常用的集合 &amp; 它们底层的实现方式 &amp; 优缺点 &amp; 使用场景。</h4>
+<ul>
+<li>ArrayList和Vector:
+ArrayList和Vector是List的两个典型实现类。它们底层的实现方案相同。都是采用动态数组的方式实现的。特点是元素有序并且可以重复。ArrayList本身是线程不安全的，Vector是线程安全的。但是Vector比较古老，所以绝大多数情况下应该使用ArrayList。</li>
+<li>LinkedList:
+LinkedList也是List的一个具有代表性的实现类。底层采用的是双向链表。从中间插入和删除元素的效率更高。</li>
+<li>HashMap:
+HashMap的是Map集合的常用实现类，底层采用的是哈希表的数据结构存放数据的。特点是插入和查询速度很快。但是随着元素个数越来越多，效率会有所下降，但是仍然是效率很高的一种数据结构。HashMap的key值是无序且不重复的。</li>
+<li>LinkedHashMap:
+LinkedHashMap底层采用的是哈希表 + 链表的形式存放数据的。因为需要额外的维护一个链表，所谓元素的操作速度会比HashMap略慢。但是因为有链表的存在，遍历元素的速度反而会比HashMap快，并且可以按照元素的插入顺序遍历出来。</li>
+<li>TreeMap:
+底层采用的是红-黑树实现的。相对于哈希表，红黑树的插入和查询速度要慢，但是红-黑树可以维护元素本身的字典顺序，所以当需要对key进行大小排序的时候，才应该使用TreeMap，否则都应该选择HashMap</li>
+<li>HashSet/LinkedHashSet/TreeSet:
+Set集合的底层其实就是Map集合实现的。Set集合中包含一个Map集合，每个元素插入到Set集合中时，其实就是插入到底层的Map集合的key的位置，value是一个固定的Object对象，没有任何意义。因此可以发现Set和Map的实现类几乎是一一对应的。</li>
+</ul>
+<h4 id="24-map的遍历方式有哪些">2.4 Map的遍历方式有哪些？</h4>
+<p>在java中所有的map都实现了Map接口，因此所有的Map（如HashMap, TreeMap, LinkedHashMap, Hashtable等）都可以用以下的方式去遍历。</p>
+<p>方法一：在for循环中使用entries实现Map的遍历：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">* 最常见也是大多数情况下用的最多的，一般在键值对都需要使用
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span>Map <span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span>String<span style="color:#f92672">&gt;</span>map <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span>String<span style="color:#f92672">&gt;();</span>
+</span></span><span style="display:flex;"><span>map<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;熊大&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;棕色&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>map<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;熊二&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;黄色&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span><span style="color:#f92672">(</span>Map<span style="color:#f92672">.</span><span style="color:#a6e22e">Entry</span><span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> String<span style="color:#f92672">&gt;</span> entry <span style="color:#f92672">:</span> map<span style="color:#f92672">.</span><span style="color:#a6e22e">entrySet</span><span style="color:#f92672">()){</span>
+</span></span><span style="display:flex;"><span>    String mapKey <span style="color:#f92672">=</span> entry<span style="color:#f92672">.</span><span style="color:#a6e22e">getKey</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    String mapValue <span style="color:#f92672">=</span> entry<span style="color:#f92672">.</span><span style="color:#a6e22e">getValue</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>mapKey<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;:&#34;</span><span style="color:#f92672">+</span>mapValue<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>方法二：在for循环中遍历key或者values，一般适用于只需要map中的key或者value时使用，在性能上比使用entrySet较好；</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Map <span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span>String<span style="color:#f92672">&gt;</span>map <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span>String<span style="color:#f92672">&gt;();</span>
+</span></span><span style="display:flex;"><span>map<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;熊大&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;棕色&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>map<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;熊二&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;黄色&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//key
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">for</span><span style="color:#f92672">(</span>String key <span style="color:#f92672">:</span> map<span style="color:#f92672">.</span><span style="color:#a6e22e">keySet</span><span style="color:#f92672">()){</span>
+</span></span><span style="display:flex;"><span>    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>key<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//value
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">for</span><span style="color:#f92672">(</span>String value <span style="color:#f92672">:</span> map<span style="color:#f92672">.</span><span style="color:#a6e22e">values</span><span style="color:#f92672">()){</span>
+</span></span><span style="display:flex;"><span>    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>value<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>方法三：通过Iterator遍历；</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Iterator<span style="color:#f92672">&lt;</span>Entry<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> String<span style="color:#f92672">&gt;&gt;</span> entries <span style="color:#f92672">=</span> map<span style="color:#f92672">.</span><span style="color:#a6e22e">entrySet</span><span style="color:#f92672">().</span><span style="color:#a6e22e">iterator</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span><span style="color:#f92672">(</span>entries<span style="color:#f92672">.</span><span style="color:#a6e22e">hasNext</span><span style="color:#f92672">()){</span>
+</span></span><span style="display:flex;"><span>    Entry<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> String<span style="color:#f92672">&gt;</span> entry <span style="color:#f92672">=</span> entries<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    String key <span style="color:#f92672">=</span> entry<span style="color:#f92672">.</span><span style="color:#a6e22e">getKey</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    String value <span style="color:#f92672">=</span> entry<span style="color:#f92672">.</span><span style="color:#a6e22e">getValue</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>key<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;:&#34;</span><span style="color:#f92672">+</span>value<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>方法四：通过键找值遍历，这种方式的效率比较低，因为本身从键取值是耗时的操作；</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">for</span><span style="color:#f92672">(</span>String key <span style="color:#f92672">:</span> map<span style="color:#f92672">.</span><span style="color:#a6e22e">keySet</span><span style="color:#f92672">()){</span>
+</span></span><span style="display:flex;"><span>    String value <span style="color:#f92672">=</span> map<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>key<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>key<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;:&#34;</span><span style="color:#f92672">+</span>value<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h4 id="25-给我说说arraylist的扩容机制">2.5 给我说说ArrayList的扩容机制.</h4>
+<p>默认容量10，1.5倍扩容。</p>
+<p>1、add(E e)方法中</p>
+<p>① ensureCapacityInternal(size+1),确保内部容量，size是添加前数组内元素的数量</p>
+<p>② elementData[size++] = e 添加元素到相应位置，元素数量加1</p>
+<p>2、 ensureCapacityInternal(size+1)确保内部容量</p>
+<p>① 计算最小需要空间（如果传入的是个空数组则最小容量取默认容量与minCapacity之间的最大值）</p>
+<p>② 判断是否需要扩容（如果最小需要空间比elementData的内存空间要大，则扩容）</p>
+<p>3、扩容 grow(int minCapacity)</p>
+<p>newCapacity=oldCapacity + (oldCapacity &raquo; 1),原来容量的1.5倍</p>
+<p>再与最小需要空间比较，与最大数组长度比较。</p>
+<h4 id="26-什么是深拷贝--浅拷贝--如何深拷贝一个list集合">2.6 什么是深拷贝 &amp; 浅拷贝 &amp; 如何深拷贝一个List集合.</h4>
+<p>对于基本数据类型，实际上是拷贝它的值，而对于引用数据类型，拷贝的就是它的引用，并没有创建一个新的对象，即没有分配新的内存空间。这样的拷贝就称作浅拷贝。</p>
+<p>深拷贝就是在引用类型进行拷贝时，创建了新的对象，即分配了新的内存空间给拷贝对象。下面就来具体看看浅拷贝和深拷贝的区别。</p>
+<h6 id="list浅拷贝">List浅拷贝</h6>
+<p><img src="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1034021-20181031171714471-102224977.png"
+	width="496"
+	height="301"
+	srcset="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1034021-20181031171714471-102224977_hufce4280d0a81b7fc8a221a79ffdc6746_19235_480x0_resize_box_3.png 480w, /post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1034021-20181031171714471-102224977_hufce4280d0a81b7fc8a221a79ffdc6746_19235_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="164"
+		data-flex-basis="395px"
+	
+></p>
+<p>众所周知，list本质上是数组，而数组的是以地址的形式进行存储。
+如上图将list A浅拷贝给list B，由于进行的是浅拷贝，所以直接将A的内容复制给了B，java中相同内容的数组指向同一地址，即进行浅拷贝后A与B指向同一地址。造成的后果就是，改变B的同时也会改变A，因为改变B就是改变B所指向地址的内容，由于A也指向同一地址，所以A与B一起改变。</p>
+<p>几种浅拷贝</p>
+<p>1、遍历循环复制</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#ae81ff">1</span> List<span style="color:#f92672">&lt;</span>Person<span style="color:#f92672">&gt;</span> destList <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;</span>Person<span style="color:#f92672">&gt;(</span>srcList<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">());</span>  
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span>Person p <span style="color:#f92672">:</span> srcList<span style="color:#f92672">){</span>  
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3</span>     destList<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>p<span style="color:#f92672">);</span>  
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">4</span> <span style="color:#f92672">}</span>  
+</span></span></code></pre></div><p>2、使用List实现类的构造方法</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>List<span style="color:#f92672">&lt;</span>Person<span style="color:#f92672">&gt;</span> destList <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;</span>Person<span style="color:#f92672">&gt;(</span>srcList<span style="color:#f92672">);</span>  
+</span></span></code></pre></div><p>3、使用list.addAll()方法</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>List<span style="color:#f92672">&lt;</span>Person<span style="color:#f92672">&gt;</span> destList <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;</span>Person<span style="color:#f92672">&gt;();</span>  
+</span></span><span style="display:flex;"><span>destList<span style="color:#f92672">.</span><span style="color:#a6e22e">addAll</span><span style="color:#f92672">(</span>srcList<span style="color:#f92672">);</span>  
+</span></span></code></pre></div><p>4、使用System.arraycopy()方法</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#ae81ff">1</span> Person<span style="color:#f92672">[]</span> srcPersons<span style="color:#f92672">=</span>srcList<span style="color:#f92672">.</span><span style="color:#a6e22e">toArray</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Person<span style="color:#f92672">[</span><span style="color:#ae81ff">0</span><span style="color:#f92672">]);</span> 
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2</span> Person<span style="color:#f92672">[]</span> destPersons<span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> Person<span style="color:#f92672">[</span>srcPersons<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">];</span> 
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">arraycopy</span><span style="color:#f92672">(</span>srcPersons<span style="color:#f92672">,</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">,</span> destPersons<span style="color:#f92672">,</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">,</span> srcPersons<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">);</span> 
+</span></span></code></pre></div><p>5、使用Stream的方式copy</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>List<span style="color:#f92672">&lt;</span>Person<span style="color:#f92672">&gt;</span> destList <span style="color:#f92672">=</span> srcList<span style="color:#f92672">.</span><span style="color:#a6e22e">stream</span><span style="color:#f92672">().</span><span style="color:#a6e22e">collect</span><span style="color:#f92672">(</span>Collectors<span style="color:#f92672">.</span><span style="color:#a6e22e">toList</span><span style="color:#f92672">());</span>
+</span></span></code></pre></div><h6 id="list深拷贝">List深拷贝</h6>
+<p><img src="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1034021-20181031172932047-1954670442.png"
+	width="751"
+	height="295"
+	srcset="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1034021-20181031172932047-1954670442_hu89b7e9ba1a7c2d589910def906636531_18841_480x0_resize_box_3.png 480w, /post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/1034021-20181031172932047-1954670442_hu89b7e9ba1a7c2d589910def906636531_18841_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="254"
+		data-flex-basis="610px"
+	
+></p>
+<p>如图，深拷贝就是将A复制给B的同时，给B创建新的地址，再将地址A的内容传递到地址B。ListA与ListB内容一致，但是由于所指向的地址不同，所以改变相互不受影响。</p>
+<p>深拷贝的方法</p>
+<p>1.使用序列化方法</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">       * 对集合进行深拷贝
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">       * 注意需要岁泛型类进行序列化（实现serializable）
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">       *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">       * @param src
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">       * @param &lt;T&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">       * @return
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">       * @throws IOException
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">       * @throws ClassNotFoundException
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">      */</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> List<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">deepCopy</span><span style="color:#f92672">(</span>List<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> src<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#66d9ef">try</span> <span style="color:#f92672">(</span>ByteArrayOutputStream byteOut <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ByteArrayOutputStream<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>              ObjectOutputStream outputStream <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ObjectOutputStream<span style="color:#f92672">(</span>byteOut<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>             outputStream<span style="color:#f92672">.</span><span style="color:#a6e22e">writeObject</span><span style="color:#f92672">(</span>src<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>             <span style="color:#66d9ef">try</span> <span style="color:#f92672">(</span>ByteArrayInputStream byteIn <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ByteArrayInputStream<span style="color:#f92672">(</span>byteOut<span style="color:#f92672">.</span><span style="color:#a6e22e">toByteArray</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>                  ObjectInputStream inputStream <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ObjectInputStream<span style="color:#f92672">(</span>byteIn<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>             <span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                 <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>List<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;)</span> inputStream<span style="color:#f92672">.</span><span style="color:#a6e22e">readObject</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>             <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>             ThrowableUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">getString</span><span style="color:#f92672">(</span>e<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#66d9ef">return</span> Collections<span style="color:#f92672">.</span><span style="color:#a6e22e">emptyList</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>2.clone方法</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">A</span> <span style="color:#66d9ef">implements</span> Cloneable <span style="color:#f92672">{</span> 
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">public</span> String name<span style="color:#f92672">[];</span> 
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">A</span><span style="color:#f92672">(){</span> name<span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> String<span style="color:#f92672">[</span><span style="color:#ae81ff">2</span><span style="color:#f92672">];</span> <span style="color:#f92672">}</span> 
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">public</span> Object <span style="color:#a6e22e">clone</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span> 
+</span></span><span style="display:flex;"><span>          A o <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span> 
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span> 
+</span></span><span style="display:flex;"><span>              o <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>A<span style="color:#f92672">)</span> <span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">clone</span><span style="color:#f92672">();</span> 
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>CloneNotSupportedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>        
+</span></span><span style="display:flex;"><span>              e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span> 
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">}</span> <span style="color:#66d9ef">return</span> o<span style="color:#f92672">;</span> 
+</span></span><span style="display:flex;"><span>     <span style="color:#f92672">}</span> 
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">}</span> 
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span> <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span><span style="color:#f92672">;</span>i<span style="color:#f92672">&lt;</span>n<span style="color:#f92672">;</span>i<span style="color:#f92672">+=){</span> 
+</span></span><span style="display:flex;"><span>     copy<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">((</span>A<span style="color:#f92672">)</span>src<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>i<span style="color:#f92672">).</span><span style="color:#a6e22e">clone</span><span style="color:#f92672">());</span> 
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>Java对对象和基本的数据类型的处理是不一样的。在Java中用对象的作为入口参数的传递则缺省为”引用传递”，也就是说仅仅传递了对象的一个”引用”，这个”引用”的概念同C语言中的指针引用是一样的。当函数体内部对输入变量改变时，实质上就是在对这个对象的直接操作。 除了在函数传值的时候是”引用传递”，在任何用”＝”向对象变量赋值的时候都是”引用传递”。</p>
+<h4 id="27-set是如何确保它的唯一性的">2.7 Set是如何确保它的唯一性的。</h4>
+<p>set保证里面元素的唯一性其实是靠两个方法，一是equals()和hashCode()方法</p>
+<p>往set里面添加数据的时候一般会有隐式的操作</p>
+<p>先是判断set集合中是否有与新添加数据的hashcode值一致的数据，</p>
+<p>如果有，那么将再进行第二步调用equals方法再进行一次判断，</p>
+<p>假如集合中没有与新添加数据hashcode值一致的数据，那么将不调用eqauls方法。</p>
+<p>只有hashcode和equals都相等的时候才是同一个元素。</p>
+<h4 id="28-你觉得hashmap的元素顺序和什么有关">2.8 你觉得HashMap的元素顺序和什么有关？</h4>
+<p><strong>HashMap散列图、Hashtable散列表是按“有利于随机查找的散列(hash)的顺序”。并非按输入顺序。遍历时只能全部输出，而没有顺序</strong>。甚至可以rehash()重新散列，来获得更利于随机存取的内部顺序。</p>
+<p>需要顺序可以用<strong>java.util.LinkedHashMap</strong> 就是按加入时的顺序遍历了。</p>
+<h4 id="29-java中hashmap如何解决哈希碰撞的">2.9 Java中HashMap如何解决哈希碰撞的？</h4>
+<p>插入链表中，1.7.头插，1.8尾插。</p>
+<h4 id="210-concurrenthashmap如何实现并发访问的">2.10 ConcurrentHashMap如何实现并发访问的？</h4>
+<p>在实际的应用中，散列表一般的应用场景是：除了少数插入操作和删除操作外，绝大多数都是读取操作，而且读操作在大多数时候都是成功的。</p>
+<p>正是基于这个前提，ConcurrentHashMap <strong>针对读操作做了大量的优化</strong>。通过 HashEntry 对象的不变性和用 volatile 型变量协调线程间的内存可见性，<strong>使得大多数时候，读操作不需要加锁就可以正确获得值。<strong>这个特性使得 ConcurrentHashMap 的并发性能在</strong>分离锁</strong>的基础上又有了近一步的提高。</p>
+<p><strong>总结</strong></p>
+<p>ConcurrentHashMap 是一个并发散列映射表的实现，它允许完全并发的读取，并且支持给定数量的并发更新。</p>
+<p>相比于 HashTable 和用同步包装器包装的 HashMap（Collections.synchronizedMap(new HashMap())），ConcurrentHashMap 拥有更高的并发性。</p>
+<p>在 HashTable 和由同步包装器包装的 HashMap 中，使用一个全局的锁来同步不同线程间的并发访问。同一时间点，只能有一个线程持有锁，也就是说在同一时间点，只能有一个线程能访问容器。这虽然保证多线程间的安全并发访问，但同时也导致对容器的访问变成串行化的了。</p>
+<p>在使用锁来协调多线程间并发访问的模式下，减小对锁的竞争可以有效提高并发性。有两种方式可以减小对锁的竞争：</p>
+<ul>
+<li><strong>减小请求同一个锁的频率。</strong></li>
+<li><strong>减少持有锁的时间。</strong></li>
+</ul>
+<p>ConcurrentHashMap 的高并发性主要来自于三个方面：</p>
+<ul>
+<li><strong>用分离锁实现多个线程间的更深层次的共享访问。</strong></li>
+<li><strong>用 HashEntery 对象的不变性来降低执行读操作的线程在遍历链表期间对加锁的需求。</strong></li>
+<li><strong>通过对同一个 Volatile 变量的写 / 读访问，协调不同线程间读 / 写操作的内存可见性。</strong></li>
+</ul>
+<p>使用分离锁，减小了请求 同一个锁的频率。</p>
+<p>通过 HashEntery 对象的不变性及对同一个 Volatile 变量的读 / 写来协调内存可见性，使得 读操作大多数时候不需要加锁就能成功获取到需要的值。由于散列映射表在实际应用中大多数操作都是成功的 读操作，所以 2 和 3 既可以减少请求同一个锁的频率，也可以有效减少持有锁的时间。</p>
+<p>通过<strong>减小请求同一个锁的频率和尽量减少持有锁的时间</strong> ，使得 ConcurrentHashMap 的并发性相对于 HashTable 和用同步包装器包装的 HashMap有了质的提高。</p>
+<h4 id="211-谈谈java集合中那些线程安全的集合--实现原理">2.11 谈谈Java集合中那些线程安全的集合 &amp; 实现原理。</h4>
+<p>HashTable、Vector</p>
+<p>Vector的方法都是同步的(Synchronized),是线程安全的(thread-safe)。</p>
+<p>HashMap是非synchronized的，但<strong>collection框架提供方法能保证HashMap synchronized</strong>，这样多个线程同时访问HashMap时，能保证只有一个线程更改Map。</p>
+<p>Hashtable同样是<strong>基于哈希表实现的</strong>，同样每个元素是一个key-value对，其内部也是通过<strong>单链表</strong>解决冲突问题，容量不足（超过了阀值）时，同样会自动增长。</p>
+<h6 id="hashmap和hashtable的区别">HashMap和Hashtable的区别</h6>
+<p>Hashtable继承自Dictionary类，而HashMap继承自AbstractMap类。但二者都实现了Map接口。但决定用哪一个之前先要弄清楚它们之间的分别。主要的区别有：线程安全性，同步(synchronization)，以及速度。</p>
+<ol>
+<li>
+<p>HashMap几乎可以等价于Hashtable，除了HashMap是非synchronized的，并可以接受null(HashMap可以接受为null的键值(key)和值(value)，而Hashtable则不行)。</p>
+</li>
+<li>
+<p>HashMap是非synchronized，而Hashtable是synchronized，这意味着Hashtable是线程安全的，多个线程可以共享一个Hashtable；而如果没有正确的同步的话，多个线程是不能共享HashMap的。Java 5提供了ConcurrentHashMap，它是HashTable的替代，比HashTable的扩展性更好。</p>
+</li>
+<li>
+<p>另一个区别是HashMap的迭代器(Iterator)是fail-fast迭代器，而Hashtable的enumerator迭代器不是fail-fast的。所以当有其它线程改变了HashMap的结构（增加或者移除元素），将会抛出ConcurrentModificationException，但迭代器本身的remove()方法移除元素则不会抛出ConcurrentModificationException异常。但这并不是一个一定发生的行为，要看JVM。这条同样也是Enumeration和Iterator的区别。</p>
+</li>
+<li>
+<p>由于Hashtable是线程安全的也是synchronized，所以在单线程环境下它比HashMap要慢。如果你不需要同步，只需要单一线程，那么使用HashMap性能要好过Hashtable。</p>
+</li>
+<li>
+<p>HashMap不能保证随着时间的推移Map中的元素次序是不变的。</p>
+</li>
+<li>
+<p>HashSet和HashMap的区别</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th><em>HashMap</em></th>
+<th><em>HashSet</em></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HashMap实现了Map接口</td>
+<td>HashSet实现了Set接口</td>
+</tr>
+<tr>
+<td>HashMap储存键值对</td>
+<td>HashSet仅仅存储对象</td>
+</tr>
+<tr>
+<td>使用put()方法将元素放入map中</td>
+<td>使用add()方法将元素放入set中</td>
+</tr>
+<tr>
+<td>HashMap中使用键对象来计算hashcode值</td>
+<td>HashSet使用成员对象来计算hashcode值，对于两个对象来说hashcode可能相同，所以equals()方法用来判断对象的相等性，如果两个对象不同的话，那么返回false</td>
+</tr>
+<tr>
+<td>HashMap比较快，因为是使用唯一的键来获取对象</td>
+<td>HashSet较HashMap来说比较慢</td>
+</tr>
+</tbody>
+</table></div>
+<p>注意</p>
+</li>
+</ol>
+<ol>
+<li>
+<p>sychronized意味着在一次仅有一个线程能够更改Hashtable。就是说任何线程要更新Hashtable时要首先获得同步锁，其它线程要等到同步锁被释放之后才能再次获得同步锁更新Hashtable。</p>
+</li>
+<li>
+<p>Fail-safe和iterator迭代器相关。如果某个集合对象创建了Iterator或者ListIterator，然后其它的线程试图“结构上”更改集合对象，将会抛出ConcurrentModificationException异常。但其它线程可以通过set()方法更改集合对象是允许的，因为这并没有从“结构上”更改集合。但是假如已经从结构上进行了更改，再调用set()方法，将会抛出IllegalArgumentException异常。</p>
+</li>
+<li>
+<p><strong>结构上的更改指的是删除或者插入一个元素</strong>，这样会影响到map的结构。</p>
+</li>
+</ol>
+<h4 id="212-说说有哪些集合能加入null哪些不能加入null为什么">2.12 说说有哪些集合能加入null,哪些不能加入null,为什么？</h4>
+<ul>
+<li>List 以索引来存取元素，有序的，元素是允许重复的，可以插入多个null。</li>
+<li>Set 不能存放重复元素，无序的，只允许一个null</li>
+<li>Map 保存键值对映射，映射关系可以一对一、多对一</li>
+<li>List 有基于数组、链表实现两种方式ArrayList、LinkedList</li>
+<li>Set、Map 容器有基于哈希存储和红黑树两种方式实现Hash、Tree</li>
+<li>Set 基于 Map 实现，Set 里的元素值就是 Map的键值</li>
+</ul>
+<h4 id="213-说说linkedhashmap原理">2.13 说说LinkedHashMap原理。</h4>
+<p>对于linkedHashMap的基本操作还是和HashMap一样，在其上面加了两个属性，也就是为了记录前一个插入的元素和记录后一个插入的元素。也就是只要和hashmap一样进行操作之后把这两个属性的值设置好，就OK了。注意一点，会有一个header的实体，目的是为了记录第一个插入的元素是谁，在遍历的时候能够找到第一个元素。</p>
+<p>实际上的<strong>存储方式是和hashMap一样</strong>，但是同时增加了一个新的东西就是 <strong>双向循环链表</strong>。就是因为有了这个双向循环链表，LinkedHashMap才和HashMap不一样。</p>
+<h4 id="214-collection-和-collections的区别">2.14 Collection 和 Collections的区别？</h4>
+<p>1.Collection:</p>
+<p>是集合类的上层接口。本身是一个Interface，里面包含了一些集合的基本操作。</p>
+<p>Collection接口是Set接口和List接口的父接口</p>
+<p>2.Collections</p>
+<p>Collections是一个集合框架的<strong>帮助类，里面包含一些对集合的排序，搜索以及序列化的操作</strong>。最根本的是Collections是一个类,</p>
+<h4 id="215-比较一下arraymap和hashmap">2.15 比较一下ArrayMap和HashMap。</h4>
+<p>HashMap内部是使用一个默认容量为16的数组来存储数据的，而数组中每一个元素却又是一个链表的头结点或者红黑树的根节点，所以，更准确的来说，HashMap内部存储结构是使用<strong>哈希表的数组+链表+红黑树</strong>。如图：</p>
+<p><img src="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/20190709080407308.png"
+	width="494"
+	height="401"
+	srcset="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/20190709080407308_huf95c5dfd4e5ad1e060d679d3241c8b4b_37554_480x0_resize_box_3.png 480w, /post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/20190709080407308_huf95c5dfd4e5ad1e060d679d3241c8b4b_37554_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="img"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="123"
+		data-flex-basis="295px"
+	
+></p>
+<p>这些Entry数据是按什么规则进行存储的呢？就是通过计算元素key的hash值，然后对HashMap中数组长度取余得到该元素存储的位置，计算公式为(key == null) ? 0 : (h = key.hashCode()) ^ (h &raquo;&gt; 16);</p>
+<h4 id="216-说说hashmap的原理">2.16 说说HashMap的原理。</h4>
+<ul>
+<li>HashMap是以<strong>键值对存储数据</strong>的集合容器</li>
+<li>HashMap是<strong>非线程安全</strong>的。</li>
+<li>HashMap底层数据结构：<strong>数组+(链表、红黑树)</strong>，jdk8之前是用数组+链表的方式实现，jdk8引进了红黑树</li>
+<li>Hashmap数组的<strong>默认初始长度是16</strong>，<strong>key和value都允许null</strong>的存在</li>
+<li>HashMap的<strong>内部实现数组是Node[]数组</strong>，上面存放的是key-value键值对的节点。HashMap通过put和get方法存储和获取。</li>
+<li>HashMap的put方法，<strong>首先计算key的hashcode值，定位到对应的数组索引</strong>，然后再在该索引的单向链表上进行<strong>循环遍历，用equals比较key是否存在，如果存在则用新的value覆盖原值，如果没有则向后追加。</strong></li>
+<li>jdk8中put方法：<strong>先判断Hashmap是否为空，为空就扩容</strong>，不为空<strong>计算出key的hash值i，然后看table[i]是否为空，为空就直接插入</strong>，不为空判断当前位置的key和table[i]是否相同，<strong>相同就覆盖，不相同就查看table[i]是否是红黑树节点，如果是的话就用红黑树直接插入键值对，如果不是开始遍历链表插入，如果遇到重复值就覆盖，否则直接插入，如果链表长度大于8，转为红黑树结构，执行完成后看size是否大于阈值threshold，大于就扩容，否则直接结束</strong>。</li>
+<li>Hashmap解决hash冲突，使用的是<strong>链地址法，即数组+链表的形式来解决。put执行首先判断table[i]位置，如果为空就直接插入，不为空判断和当前值是否相等，相等就覆盖，如果不相等的话，判断是否是红黑树节点，如果不是，就从table[i]位置开始遍历链表，相等覆盖，不相等插入。</strong></li>
+<li>HashMap的get方法就是<strong>计算出要获取元素的hash值，去对应位置获取即可。</strong></li>
+<li>HashMap的扩容机制，Hashmap的扩容中主要进行两步，<strong>第一步把数组长度变为原来的两倍</strong>，<strong>第二步把旧数组的元素重新计算hash插入到新数组中</strong>，<strong>jdk8时，不用重新计算hash，只用看看原来的hash值新增的一位是零还是1，如果是1这个元素在新数组中的位置，是原数组的位置加原数组长度，如果是零就插入到原数组中。扩容过程第二部一个非常重要的方法是transfer方法，采用头插法，把旧数组的元素插入到新数组中。</strong></li>
+<li>HashMap大小为什么是2的幂次方？<strong>效率高+空间分布均匀，因为初始是16，每次都扩容成原来的2倍，必然是2的幂次方</strong></li>
+</ul>
+<h4 id="217-从源码角度剖析arraylistlinkedlist">2.17 从源码角度剖析ArrayList,LinkedList</h4>
+<p>List代表一种线性表的数据结构，ArrayList则是一种顺序存储的线性表。ArrayList底层采用数组来保存每个集合的元素，LinkedList则是一种链式存储的线性表。其本质上就是一个双向链表，但它不仅实现了List接口，还是想了Deque接口。也就是说LinkedList既可以当成双向链表使用，也可以当成队列使用，还可以当成栈来适用于（Deque代表双端队列，即具有队列的特征，也具有栈的特征）。</p>
+<p>ArrayList底层采用一个elementData数组来保存所有集合的元素，因此ArrayList在插入元素时需要完成下面两件事情。</p>
+<ul>
+<li>保证ArrayList底层封装的数组长度大于集合元素的个数；</li>
+<li>将插入位置之后的所有数组元素“整体搬家”，向后移动一“格”。</li>
+</ul>
+<p>LinkedList本质上是一个双向链表，因此它可以非常方便地在指定节点之前插入新节点，LinkedList在指定位置添加新节点就是通过这种方式来实现的。</p>
+<ul>
+<li>node(int index):搜索指定索引处的元素。</li>
+<li>linkBefore(E e, Node succ):在succ节点之前插入element新节点。</li>
+</ul>
+<p>node(int index实际上就是get(int index)方法的底层实现。对于ArrayList来说，由于它底层采用数组来保存集合元素，因此可以直接根据数组索引取出index位置的元素；但是对于LinkedList就比较麻烦了，LinkedList必须要一个一个元素的搜索，直到找到第index个元素为止。</p>
+<p>当程序需要以get(int index)方法获取指定索引处的元素时，ArrayList性能大大地优于Linkedlist.因为Arraylist底层以数组来保存集合元素，所示调用get(int index)方法来获取指定索引处的元素时，底层实际上调用 elementdata［index］来返回该元素，因此性能非常好。</p>
+<p>当程序调用 add(int index， Object obj)向List集合中添加元素时， Arraylist必须对底层数组元素进行“整体搬家”，如果添加元素导致集合长度将要超过底层数组长度，ArrayList必须创建一个长度为原来长度1.5倍的数组，再由垃圾回收机制回收原有数组，因此
+开销比较大。对于 LinkedList而言，它的主要开销集中在 node(index)方法上，该方法必須一个个地搜索过去，直到找到index处的元素，然后再在该元素之前插入新元索。即使如此，执行该方法的时候 LinkedList方法的性能依然高于ArrayList</p>
+<p>当程序调用 remove（int index）方法删除 index索引处的元素时， Arraylist同样也需要对底层数组元素进行“整体搬家”。但调用 remove（int index）方法別除集合元素时， Arraylist无需考虑创建新数组，因此执行 ArrayList的 remove（int index）方法比执行add（ int index， Object o)方法略快一点。当 Linkedlist调用 remove（ int index）方法删除集合元素时，与调用 add（int index,Oject obj）方法添加元素的系统开销几乎完全相同。</p>
+<p>当程序调用add(Object obj）方法向List集合尾端添加一个元素时，大部分时候 ArrayList无需对底层数组元素进行“整体搬家”，因此也可以获得很好的性能（甚至比 Linkedlist的add(Object obj)方法的性能更好;但如果添加这个元素导致集合长度将要超过底层数组长度，那么 ArrayList必须创建一个长度为原来长度1.5倍的数组，再由垃圾回收机制回收原有数组一一这样系统开销就比较大了。但 Linkedlist调用add(Object obj）方法添加元系时总可以获得较好的性能。</p>
+<h4 id="218-你如何看待java-8中hashmap引入红黑树">2.18 你如何看待Java 8中HashMap引入红黑树？</h4>
+<p>在jdk1.8版本后，java对HashMap做了改进，在链表长度大于8的时候，将后面的数据存在红黑树中，以加快检索速度，我们接下来讲一下红黑树。</p>
+<p>红黑树虽然本质上是一棵二叉查找树，但它在二叉查找树的基础上增加了着色和相关的性质使得<strong>红黑树相对平衡，从而保证了红黑树的查找、插入、删除的时间复杂度最坏为O(log n)。加快检索速率。</strong></p>
+<p><strong>红黑树的5个性质：</strong></p>
+<blockquote>
+<p>1.每个结点要么是红的要么是黑的。</p>
+<p>2.根结点是黑的。</p>
+<p>3.每个叶结点（叶结点即指树尾端NIL指针或NULL结点）都是黑的。</p>
+<p>4.如果一个结点是红的，那么它的两个儿子都是黑的。</p>
+<p>5.对于任意结点而言，其到叶结点树尾端NIL指针的每条路径都包含相同数目的黑结点。
+红黑树还可以描述成：
+⑴红链接均为左链接。
+⑵没有任何一个结点同时和两条红链接相连。
+⑶该树是完美黑色平衡的，即任意空链接到根结点的路径上的黑链接数量相同。</p>
+</blockquote>
+<p>红黑树
+一种二叉查找树，但在每个节点增加一个存储位表示节点的颜色，可以是红或黑（非红即黑）。通过对任何一条从根到叶子的路径上各个节点着色的方式的限制，红黑树确保没有一条路径会比其它路径长出两倍，因此，红黑树是一种弱平衡二叉树（由于是弱平衡，可以看到，在相同的节点情况下，AVL树的高度低于红黑树），相对于要求严格的AVL树来说，它的旋转次数少，所以对于搜索，插入，删除操作较多的情况下，我们就用红黑树。</p>
+<p>性质</p>
+<ul>
+<li>每个节点不是红色就是黑色</li>
+<li>不可能有连在一起的红色节点</li>
+<li>根节点是黑色</li>
+<li>叶子节点（null）都是黑色</li>
+</ul>
+<p>变换规则</p>
+<ul>
+<li>改变颜色</li>
+<li>左旋</li>
+<li>右旋</li>
+</ul>
+<ol>
+<li><strong>变色的情况：当前结点的父亲是红色，且他的祖父节点的另一个子节点（叔叔节点）也是红色：</strong>
+a、把父节点设置为黑色
+b、把叔叔节点也设置为黑色
+c、把父亲的父节点（祖父节点）设置为红色
+d、把指针定义到祖父节点设为当前要操作的节点，目的是为了平衡修改颜色其它节点不满足红黑树原则的情况（通过更改颜色或左旋右旋平衡，以此类推）
+<strong>颜色变换示例</strong> (给0005新增一个大于它的子节点)：
+<img src="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/20200529162939627.gif"
+	width="477"
+	height="289"
+	srcset="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/20200529162939627_hu404ad56303f8611677e1e7a0ee91b302_235481_480x0_resize_box_1.gif 480w, /post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/20200529162939627_hu404ad56303f8611677e1e7a0ee91b302_235481_1024x0_resize_box_1.gif 1024w"
+	loading="lazy"
+	
+		alt="在这里插入图片描述"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="165"
+		data-flex-basis="396px"
+	
+></li>
+<li><strong>旋转示例（新增节点、父节点、祖父节点同一条直线）</strong>
+a、以最短路径旋转(顺时针为右旋，逆时针为左旋)
+b、以父节点为旋转中心，旋转祖父节点
+c、父节点变成黑色，祖父节点变成红色
+d、当前操作节点为变成红色的祖父节点（递归他坐在的父节点是否满足红黑树原则）
+<strong>旋转示例</strong>（新增节点5，以父节点4为旋转中心旋转祖父节点，该示例为左旋操作）
+<img src="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/20200529193111323.gif"
+	width="412"
+	height="236"
+	srcset="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/20200529193111323_huf535d457162e24986c45bcdc28739411_195583_480x0_resize_box_1.gif 480w, /post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/20200529193111323_huf535d457162e24986c45bcdc28739411_195583_1024x0_resize_box_1.gif 1024w"
+	loading="lazy"
+	
+		alt="在这里插入图片描述"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="174"
+		data-flex-basis="418px"
+	
+></li>
+<li><strong>旋转示例（新增节点、父节点、祖父节点同呈三角关系）</strong>
+a、以最短路径旋转(顺时针为右旋，逆时针为左旋)
+b、首先以新增节点为旋转中心，旋转父节点，使新增节点、父节点、祖父节点在同一条直线上
+c、然后再参考上面同一条直线的情况进行旋转（递归处理，以此类推）
+<strong>旋转示例：</strong>
+新增节点48，以48为圆心旋转47节点——左旋
+然后变成在同一条线上的情况，以48为圆心，旋转父节点50——右旋
+<img src="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/20200531211722834.gif"
+	width="575"
+	height="319"
+	srcset="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/20200531211722834_hu80eeed74858d1021d5b62c64ecfc5b0c_489207_480x0_resize_box_1.gif 480w, /post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/20200531211722834_hu80eeed74858d1021d5b62c64ecfc5b0c_489207_1024x0_resize_box_1.gif 1024w"
+	loading="lazy"
+	
+		alt="在这里插入图片描述"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="180"
+		data-flex-basis="432px"
+	
+></li>
+</ol>
+<h6 id="红黑树详细变换图解">红黑树详细变换图解</h6>
+<p><img src="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/20200531214238332.png"
+	width="1361"
+	height="1332"
+	srcset="/post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/20200531214238332_huc990c5384c1aaacef95cdd3aad7e1cae_450003_480x0_resize_box_3.png 480w, /post/java7%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/index.assets/20200531214238332_huc990c5384c1aaacef95cdd3aad7e1cae_450003_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="在这里插入图片描述"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="102"
+		data-flex-basis="245px"
+	
+></p>
+<p>红黑树相比avl树，在检索的时候效率其实差不多，都是通过平衡来二分查找。但对于插入删除等操作效率提高很多。红黑树不像avl树一样追求绝对的平衡，他允许局部很少的不完全平衡，这样对于效率影响不大，但省去了很多没有必要的调平衡操作，avl树调平衡有时候代价较大，所以效率不如红黑树。</p>
+<h4 id="219-hashmap为什么线程不安全">2.19 HashMap为什么线程不安全？</h4>
+<p>首先HashMap是<strong>线程不安全</strong>的，其主要体现：</p>
+<p>#1.在jdk1.7中，在多线程环境下，<strong>扩容时</strong>会造成环形链或数据丢失。</p>
+<p>#2.在jdk1.8中，在多线程环境下，会发生<strong>数据覆盖</strong>的情况。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2023 浩&amp;琳
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

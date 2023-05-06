@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='十三、设计模式 1.说说设计模式的六大原则。 单一职责原则告诉我们实现类要职责单一
+里氏替换原则告诉我们不要破坏继承体系，不轻易重写方法，父类能用的地方，子类也能用
+依赖倒置原则告诉我们要面向接口编程
+接口隔离原则告诉我们在设计接口的时候要精简单一
+迪米特原则告诉我们要降低耦合
+开闭原则是总纲，告诉我们要对扩展开放，对修改关闭
+2.请讲讲你会使用的一些设计模式？ 单例模式，适配器模式，命令模式，建造者模式，抽象工厂模式，观察者模式，享元模式。
+创建型设计模式：这类模式提供创建对象的机制， 能够提升已有代码的灵活性和可复⽤性
+结构型模式：这类模式介绍如何将对象和类组装成较⼤的结构， 并同时保持结构的灵活和⾼效。
+行为模式：这类模式负责对象间的⾼效沟通和职责委派。
+3.请说说单例模式 &amp;amp; 你项目中常用的单例模式。 单例模式的目的是保证系统中只有类的一个实例对象，并且提供一个全局的入口点来获取并使用这个实例对象。
+使用单例模式可以防止用户“胡乱”创建对象，耗费内存。而且有些对象从逻辑上来讲一个系统中只应该存在一个，比如说Runtime类，使用单例模式也能很好的保证这一点。binder的ProcessState是在系统中唯一的，它是以单例模式存在的。他的使命就是打开Binder设备，分配Binder所需要的内存。
+Android的ActivityManagerNative中调用了getDefault()方法，源码如下：
+private static final Singleton&amp;lt;IActivityManager&amp;gt; gDefault = new Singleton&amp;lt;IActivityManager&amp;gt;() { protected IActivityManager create() { IBinder b = ServiceManager.getService(&amp;#34;activity&amp;#34;); if (false) { Log.v(&amp;#34;ActivityManager&amp;#34;, &amp;#34;default service binder = &amp;#34; &#43; b); } IActivityManager am = asInterface(b); if (false) { Log.v(&amp;#34;ActivityManager&amp;#34;, &amp;#34;default service = &amp;#34; &#43; am); } return am; } }; 首先这是一个单例模式，最终返回了一个叫am的对象。'>
+<title>Java（13）设计模式</title>
+
+<link rel='canonical' href='https://haolovelin.com/post/java13%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/'>
+
+<link rel="stylesheet" href="/scss/style.min.5be32ca3f6e1a997c75795c4359147cc6d4fbd34948c0acd51e31d237033978a.css"><meta property='og:title' content='Java（13）设计模式'>
+<meta property='og:description' content='十三、设计模式 1.说说设计模式的六大原则。 单一职责原则告诉我们实现类要职责单一
+里氏替换原则告诉我们不要破坏继承体系，不轻易重写方法，父类能用的地方，子类也能用
+依赖倒置原则告诉我们要面向接口编程
+接口隔离原则告诉我们在设计接口的时候要精简单一
+迪米特原则告诉我们要降低耦合
+开闭原则是总纲，告诉我们要对扩展开放，对修改关闭
+2.请讲讲你会使用的一些设计模式？ 单例模式，适配器模式，命令模式，建造者模式，抽象工厂模式，观察者模式，享元模式。
+创建型设计模式：这类模式提供创建对象的机制， 能够提升已有代码的灵活性和可复⽤性
+结构型模式：这类模式介绍如何将对象和类组装成较⼤的结构， 并同时保持结构的灵活和⾼效。
+行为模式：这类模式负责对象间的⾼效沟通和职责委派。
+3.请说说单例模式 &amp;amp; 你项目中常用的单例模式。 单例模式的目的是保证系统中只有类的一个实例对象，并且提供一个全局的入口点来获取并使用这个实例对象。
+使用单例模式可以防止用户“胡乱”创建对象，耗费内存。而且有些对象从逻辑上来讲一个系统中只应该存在一个，比如说Runtime类，使用单例模式也能很好的保证这一点。binder的ProcessState是在系统中唯一的，它是以单例模式存在的。他的使命就是打开Binder设备，分配Binder所需要的内存。
+Android的ActivityManagerNative中调用了getDefault()方法，源码如下：
+private static final Singleton&amp;lt;IActivityManager&amp;gt; gDefault = new Singleton&amp;lt;IActivityManager&amp;gt;() { protected IActivityManager create() { IBinder b = ServiceManager.getService(&amp;#34;activity&amp;#34;); if (false) { Log.v(&amp;#34;ActivityManager&amp;#34;, &amp;#34;default service binder = &amp;#34; &#43; b); } IActivityManager am = asInterface(b); if (false) { Log.v(&amp;#34;ActivityManager&amp;#34;, &amp;#34;default service = &amp;#34; &#43; am); } return am; } }; 首先这是一个单例模式，最终返回了一个叫am的对象。'>
+<meta property='og:url' content='https://haolovelin.com/post/java13%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/'>
+<meta property='og:site_name' content='浩&amp;琳'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2021-06-10T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-06-10T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Java（13）设计模式">
+<meta name="twitter:description" content="十三、设计模式 1.说说设计模式的六大原则。 单一职责原则告诉我们实现类要职责单一
+里氏替换原则告诉我们不要破坏继承体系，不轻易重写方法，父类能用的地方，子类也能用
+依赖倒置原则告诉我们要面向接口编程
+接口隔离原则告诉我们在设计接口的时候要精简单一
+迪米特原则告诉我们要降低耦合
+开闭原则是总纲，告诉我们要对扩展开放，对修改关闭
+2.请讲讲你会使用的一些设计模式？ 单例模式，适配器模式，命令模式，建造者模式，抽象工厂模式，观察者模式，享元模式。
+创建型设计模式：这类模式提供创建对象的机制， 能够提升已有代码的灵活性和可复⽤性
+结构型模式：这类模式介绍如何将对象和类组装成较⼤的结构， 并同时保持结构的灵活和⾼效。
+行为模式：这类模式负责对象间的⾼效沟通和职责委派。
+3.请说说单例模式 &amp;amp; 你项目中常用的单例模式。 单例模式的目的是保证系统中只有类的一个实例对象，并且提供一个全局的入口点来获取并使用这个实例对象。
+使用单例模式可以防止用户“胡乱”创建对象，耗费内存。而且有些对象从逻辑上来讲一个系统中只应该存在一个，比如说Runtime类，使用单例模式也能很好的保证这一点。binder的ProcessState是在系统中唯一的，它是以单例模式存在的。他的使命就是打开Binder设备，分配Binder所需要的内存。
+Android的ActivityManagerNative中调用了getDefault()方法，源码如下：
+private static final Singleton&amp;lt;IActivityManager&amp;gt; gDefault = new Singleton&amp;lt;IActivityManager&amp;gt;() { protected IActivityManager create() { IBinder b = ServiceManager.getService(&amp;#34;activity&amp;#34;); if (false) { Log.v(&amp;#34;ActivityManager&amp;#34;, &amp;#34;default service binder = &amp;#34; &#43; b); } IActivityManager am = asInterface(b); if (false) { Log.v(&amp;#34;ActivityManager&amp;#34;, &amp;#34;default service = &amp;#34; &#43; am); } return am; } }; 首先这是一个单例模式，最终返回了一个叫am的对象。">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu9f7a08366cc43f473c39f8f10558a931_55504_300x0_resize_box_3.png" width="300"
+                            height="332" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">浩&amp;琳</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+
+        <div class="menu-bottom-section">
+            
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>Dark Mode</span>
+                </li>
+            
+        </div>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/" style="background-color: #2a9d8f; color: #fff;">
+                编程学习
+            </a>
+        
+            <a href="/categories/javase/" style="background-color: #666666; color: #fff;">
+                JavaSE
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/java13%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">Java（13）设计模式</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jun 10, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    2 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="十三设计模式">十三、设计模式</h2>
+<h3 id="1说说设计模式的六大原则">1.说说设计模式的六大原则。</h3>
+<p>单一职责原则告诉我们实现类要职责单一</p>
+<p>里氏替换原则告诉我们不要破坏继承体系，不轻易重写方法，父类能用的地方，子类也能用</p>
+<p>依赖倒置原则告诉我们要面向接口编程</p>
+<p>接口隔离原则告诉我们在设计接口的时候要精简单一</p>
+<p>迪米特原则告诉我们要降低耦合</p>
+<p>开闭原则是总纲，告诉我们要对扩展开放，对修改关闭</p>
+<h3 id="2请讲讲你会使用的一些设计模式">2.请讲讲你会使用的一些设计模式？</h3>
+<p>单例模式，适配器模式，命令模式，建造者模式，抽象工厂模式，观察者模式，享元模式。</p>
+<p><strong>创建型设计模式</strong>：这类模式提供创建对象的机制， 能够提升已有代码的灵活性和可复⽤性</p>
+<p><img src="/post/java13%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.assets/image-20201021203044037-1621678376661.png"
+	width="768"
+	height="627"
+	srcset="/post/java13%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.assets/image-20201021203044037-1621678376661_hua56bd748f53eafc4b20b79471e5c041f_175232_480x0_resize_box_3.png 480w, /post/java13%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.assets/image-20201021203044037-1621678376661_hua56bd748f53eafc4b20b79471e5c041f_175232_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="image-20201021203044037"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="122"
+		data-flex-basis="293px"
+	
+></p>
+<p><strong>结构型模式</strong>：这类模式介绍如何将对象和类组装成较⼤的结构， 并同时保持结构的灵活和⾼效。</p>
+<p><img src="/post/java13%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.assets/image-20201021203922944-1621678376661.png"
+	width="737"
+	height="777"
+	srcset="/post/java13%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.assets/image-20201021203922944-1621678376661_hu979e3a5d151ce522e66230432a09e1ff_245883_480x0_resize_box_3.png 480w, /post/java13%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.assets/image-20201021203922944-1621678376661_hu979e3a5d151ce522e66230432a09e1ff_245883_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="image-20201021203922944"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="94"
+		data-flex-basis="227px"
+	
+></p>
+<p><strong>行为模式</strong>：这类模式负责对象间的⾼效沟通和职责委派。</p>
+<p><img src="/post/java13%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.assets/image-20201021205327782-1621678376661.png"
+	width="738"
+	height="682"
+	srcset="/post/java13%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.assets/image-20201021205327782-1621678376661_hu1cb346e1ff9862ed53bc9a620986c230_169582_480x0_resize_box_3.png 480w, /post/java13%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.assets/image-20201021205327782-1621678376661_hu1cb346e1ff9862ed53bc9a620986c230_169582_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="image-20201021205327782"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="108"
+		data-flex-basis="259px"
+	
+></p>
+<p><img src="/post/java13%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.assets/image-20201021205403012-1621678376661.png"
+	width="749"
+	height="614"
+	srcset="/post/java13%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.assets/image-20201021205403012-1621678376661_hu3bee598cf01deafd8941eb55282fa390_213858_480x0_resize_box_3.png 480w, /post/java13%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.assets/image-20201021205403012-1621678376661_hu3bee598cf01deafd8941eb55282fa390_213858_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="image-20201021205403012"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="121"
+		data-flex-basis="292px"
+	
+></p>
+<h3 id="3请说说单例模式--你项目中常用的单例模式">3.请说说单例模式 &amp; 你项目中常用的单例模式。</h3>
+<p>单例模式的目的是保证系统中只有类的一个实例对象，并且提供一个全局的入口点来获取并使用这个实例对象。</p>
+<p>使用单例模式可以防止用户“胡乱”创建对象，耗费内存。而且有些对象从逻辑上来讲一个系统中只应该存在一个，比如说<code>Runtime</code>类，使用单例模式也能很好的保证这一点。<strong>binder</strong>的<strong>ProcessState是在系统中唯一的，它是以单例模式存在的。他的使命就是打开Binder设备，分配Binder所需要的内存。</strong></p>
+<p>Android的ActivityManagerNative中调用了<code>getDefault()</code>方法，源码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span> <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Singleton<span style="color:#f92672">&lt;</span>IActivityManager<span style="color:#f92672">&gt;</span> gDefault <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Singleton<span style="color:#f92672">&lt;</span>IActivityManager<span style="color:#f92672">&gt;()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">protected</span> IActivityManager <span style="color:#a6e22e">create</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            IBinder b <span style="color:#f92672">=</span> ServiceManager<span style="color:#f92672">.</span><span style="color:#a6e22e">getService</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;activity&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">false</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                Log<span style="color:#f92672">.</span><span style="color:#a6e22e">v</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ActivityManager&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;default service binder = &#34;</span> <span style="color:#f92672">+</span> b<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            IActivityManager am <span style="color:#f92672">=</span> asInterface<span style="color:#f92672">(</span>b<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">false</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                Log<span style="color:#f92672">.</span><span style="color:#a6e22e">v</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ActivityManager&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;default service = &#34;</span> <span style="color:#f92672">+</span> am<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> am<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">};</span>
+</span></span></code></pre></div><p>首先这是一个单例模式，最终返回了一个叫am的对象。</p>
+<p>其中，<code>IBinder b = ServiceManager.getService(&quot;activity&quot;)</code>通过ServiceManager获取了一个系统服务的引用。</p>
+<h5 id="jdk中的单例模式">JDK中的单例模式</h5>
+<p><code>Runtime</code>类封装了Java运行时的环境。每一个java程序实际上都是启动了一个JVM进程，那么每个JVM进程都是对应这一个Runtime实例，此实例是由JVM为其实例化的。每个 Java 应用程序都有一个 Runtime 类实例，使应用程序能够与其运行的环境相连接。</p>
+<p>由于Java是单进程的，所以，在一个JVM中，Runtime的实例应该只有一个。所以应该使用单例来实现。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-JAVA" data-lang="JAVA"><span style="display:flex;"><span>Copypublic <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Runtime</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Runtime currentRuntime <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Runtime<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Runtime <span style="color:#a6e22e">getRuntime</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> currentRuntime<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#a6e22e">Runtime</span><span style="color:#f92672">()</span> <span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>以上代码为JDK中<code>Runtime</code>类的部分实现，可以看到，这其实是饿汉式单例模式。在该类第一次被classloader加载的时候，这个实例就被创建出来了。</p>
+<h3 id="4懒汉单例模式为什么要加volaitle">4.懒汉单例模式为什么要加volaitle？</h3>
+<p>基本上，把synchronized移动到代码内部是没有什么意义的，每次调用getInstance()还是要进行同步。同步本身没有问题，但是我们只希望在第一次创建instance实例的时候进行同步，因此有了下面的写法——<strong>双重锁定检查（DCL,Double Check Lock）</strong>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span> <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Singleton</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Singleton instance <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#66d9ef">public</span>  <span style="color:#66d9ef">static</span> Singleton <span style="color:#a6e22e">getInstance</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span><span style="color:#66d9ef">null</span> <span style="color:#f92672">==</span> instance<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>    <span style="color:#75715e">// 线程二检测到instance不为空
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>             <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>Singleton<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                 <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span><span style="color:#66d9ef">null</span> <span style="color:#f92672">==</span> instance<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>                    
+</span></span><span style="display:flex;"><span>                     instance <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Singleton<span style="color:#f92672">();</span>    <span style="color:#75715e">// 线程一被指令重排，先执行了赋值，但还没执行完构造函数（即未完成初始化）    
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                 <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>             <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> instance<span style="color:#f92672">;</span>    <span style="color:#75715e">// 后面线程二执行时将引发：对象尚未初始化错误
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>如上代码段中的注释：假设线程一执行到instance = new Singleton()这句，这里看起来是一句话，但实际上其被编译后在JVM执行的对应会变代码就发现，这句话被编译成8条汇编指令，大致做了三件事情：</p>
+<p>　　1）给instance实例分配内存；</p>
+<p>　　2）初始化instance的构造器；</p>
+<p>　　3）将instance对象指向分配的内存空间（注意到这步时instance就非null了）</p>
+<p>　　<strong>如果指令按照顺序执行倒也无妨，但JVM为了优化指令，提高程序运行效率，允许指令重排序</strong>。如此，在程序真正运行时以上指令执行顺序可能是这样的：</p>
+<p>　　a）给instance实例分配内存；</p>
+<p>　　b）将instance对象指向分配的内存空间；</p>
+<p>　　c）初始化instance的构造器；</p>
+<p>　　这时候，当线程一执行b）完毕，在执行c）之前，被切换到线程二上，这时候instance判断为非空，此时线程二直接来到return instance语句，拿走instance然后使用，接着就顺理成章地报错（<strong>对象尚未初始化</strong>）。</p>
+<p>　　<strong>具体来说就是synchronized虽然保证了线程的原子性（即synchronized块中的语句要么全部执行，要么一条也不执行），但单条语句编译后形成的指令并不是一个原子操作（即可能该条语句的部分指令未得到执行，就被切换到另一个线程了）</strong>。</p>
+<p>　　根据以上分析可知，<strong>解决这个问题的方法是：禁止指令重排序优化，即使用volatile变量</strong>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Singleton</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">static</span> Singleton instance <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span>  <span style="color:#66d9ef">static</span> Singleton <span style="color:#a6e22e">getInstance</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span><span style="color:#66d9ef">null</span> <span style="color:#f92672">==</span> instance<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>Singleton<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span><span style="color:#66d9ef">null</span> <span style="color:#f92672">==</span> instance<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                    instance <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Singleton<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> instance<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p><strong>将变量instance使用volatile修饰</strong>即可实现单例模式的线程安全。</p>
+<h3 id="5能否给我说说android中至少3个用到设计模式的例子">5.能否给我说说Android中至少3个用到设计模式的例子？</h3>
+<p>控件的监听、BroadcastReceiver、一些著名的第三方事件总线库,比如RxJava、RxAndroid、EventBus、otto都是：观察者模式</p>
+<p>dialog：建造者模式</p>
+<p>GridView、ListView与Adapter：适配器模式</p>
+<p>Handler：命令模式</p>
+<p>InputMethodManager.getInstance：单例模式</p>
+<p>Message.obtain：享元模式</p>
+<p>BaseActivity：抽象工厂模式</p>
+<p>binder：单例、代理</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2023 浩&amp;琳
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

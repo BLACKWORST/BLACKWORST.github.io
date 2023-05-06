@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='五、Java异常体系 Java异常以Throwable开始，扩展出Error和Exception。 Error是程序代码无法处理的错误，比如OutOfMemoryError、ThreadDeath等。这些异常发生时，Java虚拟机（JVM）一般会选择线程终止退出，其表示程序在运行期间出现了十分严重、不可恢复的错误，应用程序只能中止运行。 Exception分运行时异常和非运行时异常。运行时异常都是RuntimeException类及其子类异常，如NullPointerException、IndexOutOfBoundsException等，这些异常也是不检查异常，程序代码中自行选择捕获处理，也可以不处理。这些异常一般是由程序逻辑错误引起的，程序代码应该从逻辑角度尽可能避免这类异常的发生。所有继承Exception且不是RuntimeException的异常都是非运行时异常，也称检查异常，如上图中的IOException和ClassNotFoundException，编译器会对其作检查，故程序中一定会对该异常进行处理，处理方法要么在方法体中声明抛出checked Exception，要么使用catch语句捕获checked Exception进行处理，不然不能通过编译。
+1.说说Java异常体系主要用来干什么的 &amp;amp; 异常体系？ 无论何时，代码都能可靠运行，即使发生异常，程序也能执行而不是停止；
+异常处理使代码的阅读、编写和调试工作更加方便。
+Java语言规定Exception对象可以捕获并处理掉。
+常见的异常种类 ERROR类： java.lang.OutOfMemoryError：最可怕的错误之一，JVM内存不足导致的Error，程序直接停止运行。 java.lang.StackOverflowError：最可怕的错误之一，JVM栈溢出错误，程序直接停止运行。 java.lang.NoClassDefFoundError：未找到类定义错误。当Java虚拟机或者类装载器试图实例化某个类，而找不到该类的定义时抛出该错误。 注意：NoClassDefFoundError和ClassNotFoundException的区别。
+RuntimeException类： java.lang.ClassCastException：强制类型转换异常，一般发生在向下类型转换过程中。 java.lang.IndexOutOfBoundsException：索引越界异常。 java.lang.NullPointerException：空指针异常。 java.lang.NumberFormatException：数字格式异常。 java.lang.ArithmeticException：算术条件异常。比如：除数为零时。 java.lang.ArrayIndexOutOfBoundsException：数组索引越界异常。 java.lang.InstantiationException：实例化异常。当试图通过newInstance()方法创建某个类的实例，而该类是一个抽象类或接口时，抛出该异常。 java.lang.InterruptedException：线程阻塞异常。
+受检查异常类： java.lang.ClassNotFoundException：找不到类异常。当应用试图根据字符串形式的类名构造类，而在遍历CLASSPATH之后找不到对应名称的class文件时，抛出该异常。 java.lang.NoSuchMethodException：找不到方法异常。 注意：上面两个很容易被理解为RuntimeException，如果你去看了源码就会知道他们是受检查的异常。
+2.Error和Exception的区别？ Exception和Error都是继承了Throwable类 Error是指正常情况下，不大可能出现的情况，绝大部分的Error都会导致程序（比如JVM自身）处于非正常状态，不可恢复状态。既然是非正常情况，所以不便于也不需要捕获，常见的比如OutOfMemoryError之类，都是Error的子类。 Exception是程序正常运行中，可以预料的意外情况，可能并且应该被捕获，进行相应的处理。 Exception又分为可检查（checked）异常和不检查（unchecked）异常。
+可检查异常在源码里必须显示的进行捕获处理，这里是编译期检查的一部分。前面我们介绍的不可查的Error，是Throwable不是Exception。 不检查异常就是所谓的运行时异常，类似NullPointerException,ArrayIndexOutOfBoundsExceptin之类，通常是可以编码避免的逻辑错误，具体根据需要来判断是否需要捕获，并不会在编译器强制要求。
+3.说说运行时异常和非运行时异常的区别？ 运行时异常（RuntimeException）和非编译时异常，非受检查时异常等同。运行时异常，比如“数组越界”，“空指针”，“算数异常”，“类型转换异常”，这些时不时都是因为我们程序的逻辑不够严谨而造成。
+受检查时异常，编译异常，非运行时异常，描述可以理解为同一个意思。是RuntimeException以外的异常，类型上都属于Exception类及其子类。从程序语法角度讲是必须进行处理的异常，如果不处理，程序就不能编译通过。如IOException、SQLException等以及用户自定义的Exception异常，一般情况下不要自定义检查异常。
+4.如何自定义一个异常？ 为这个找一个近似的类作为父类。 在该类中编写两个构造器: 默认构造器; 带String message参数的构造器且在该构造器中使用 super(message); 语句来调用父类的构造器完成异常原因的更改。
+5.throw和throws 的区别？ throw：
+作用在方法内，表示抛出具体异常，由方法体内的语句处理。 具体向外抛出的动作，所以它抛出的是一个异常实体类。若执行了Throw一定是抛出了某种异常。 throws：
+作用在方法的声明上，表示如果抛出异常，则由该方法的调用者来进行异常处理。
+主要的声明这个方法会抛出会抛出某种类型的异常，让它的使用者知道捕获异常的类型。
+出现异常是一种可能性，但不一定会发生异常。
+实例：
+void testException(int a) throws IOException{ try{ ...... }catch(Exception1 e){ throw e; }catch(Exception2 e){ System.'>
+<title>Java（5）Java异常体系</title>
+
+<link rel='canonical' href='https://haolovelin.com/post/java5java%E5%BC%82%E5%B8%B8%E4%BD%93%E7%B3%BB/'>
+
+<link rel="stylesheet" href="/scss/style.min.5be32ca3f6e1a997c75795c4359147cc6d4fbd34948c0acd51e31d237033978a.css"><meta property='og:title' content='Java（5）Java异常体系'>
+<meta property='og:description' content='五、Java异常体系 Java异常以Throwable开始，扩展出Error和Exception。 Error是程序代码无法处理的错误，比如OutOfMemoryError、ThreadDeath等。这些异常发生时，Java虚拟机（JVM）一般会选择线程终止退出，其表示程序在运行期间出现了十分严重、不可恢复的错误，应用程序只能中止运行。 Exception分运行时异常和非运行时异常。运行时异常都是RuntimeException类及其子类异常，如NullPointerException、IndexOutOfBoundsException等，这些异常也是不检查异常，程序代码中自行选择捕获处理，也可以不处理。这些异常一般是由程序逻辑错误引起的，程序代码应该从逻辑角度尽可能避免这类异常的发生。所有继承Exception且不是RuntimeException的异常都是非运行时异常，也称检查异常，如上图中的IOException和ClassNotFoundException，编译器会对其作检查，故程序中一定会对该异常进行处理，处理方法要么在方法体中声明抛出checked Exception，要么使用catch语句捕获checked Exception进行处理，不然不能通过编译。
+1.说说Java异常体系主要用来干什么的 &amp;amp; 异常体系？ 无论何时，代码都能可靠运行，即使发生异常，程序也能执行而不是停止；
+异常处理使代码的阅读、编写和调试工作更加方便。
+Java语言规定Exception对象可以捕获并处理掉。
+常见的异常种类 ERROR类： java.lang.OutOfMemoryError：最可怕的错误之一，JVM内存不足导致的Error，程序直接停止运行。 java.lang.StackOverflowError：最可怕的错误之一，JVM栈溢出错误，程序直接停止运行。 java.lang.NoClassDefFoundError：未找到类定义错误。当Java虚拟机或者类装载器试图实例化某个类，而找不到该类的定义时抛出该错误。 注意：NoClassDefFoundError和ClassNotFoundException的区别。
+RuntimeException类： java.lang.ClassCastException：强制类型转换异常，一般发生在向下类型转换过程中。 java.lang.IndexOutOfBoundsException：索引越界异常。 java.lang.NullPointerException：空指针异常。 java.lang.NumberFormatException：数字格式异常。 java.lang.ArithmeticException：算术条件异常。比如：除数为零时。 java.lang.ArrayIndexOutOfBoundsException：数组索引越界异常。 java.lang.InstantiationException：实例化异常。当试图通过newInstance()方法创建某个类的实例，而该类是一个抽象类或接口时，抛出该异常。 java.lang.InterruptedException：线程阻塞异常。
+受检查异常类： java.lang.ClassNotFoundException：找不到类异常。当应用试图根据字符串形式的类名构造类，而在遍历CLASSPATH之后找不到对应名称的class文件时，抛出该异常。 java.lang.NoSuchMethodException：找不到方法异常。 注意：上面两个很容易被理解为RuntimeException，如果你去看了源码就会知道他们是受检查的异常。
+2.Error和Exception的区别？ Exception和Error都是继承了Throwable类 Error是指正常情况下，不大可能出现的情况，绝大部分的Error都会导致程序（比如JVM自身）处于非正常状态，不可恢复状态。既然是非正常情况，所以不便于也不需要捕获，常见的比如OutOfMemoryError之类，都是Error的子类。 Exception是程序正常运行中，可以预料的意外情况，可能并且应该被捕获，进行相应的处理。 Exception又分为可检查（checked）异常和不检查（unchecked）异常。
+可检查异常在源码里必须显示的进行捕获处理，这里是编译期检查的一部分。前面我们介绍的不可查的Error，是Throwable不是Exception。 不检查异常就是所谓的运行时异常，类似NullPointerException,ArrayIndexOutOfBoundsExceptin之类，通常是可以编码避免的逻辑错误，具体根据需要来判断是否需要捕获，并不会在编译器强制要求。
+3.说说运行时异常和非运行时异常的区别？ 运行时异常（RuntimeException）和非编译时异常，非受检查时异常等同。运行时异常，比如“数组越界”，“空指针”，“算数异常”，“类型转换异常”，这些时不时都是因为我们程序的逻辑不够严谨而造成。
+受检查时异常，编译异常，非运行时异常，描述可以理解为同一个意思。是RuntimeException以外的异常，类型上都属于Exception类及其子类。从程序语法角度讲是必须进行处理的异常，如果不处理，程序就不能编译通过。如IOException、SQLException等以及用户自定义的Exception异常，一般情况下不要自定义检查异常。
+4.如何自定义一个异常？ 为这个找一个近似的类作为父类。 在该类中编写两个构造器: 默认构造器; 带String message参数的构造器且在该构造器中使用 super(message); 语句来调用父类的构造器完成异常原因的更改。
+5.throw和throws 的区别？ throw：
+作用在方法内，表示抛出具体异常，由方法体内的语句处理。 具体向外抛出的动作，所以它抛出的是一个异常实体类。若执行了Throw一定是抛出了某种异常。 throws：
+作用在方法的声明上，表示如果抛出异常，则由该方法的调用者来进行异常处理。
+主要的声明这个方法会抛出会抛出某种类型的异常，让它的使用者知道捕获异常的类型。
+出现异常是一种可能性，但不一定会发生异常。
+实例：
+void testException(int a) throws IOException{ try{ ...... }catch(Exception1 e){ throw e; }catch(Exception2 e){ System.'>
+<meta property='og:url' content='https://haolovelin.com/post/java5java%E5%BC%82%E5%B8%B8%E4%BD%93%E7%B3%BB/'>
+<meta property='og:site_name' content='浩&amp;琳'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2021-06-01T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-06-01T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Java（5）Java异常体系">
+<meta name="twitter:description" content="五、Java异常体系 Java异常以Throwable开始，扩展出Error和Exception。 Error是程序代码无法处理的错误，比如OutOfMemoryError、ThreadDeath等。这些异常发生时，Java虚拟机（JVM）一般会选择线程终止退出，其表示程序在运行期间出现了十分严重、不可恢复的错误，应用程序只能中止运行。 Exception分运行时异常和非运行时异常。运行时异常都是RuntimeException类及其子类异常，如NullPointerException、IndexOutOfBoundsException等，这些异常也是不检查异常，程序代码中自行选择捕获处理，也可以不处理。这些异常一般是由程序逻辑错误引起的，程序代码应该从逻辑角度尽可能避免这类异常的发生。所有继承Exception且不是RuntimeException的异常都是非运行时异常，也称检查异常，如上图中的IOException和ClassNotFoundException，编译器会对其作检查，故程序中一定会对该异常进行处理，处理方法要么在方法体中声明抛出checked Exception，要么使用catch语句捕获checked Exception进行处理，不然不能通过编译。
+1.说说Java异常体系主要用来干什么的 &amp;amp; 异常体系？ 无论何时，代码都能可靠运行，即使发生异常，程序也能执行而不是停止；
+异常处理使代码的阅读、编写和调试工作更加方便。
+Java语言规定Exception对象可以捕获并处理掉。
+常见的异常种类 ERROR类： java.lang.OutOfMemoryError：最可怕的错误之一，JVM内存不足导致的Error，程序直接停止运行。 java.lang.StackOverflowError：最可怕的错误之一，JVM栈溢出错误，程序直接停止运行。 java.lang.NoClassDefFoundError：未找到类定义错误。当Java虚拟机或者类装载器试图实例化某个类，而找不到该类的定义时抛出该错误。 注意：NoClassDefFoundError和ClassNotFoundException的区别。
+RuntimeException类： java.lang.ClassCastException：强制类型转换异常，一般发生在向下类型转换过程中。 java.lang.IndexOutOfBoundsException：索引越界异常。 java.lang.NullPointerException：空指针异常。 java.lang.NumberFormatException：数字格式异常。 java.lang.ArithmeticException：算术条件异常。比如：除数为零时。 java.lang.ArrayIndexOutOfBoundsException：数组索引越界异常。 java.lang.InstantiationException：实例化异常。当试图通过newInstance()方法创建某个类的实例，而该类是一个抽象类或接口时，抛出该异常。 java.lang.InterruptedException：线程阻塞异常。
+受检查异常类： java.lang.ClassNotFoundException：找不到类异常。当应用试图根据字符串形式的类名构造类，而在遍历CLASSPATH之后找不到对应名称的class文件时，抛出该异常。 java.lang.NoSuchMethodException：找不到方法异常。 注意：上面两个很容易被理解为RuntimeException，如果你去看了源码就会知道他们是受检查的异常。
+2.Error和Exception的区别？ Exception和Error都是继承了Throwable类 Error是指正常情况下，不大可能出现的情况，绝大部分的Error都会导致程序（比如JVM自身）处于非正常状态，不可恢复状态。既然是非正常情况，所以不便于也不需要捕获，常见的比如OutOfMemoryError之类，都是Error的子类。 Exception是程序正常运行中，可以预料的意外情况，可能并且应该被捕获，进行相应的处理。 Exception又分为可检查（checked）异常和不检查（unchecked）异常。
+可检查异常在源码里必须显示的进行捕获处理，这里是编译期检查的一部分。前面我们介绍的不可查的Error，是Throwable不是Exception。 不检查异常就是所谓的运行时异常，类似NullPointerException,ArrayIndexOutOfBoundsExceptin之类，通常是可以编码避免的逻辑错误，具体根据需要来判断是否需要捕获，并不会在编译器强制要求。
+3.说说运行时异常和非运行时异常的区别？ 运行时异常（RuntimeException）和非编译时异常，非受检查时异常等同。运行时异常，比如“数组越界”，“空指针”，“算数异常”，“类型转换异常”，这些时不时都是因为我们程序的逻辑不够严谨而造成。
+受检查时异常，编译异常，非运行时异常，描述可以理解为同一个意思。是RuntimeException以外的异常，类型上都属于Exception类及其子类。从程序语法角度讲是必须进行处理的异常，如果不处理，程序就不能编译通过。如IOException、SQLException等以及用户自定义的Exception异常，一般情况下不要自定义检查异常。
+4.如何自定义一个异常？ 为这个找一个近似的类作为父类。 在该类中编写两个构造器: 默认构造器; 带String message参数的构造器且在该构造器中使用 super(message); 语句来调用父类的构造器完成异常原因的更改。
+5.throw和throws 的区别？ throw：
+作用在方法内，表示抛出具体异常，由方法体内的语句处理。 具体向外抛出的动作，所以它抛出的是一个异常实体类。若执行了Throw一定是抛出了某种异常。 throws：
+作用在方法的声明上，表示如果抛出异常，则由该方法的调用者来进行异常处理。
+主要的声明这个方法会抛出会抛出某种类型的异常，让它的使用者知道捕获异常的类型。
+出现异常是一种可能性，但不一定会发生异常。
+实例：
+void testException(int a) throws IOException{ try{ ...... }catch(Exception1 e){ throw e; }catch(Exception2 e){ System.">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu9f7a08366cc43f473c39f8f10558a931_55504_300x0_resize_box_3.png" width="300"
+                            height="332" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">浩&amp;琳</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+
+        <div class="menu-bottom-section">
+            
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>Dark Mode</span>
+                </li>
+            
+        </div>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/" style="background-color: #2a9d8f; color: #fff;">
+                编程学习
+            </a>
+        
+            <a href="/categories/javase/" style="background-color: #666666; color: #fff;">
+                JavaSE
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/java5java%E5%BC%82%E5%B8%B8%E4%BD%93%E7%B3%BB/">Java（5）Java异常体系</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jun 01, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    1 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="五java异常体系">五、Java异常体系</h2>
+<p>Java异常以Throwable开始，扩展出Error和Exception。
+Error是程序代码无法处理的错误，比如OutOfMemoryError、ThreadDeath等。这些异常发生时，Java虚拟机（JVM）一般会选择线程终止退出，其表示程序在运行期间出现了十分严重、不可恢复的错误，应用程序只能中止运行。
+Exception分运行时异常和非运行时异常。运行时异常都是RuntimeException类及其子类异常，如NullPointerException、IndexOutOfBoundsException等，这些异常也是不检查异常，程序代码中自行选择捕获处理，也可以不处理。这些异常一般是由程序逻辑错误引起的，程序代码应该从逻辑角度尽可能避免这类异常的发生。所有继承Exception且不是RuntimeException的异常都是非运行时异常，也称检查异常，如上图中的IOException和ClassNotFoundException，编译器会对其作检查，故程序中一定会对该异常进行处理，处理方法要么在方法体中声明抛出checked Exception，要么使用catch语句捕获checked Exception进行处理，不然不能通过编译。</p>
+<h3 id="1说说java异常体系主要用来干什么的--异常体系">1.说说Java异常体系主要用来干什么的 &amp; 异常体系？</h3>
+<ul>
+<li>
+<p><strong>无论何时，代码都能可靠运行，即使发生异常，程序也能执行而不是停止</strong>；</p>
+</li>
+<li>
+<p><strong>异常处理使代码的阅读、编写和调试工作更加方便</strong>。</p>
+</li>
+<li>
+<p><strong>Java语言规定Exception对象可以捕获并处理掉</strong>。</p>
+</li>
+<li>
+<p>常见的异常种类
+ERROR类：
+java.lang.OutOfMemoryError：最可怕的错误之一，JVM内存不足导致的Error，程序直接停止运行。
+java.lang.StackOverflowError：最可怕的错误之一，JVM栈溢出错误，程序直接停止运行。
+java.lang.NoClassDefFoundError：未找到类定义错误。当Java虚拟机或者类装载器试图实例化某个类，而找不到该类的定义时抛出该错误。
+注意：NoClassDefFoundError和ClassNotFoundException的区别。</p>
+<p>RuntimeException类：
+java.lang.ClassCastException：强制类型转换异常，一般发生在向下类型转换过程中。
+java.lang.IndexOutOfBoundsException：索引越界异常。
+java.lang.NullPointerException：空指针异常。
+java.lang.NumberFormatException：数字格式异常。
+java.lang.ArithmeticException：算术条件异常。比如：除数为零时。
+java.lang.ArrayIndexOutOfBoundsException：数组索引越界异常。
+java.lang.InstantiationException：实例化异常。当试图通过newInstance()方法创建某个类的实例，而该类是一个抽象类或接口时，抛出该异常。
+java.lang.InterruptedException：线程阻塞异常。</p>
+<p>受检查异常类：
+java.lang.ClassNotFoundException：找不到类异常。当应用试图根据字符串形式的类名构造类，而在遍历CLASSPATH之后找不到对应名称的class文件时，抛出该异常。
+java.lang.NoSuchMethodException：找不到方法异常。
+注意：上面两个很容易被理解为RuntimeException，如果你去看了源码就会知道他们是受检查的异常。</p>
+</li>
+</ul>
+<h3 id="2error和exception的区别">2.Error和Exception的区别？</h3>
+<p>Exception和Error都是继承了Throwable类
+Error是指正常情况下，不大可能出现的情况，绝大部分的Error都会导致程序（比如JVM自身）处于非正常状态，不可恢复状态。既然是非正常情况，所以不便于也不需要捕获，常见的比如OutOfMemoryError之类，都是Error的子类。
+Exception是程序正常运行中，可以预料的意外情况，可能并且应该被捕获，进行相应的处理。 Exception又分为可检查（checked）异常和不检查（unchecked）异常。</p>
+<p>可检查异常在源码里必须显示的进行捕获处理，这里是编译期检查的一部分。前面我们介绍的不可查的Error，是Throwable不是Exception。
+不检查异常就是所谓的运行时异常，类似NullPointerException,ArrayIndexOutOfBoundsExceptin之类，通常是可以编码避免的逻辑错误，具体根据需要来判断是否需要捕获，并不会在编译器强制要求。</p>
+<h3 id="3说说运行时异常和非运行时异常的区别">3.说说运行时异常和非运行时异常的区别？</h3>
+<p>运行时异常（RuntimeException）和非编译时异常，非受检查时异常等同。运行时异常，比如“数组越界”，“空指针”，“算数异常”，“类型转换异常”，这些时不时都是因为我们程序的逻辑不够严谨而造成。</p>
+<p>受检查时异常，编译异常，非运行时异常，描述可以理解为同一个意思。是RuntimeException以外的异常，类型上都属于Exception类及其子类。从程序语法角度讲是必须进行处理的异常，如果不处理，程序就不能编译通过。如IOException、SQLException等以及用户自定义的Exception异常，一般情况下不要自定义检查异常。</p>
+<h3 id="4如何自定义一个异常">4.如何自定义一个异常？</h3>
+<p>为这个找一个近似的类作为父类。
+在该类中编写两个构造器:
+默认构造器;
+带String message参数的构造器且在该构造器中使用 super(message); 语句来调用父类的构造器完成异常原因的更改。</p>
+<h3 id="5throw和throws-的区别">5.throw和throws 的区别？</h3>
+<p>throw：</p>
+<ol>
+<li>作用在方法内，表示抛出具体异常，由方法体内的语句处理。</li>
+<li>具体向外抛出的动作，所以它抛出的是一个异常实体类。若执行了Throw一定是抛出了某种异常。</li>
+</ol>
+<p>throws：</p>
+<ol>
+<li>
+<p>作用在方法的声明上，表示如果抛出异常，则由该方法的调用者来进行异常处理。</p>
+</li>
+<li>
+<p>主要的声明这个方法会抛出会抛出某种类型的异常，让它的使用者知道捕获异常的类型。</p>
+</li>
+<li>
+<p>出现异常是一种可能性，但不一定会发生异常。</p>
+<p>实例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testException</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> a<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">try</span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">......</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">}</span><span style="color:#66d9ef">catch</span><span style="color:#f92672">(</span>Exception1 e<span style="color:#f92672">){</span>
+</span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">throw</span> e<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">}</span><span style="color:#66d9ef">catch</span><span style="color:#f92672">(</span>Exception2 e<span style="color:#f92672">){</span>
+</span></span><span style="display:flex;"><span>       System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;出错了！&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>a<span style="color:#f92672">!=</span>b<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Exception3<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;自定义异常&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div></li>
+</ol>
+<h3 id="6try-catch-finally-可以没有finally吗">6.try{ }catch{ }finally{ }可以没有finally吗？</h3>
+<p>可以，三种搭配，try{ }catch{ }、try{ }finally{ }、try{ }catch{ }finally{ }</p>
+<h3 id="7finally语块有什么特点">7.finally语块有什么特点？</h3>
+<p>被finally控制的语句体一定会执行,特殊情况：在执行finally之前，jvm退出了,例如System.exit(0)</p>
+<p>finally的作用：
+用于释放资源，在IO操作和数据库操作中会见到</p>
+<h3 id="8return在trycatchfinally中执行具有哪些规则">8.return在try{}catch{}finally{}中执行具有哪些规则？</h3>
+<p>在一般情况下，finally控制的语句体一定会执行
+如果catch里面有return语句，finally的代码还会执行，在return前执行。</p>
+<h3 id="9给我例举至少5个常见的运行时异常">9.给我例举至少5个常见的运行时异常。</h3>
+<p>ClassCastException(类转换异常)、IndexOutOfBoundsException(数组越界异常)、NullPointerException(空指针异常)、ArrayStoreException(数据存储异常，操作数组时类型不一致)、BufferOverflowException(还有IO操作的,缓冲溢出异常)。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2023 浩&amp;琳
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

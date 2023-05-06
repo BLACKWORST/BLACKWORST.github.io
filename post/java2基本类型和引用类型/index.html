@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='二、基本数据类型和引用类型 基本数据类型 对应的引用类型（封装类型） 占用的字节 取值范围 默认值 boolean Boolean 《Java虚拟机规范》一书中的描述：“虽然定义了boolean这种数据类型，但是只对它提供了非常有限的支持。在Java虚拟机中没有任何供boolean值专用的字节码指令，Java语言表达式所操作的boolean值，在编译之后都使用Java虚拟机中的int数据类型来代替，而boolean数组将会被编码成Java虚拟机的byte数组，每个元素boolean元素占8位”。这样我们可以得出boolean类型占了单独使用是4个字节，在数组中又是1个字节。 true/false false char Character 2B 0~2^16-1（0 ~ 65535无符号） \u0000 byte Byte 1B -128~127 0 short Short 2B -2^15 ~ 2^15-1（-32768～32767） 0 int Integer 4B -2^31 ~ 2^31-1（-2147483648～2147483647） 0 long Long 8B -2^63 ~ 2^63-1（-9223372036854775808 ~ 9223372036854775807） 0 float Float 4B -2^128 ~ 2^128 0.0F double Double 8B -2^1024 ~ 2^1024 0.0D 1.基础数据类型与封装类型的区别 1.1 传递方式不同 基本类型（原始数据类型）在传递参数时都是按值传递。 封装类型是引用类型，按引用传递的(其实“引用也是按值传递的”，传递的是对象的地址)。由于包装类型都是不可变量，因此没有提供改变它值的方法，增加了对“按引用传递”的理解难度。 int是基本类型，直接存放数值；Integer是类，产生对象时用一个引用指向这个对象。
+1.2 封装类可以有方法和属性 封装类可以有方法和属性，利用这些方法和属性来处理数据，如Integer.parseInt(Strings)。基本数据类型都是final修饰的，不能继承扩展新的类、新的方法。
+1.3 默认值不同 基本类型跟封装类型的默认值是不一样的。如int i,i的预设为0；Integer j，j的预设为null,因为封装类产生的是对象，对象默认值为null。'>
+<title>Java（2）基本类型和引用类型</title>
+
+<link rel='canonical' href='https://haolovelin.com/post/java2%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/'>
+
+<link rel="stylesheet" href="/scss/style.min.5be32ca3f6e1a997c75795c4359147cc6d4fbd34948c0acd51e31d237033978a.css"><meta property='og:title' content='Java（2）基本类型和引用类型'>
+<meta property='og:description' content='二、基本数据类型和引用类型 基本数据类型 对应的引用类型（封装类型） 占用的字节 取值范围 默认值 boolean Boolean 《Java虚拟机规范》一书中的描述：“虽然定义了boolean这种数据类型，但是只对它提供了非常有限的支持。在Java虚拟机中没有任何供boolean值专用的字节码指令，Java语言表达式所操作的boolean值，在编译之后都使用Java虚拟机中的int数据类型来代替，而boolean数组将会被编码成Java虚拟机的byte数组，每个元素boolean元素占8位”。这样我们可以得出boolean类型占了单独使用是4个字节，在数组中又是1个字节。 true/false false char Character 2B 0~2^16-1（0 ~ 65535无符号） \u0000 byte Byte 1B -128~127 0 short Short 2B -2^15 ~ 2^15-1（-32768～32767） 0 int Integer 4B -2^31 ~ 2^31-1（-2147483648～2147483647） 0 long Long 8B -2^63 ~ 2^63-1（-9223372036854775808 ~ 9223372036854775807） 0 float Float 4B -2^128 ~ 2^128 0.0F double Double 8B -2^1024 ~ 2^1024 0.0D 1.基础数据类型与封装类型的区别 1.1 传递方式不同 基本类型（原始数据类型）在传递参数时都是按值传递。 封装类型是引用类型，按引用传递的(其实“引用也是按值传递的”，传递的是对象的地址)。由于包装类型都是不可变量，因此没有提供改变它值的方法，增加了对“按引用传递”的理解难度。 int是基本类型，直接存放数值；Integer是类，产生对象时用一个引用指向这个对象。
+1.2 封装类可以有方法和属性 封装类可以有方法和属性，利用这些方法和属性来处理数据，如Integer.parseInt(Strings)。基本数据类型都是final修饰的，不能继承扩展新的类、新的方法。
+1.3 默认值不同 基本类型跟封装类型的默认值是不一样的。如int i,i的预设为0；Integer j，j的预设为null,因为封装类产生的是对象，对象默认值为null。'>
+<meta property='og:url' content='https://haolovelin.com/post/java2%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/'>
+<meta property='og:site_name' content='浩&amp;琳'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2021-05-28T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-05-28T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Java（2）基本类型和引用类型">
+<meta name="twitter:description" content="二、基本数据类型和引用类型 基本数据类型 对应的引用类型（封装类型） 占用的字节 取值范围 默认值 boolean Boolean 《Java虚拟机规范》一书中的描述：“虽然定义了boolean这种数据类型，但是只对它提供了非常有限的支持。在Java虚拟机中没有任何供boolean值专用的字节码指令，Java语言表达式所操作的boolean值，在编译之后都使用Java虚拟机中的int数据类型来代替，而boolean数组将会被编码成Java虚拟机的byte数组，每个元素boolean元素占8位”。这样我们可以得出boolean类型占了单独使用是4个字节，在数组中又是1个字节。 true/false false char Character 2B 0~2^16-1（0 ~ 65535无符号） \u0000 byte Byte 1B -128~127 0 short Short 2B -2^15 ~ 2^15-1（-32768～32767） 0 int Integer 4B -2^31 ~ 2^31-1（-2147483648～2147483647） 0 long Long 8B -2^63 ~ 2^63-1（-9223372036854775808 ~ 9223372036854775807） 0 float Float 4B -2^128 ~ 2^128 0.0F double Double 8B -2^1024 ~ 2^1024 0.0D 1.基础数据类型与封装类型的区别 1.1 传递方式不同 基本类型（原始数据类型）在传递参数时都是按值传递。 封装类型是引用类型，按引用传递的(其实“引用也是按值传递的”，传递的是对象的地址)。由于包装类型都是不可变量，因此没有提供改变它值的方法，增加了对“按引用传递”的理解难度。 int是基本类型，直接存放数值；Integer是类，产生对象时用一个引用指向这个对象。
+1.2 封装类可以有方法和属性 封装类可以有方法和属性，利用这些方法和属性来处理数据，如Integer.parseInt(Strings)。基本数据类型都是final修饰的，不能继承扩展新的类、新的方法。
+1.3 默认值不同 基本类型跟封装类型的默认值是不一样的。如int i,i的预设为0；Integer j，j的预设为null,因为封装类产生的是对象，对象默认值为null。">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu9f7a08366cc43f473c39f8f10558a931_55504_300x0_resize_box_3.png" width="300"
+                            height="332" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">浩&amp;琳</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+
+        <div class="menu-bottom-section">
+            
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>Dark Mode</span>
+                </li>
+            
+        </div>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/" style="background-color: #2a9d8f; color: #fff;">
+                编程学习
+            </a>
+        
+            <a href="/categories/javase/" style="background-color: #666666; color: #fff;">
+                JavaSE
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/java2%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/">Java（2）基本类型和引用类型</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">May 28, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    5 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="二基本数据类型和引用类型">二、基本数据类型和引用类型</h2>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>基本数据类型</th>
+<th>对应的引用类型（封装类型）</th>
+<th style="text-align:left">占用的字节</th>
+<th>取值范围</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>boolean</td>
+<td>Boolean</td>
+<td style="text-align:left">《Java虚拟机规范》一书中的描述：“虽然定义了boolean这种数据类型，但是只对它提供了非常有限的支持。在Java虚拟机中没有任何供boolean值专用的字节码指令，Java语言表达式所操作的boolean值，在编译之后都使用Java虚拟机中的int数据类型来代替，而boolean数组将会被编码成Java虚拟机的byte数组，每个元素boolean元素占8位”。这样我们可以得出boolean类型占了单独使用是4个字节，在数组中又是1个字节。</td>
+<td>true/false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>char</td>
+<td>Character</td>
+<td style="text-align:left">2B</td>
+<td>0~2^16-1（0 ~ 65535无符号）</td>
+<td>\u0000</td>
+</tr>
+<tr>
+<td>byte</td>
+<td>Byte</td>
+<td style="text-align:left">1B</td>
+<td>-128~127</td>
+<td>0</td>
+</tr>
+<tr>
+<td>short</td>
+<td>Short</td>
+<td style="text-align:left">2B</td>
+<td>-2^15 ~ 2^15-1（-32768～32767）</td>
+<td>0</td>
+</tr>
+<tr>
+<td>int</td>
+<td>Integer</td>
+<td style="text-align:left">4B</td>
+<td>-2^31 ~ 2^31-1（-2147483648～2147483647）</td>
+<td>0</td>
+</tr>
+<tr>
+<td>long</td>
+<td>Long</td>
+<td style="text-align:left">8B</td>
+<td>-2^63 ~ 2^63-1（-9223372036854775808 ~ 9223372036854775807）</td>
+<td>0</td>
+</tr>
+<tr>
+<td>float</td>
+<td>Float</td>
+<td style="text-align:left">4B</td>
+<td>-2^128 ~ 2^128</td>
+<td>0.0F</td>
+</tr>
+<tr>
+<td>double</td>
+<td>Double</td>
+<td style="text-align:left">8B</td>
+<td>-2^1024 ~ 2^1024</td>
+<td>0.0D</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="1基础数据类型与封装类型的区别">1.基础数据类型与封装类型的区别</h3>
+<h4 id="11-传递方式不同">1.1 传递方式不同</h4>
+<p>基本类型（原始数据类型）在传递参数时都是按值传递。
+封装类型是引用类型，按引用传递的(其实“引用也是按值传递的”，传递的是对象的地址)。由于包装类型都是不可变量，因此没有提供改变它值的方法，增加了对“按引用传递”的理解难度。
+int是基本类型，直接存放数值；Integer是类，产生对象时用一个引用指向这个对象。</p>
+<h4 id="12-封装类可以有方法和属性">1.2 封装类可以有方法和属性</h4>
+<p>封装类可以有方法和属性，利用这些方法和属性来处理数据，如Integer.parseInt(Strings)。基本数据类型都是final修饰的，不能继承扩展新的类、新的方法。</p>
+<h4 id="13-默认值不同">1.3 默认值不同</h4>
+<p>基本类型跟封装类型的默认值是不一样的。如int i,i的预设为0；Integer j，j的预设为null,因为封装类产生的是对象，对象默认值为null。</p>
+<h4 id="14-存储位置">1.4 存储位置</h4>
+<p>基本类型在内存中是存储在栈中，引用类型的引用（值的地址）存储在栈中，而实际的对象（值）是存在堆中。
+虽然基本类型在栈上分配内存效率高，但是在堆栈上分配内存可能有内存泄漏的问题。</p>
+<h4 id="15-基础类型与封装类型对比">1.5 基础类型与封装类型对比</h4>
+<p>基本数据类型的好处就是速度快（不涉及到对象的构造和回收），封装类的目的主要是更好的处理数据之间的转换。</p>
+<p>JDK5.0开始可以自动装箱了，基本数据类型可以自动封装成封装类。
+比如集合List，往里添加对象Object，在JDK5.0 之前，需要将数字封装成封装类型对象，再存到List中。</p>
+<h3 id="2自动装箱和拆箱">2.自动装箱和拆箱</h3>
+<p>自动装箱就是：自动将基本数据类型转换为包装器类型；</p>
+<p>自动拆箱就是：自动将包装器类型转换为基本数据类型。</p>
+<p>装箱是通过调用包装器类的 valueOf 方法实现的
+拆箱是通过调用包装器类的 xxxValue 方法实现的，xxx代表对应的基本数据类型。
+如int装箱的时候自动调用Integer的valueOf(int)方法；Integer拆箱的时候自动调用Integer的intValue方法。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Integer i <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span><span style="color:#f92672">;</span>  <span style="color:#75715e">//自动装箱，执行时实际上系统执行了：Integer i = Integer.valueOf(10);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> n <span style="color:#f92672">=</span> i<span style="color:#f92672">;</span>   <span style="color:#75715e">//自动拆箱，实际上执行了 int t = i.intValue();
+</span></span></span></code></pre></div><p>Integer的valueOf源码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Integer <span style="color:#a6e22e">valueOf</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>i <span style="color:#f92672">&gt;=</span> IntegerCache<span style="color:#f92672">.</span><span style="color:#a6e22e">low</span> <span style="color:#f92672">&amp;&amp;</span> i <span style="color:#f92672">&lt;=</span> IntegerCache<span style="color:#f92672">.</span><span style="color:#a6e22e">high</span><span style="color:#f92672">)</span><span style="color:#75715e">//low = -128; high默认是127，可以配置，但不会低于127
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> IntegerCache<span style="color:#f92672">.</span><span style="color:#a6e22e">cache</span><span style="color:#f92672">[</span>i <span style="color:#f92672">+</span> <span style="color:#f92672">(-</span>IntegerCache<span style="color:#f92672">.</span><span style="color:#a6e22e">low</span><span style="color:#f92672">)];</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Integer<span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>对于–128到127（默认是127）之间的值，Integer.valueOf(int i) 返回的是缓存的Integer对象（并不是新建对象），而其他值，执行Integer.valueOf(int i) 返回的是一个新建的 Integer对象。装箱的过程会创建对应的对象，这个会消耗内存，所以装箱的过程会增加内存的消耗，影响性能。</p>
+<p>Integer的intValue源码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">intValue</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> value<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h3 id="3关于integer和int的比较">3.关于Integer和int的比较</h3>
+<h4 id="31-new生成的integer变量比较">3.1 new生成的Integer变量比较</h4>
+<p>由于Integer变量实际上是对一个Integer对象的引用，所以两个通过new生成的Integer变量永远是不相等的（因为new生成的是两个对象，其内存地址不同）。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Integer i <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Integer<span style="color:#f92672">(</span><span style="color:#ae81ff">100</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>Integer j <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Integer<span style="color:#f92672">(</span><span style="color:#ae81ff">100</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">print</span><span style="color:#f92672">(</span>i <span style="color:#f92672">==</span> j<span style="color:#f92672">);</span> <span style="color:#75715e">//false
+</span></span></span></code></pre></div><h4 id="32-integer变量和int变量比较">3.2 Integer变量和int变量比较</h4>
+<p>Integer变量和int变量比较时，只要两个变量的值是相等的，则结果为true（因为包装类Integer和基本数据类型int比较时，java会自动拆箱为int，然后进行比较，实际上就变为两个int变量的比较）</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Integer i <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Integer<span style="color:#f92672">(</span><span style="color:#ae81ff">100</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span><span style="color:#960050;background-color:#1e0010">；</span>
+</span></span><span style="display:flex;"><span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">print</span><span style="color:#f92672">(</span>i <span style="color:#f92672">==</span> j<span style="color:#f92672">);</span> <span style="color:#75715e">//true
+</span></span></span></code></pre></div><h4 id="33-非new生成的integer变量和new生成的变量比较">3.3 非new生成的Integer变量和new生成的变量比较</h4>
+<p>非new生成的Integer变量和new Integer()生成的变量比较时，结果为false。（因为非new生成的Integer变量指向的是java常量池中的对象，而new Integer()生成的变量指向堆中新建的对象，两者在内存中的地址不同）</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Integer i <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Integer<span style="color:#f92672">(</span><span style="color:#ae81ff">100</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>Integer j <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">print</span><span style="color:#f92672">(</span>i <span style="color:#f92672">==</span> j<span style="color:#f92672">);</span> <span style="color:#75715e">//false
+</span></span></span></code></pre></div><h4 id="34-两个非new生成的integer对象比较">3.4 两个非new生成的Integer对象比较</h4>
+<p>两个非new生成的Integer对象，进行比较时，如果两个变量的值在区间-128到127之间，则比较结果为true，如果两个变量的值不在此区间，则比较结果为false</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Integer i <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>Integer j <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">print</span><span style="color:#f92672">(</span>i <span style="color:#f92672">==</span> j<span style="color:#f92672">);</span> <span style="color:#75715e">//true
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Integer i <span style="color:#f92672">=</span> <span style="color:#ae81ff">128</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>Integer j <span style="color:#f92672">=</span> <span style="color:#ae81ff">128</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">print</span><span style="color:#f92672">(</span>i <span style="color:#f92672">==</span> j<span style="color:#f92672">);</span> <span style="color:#75715e">//false
+</span></span></span></code></pre></div><p>原因：
+java在编译Integer i = 100 ;时，会翻译成为Integer i = Integer.valueOf(100)；根据上文提及的，java API中对Integer类型的valueOf的定义如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Integer <span style="color:#a6e22e">valueOf</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>i <span style="color:#f92672">&gt;=</span> IntegerCache<span style="color:#f92672">.</span><span style="color:#a6e22e">low</span> <span style="color:#f92672">&amp;&amp;</span> i <span style="color:#f92672">&lt;=</span> IntegerCache<span style="color:#f92672">.</span><span style="color:#a6e22e">high</span><span style="color:#f92672">)</span><span style="color:#75715e">//low = -128; high默认是127，可以配置，但不会低于127
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> IntegerCache<span style="color:#f92672">.</span><span style="color:#a6e22e">cache</span><span style="color:#f92672">[</span>i <span style="color:#f92672">+</span> <span style="color:#f92672">(-</span>IntegerCache<span style="color:#f92672">.</span><span style="color:#a6e22e">low</span><span style="color:#f92672">)];</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Integer<span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>java对于-128到127之间的数，会直接从缓存中取，故相等。否则创建一个新的对象，所以后面两个不是同一个对象，故不等。</p>
+<h3 id="4数值在计算机中存储方式">4.数值在计算机中存储方式？</h3>
+<h4 id="41-带符号数正数负数在计算机中存储方式">4.1 带符号数（正数/负数）在计算机中存储方式</h4>
+<p>原码：原码就是符号位加上真值的绝对值, 即用第一位表示符号, 其余位表示值。
+补码：正数的补码就是其本身。负数的补码是在其原码的基础上, 符号位不变, 其余各位取反, 最后+1. (即在反码的基础上+1)
+补码是计算机存储带符号数的方式，可以解决0的符号问题以及两个编码问题。
+为什么byte类型（8位二进制表示）的取值范围为-128~127？
+0用[0000 0000]表示，-128用[1000 0000]表示。byte类型1个字节，8位二进制，范围为[1000 0000]~[0111 1111]</p>
+<h4 id="42-浮点数小数在计算机中存储方式遵循ieee754标准">4.2 浮点数（小数）在计算机中存储方式（遵循IEEE754标准）</h4>
+<p>在计算机中，保存这个数使用的是浮点表示法，分为三大部分：
+第一部分用来存储符号位（sign），用来区分正负，这里是 0，表示正数
+第二部分用来存储指数（exponent）
+第三部分用来存储小数（fraction）</p>
+<p>float类型是32位，是单精度浮点表示法：
+符号位占用1位，指数位占用 8 位，小数位占用 23 位。
+float 的小数位只有 23 位，即二进制的 23 位，能表示的最大的十进制数为 2 的 23 次方，即 8388608，即十进制的 7 位，严格点，精度只能百分百保证十进制的 6 位运算。
+double 类型是 64 位，是双精度浮点表示法：
+符号位占用 1 位，指数位占用 11 位，小数位占用 52 位。
+double 的小数位有 52 位，对应十进制最大值为 4 503 599 627 370 496，这个数有 16 位，所以计算精度只能百分百保证十进制的 15 位运算。</p>
+<h4 id="43-float和double类型为什么会出现精度丢失的情况">4.3 float和double类型为什么会出现精度丢失的情况</h4>
+<p>将十进制浮点数转换为二进制浮点数时，小数的二进制有时也是不可能精确的。
+就如同十进制不能准确表示1/3，二进制也无法准确表示1/10，而double类型存储尾数部分最多只能存储52位，于是，计算机在存储该浮点型数据时，便出现了精度丢失。</p>
+<p>商业运算中应用场景：例如某用户有10块钱，买了一件商品花了8.8，理应剩下1.2元。但却无法继续购买价格为1.2元的商品。</p>
+<p>数值1.2在计算机中的存储，实际上为无限接近于1.2的1.1999999999999993</p>
+<h5 id="解决方法1">解决方法1</h5>
+<p>在设计数据库表的时候可以将price字段类型设置为int(oracle应设置为number)类型，而在实体中对应的属性单位应该表示为分（即精确到0.00）或者角(即0.0),但一般情况下money会精确到分。
+如：商品的价格为12.53元(精确到分)，在数据库中price字段对应的数据为应该为1253。使用这种方法需要编程人员自己在程序中收懂转换，当然也可以封装为一个工具类。</p>
+<h5 id="解决方法2">解决方法2</h5>
+<p>使用java提供的BigDecimal类。该类封装在java.math.BigDecimal中。该类的构造器有很多，但在使用浮点类型计算时一定要使用String构造器来实例BigDecimal对象。</p>
+<h3 id="5string字符串类型">5.String字符串类型</h3>
+<h4 id="51-stringstringbufferstringbuilder简介">5.1 String、StringBuffer、StringBuilder简介</h4>
+<h5 id="511-string">5.1.1 String</h5>
+<p>字符串常量，字符串长度不可变。Java中String是immutable（不可变）的。
+/** The value is used for character storage. */
+private final char value[];
+用于存放字符的数组被声明为final的，因此只能赋值一次，不可再更改。如果我们通过 = 对String类型的变量再次赋值，实质上引用指向的对象已经改变了，不是原来的String。</p>
+<p>但是我们可用反射获取修改，这样的修改方式还是原来的对象。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">//反射修改字符串的值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">reflectString</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> Exception<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    String s <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ABCDEF&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;s = &#34;</span> <span style="color:#f92672">+</span> s<span style="color:#f92672">);</span><span style="color:#75715e">//ABCDEF
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    
+</span></span><span style="display:flex;"><span>    Field valueField <span style="color:#f92672">=</span> s<span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getDeclaredField</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;value&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    valueField<span style="color:#f92672">.</span><span style="color:#a6e22e">setAccessible</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span><span style="color:#f92672">[]</span> value <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">char</span><span style="color:#f92672">[])</span> valueField<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>s<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    value<span style="color:#f92672">[</span><span style="color:#ae81ff">0</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;a&#39;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    value<span style="color:#f92672">[</span><span style="color:#ae81ff">2</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;c&#39;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    value<span style="color:#f92672">[</span><span style="color:#ae81ff">4</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;e&#39;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;s = &#34;</span> <span style="color:#f92672">+</span> s<span style="color:#f92672">);</span><span style="color:#75715e">//aBcDeF
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h5 id="512-stringbuffer">5.1.2 StringBuffer</h5>
+<p>（JDK1.0）字符串变量（Synchronized，即线程安全）。如果要频繁对字符串内容进行修改，出于效率考虑最好使用StringBuffer，如果想转成String类型，可以调用StringBuffer的toString()方法。
+Java.lang.StringBuffer线程安全的可变字符序列。在任意时间点上它都包含某种特定的字符序列，但通过某些方法调用可以改变该序列的长度和内容。可将字符串缓冲区安全地用于多个线程。
+StringBuffer 上的主要操作是 append 和 insert 方法，可重载这些方法，以接受任意类型的数据。每个方法都能有效地将给定的数据转换成字符串，然后将该字符串的字符追加或插入到字符串缓冲区中。append 方法始终将这些字符添加到缓冲区的末端；而 insert 方法则在指定的点添加字符。</p>
+<h5 id="513-stringbuilder">5.1.3 StringBuilder</h5>
+<p>（JDK5.0）字符串变量（非线程安全）。在内部，StringBuilder对象被当作是一个包含字符序列的变长数组。
+java.lang.StringBuilder是一个可变的字符序列，是JDK5.0新增的。此类提供一个与 StringBuffer 兼容的 API，但不保证同步。该类被设计用作 StringBuffer 的一个简易替换，用在字符串缓冲区被单个线程使用的时候（这种情况很普遍）。</p>
+<h4 id="52-stringstringbuilderstringbuffer区别">5.2 String、StringBuilder、StringBuffer区别</h4>
+<ul>
+<li>可变性
+String 不可变
+StringBuffer 和 StringBuilder 可变</li>
+<li>线程安全
+String 不可变，因此是线程安全的
+StringBuilder 不是线程安全的
+StringBuffer 是线程安全的，内部使用 synchronized 进行同步</li>
+</ul>
+<p>这三个类在运行速度和线程安全这两方面的区别。</p>
+<ol>
+<li>首先说运行速度，或者说是执行速度，<strong>在这方面运行速度快慢为：StringBuilder &gt; StringBuffer &gt; String</strong></li>
+</ol>
+<p>String最慢的原因：String为字符串常量，而StringBuilder和StringBuffer均为字符串变量，即String对象一旦创建之后该对象是不可更改的，但后两者的对象是变量，是可以更改的。以下面一段代码为例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>String str<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;abc&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>str<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>str<span style="color:#f92672">=</span>str<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;de&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>str<span style="color:#f92672">);</span>
+</span></span></code></pre></div><p>如果运行这段代码会发现先输出“abc”，然后又输出“abcde”，好像是str这个对象被更改了，其实，这只是一种假象罢了，JVM对于这几行代码是这样处理的，首先创建一个String对象str，并把“abc”赋值给str，然后在第三行中，其实JVM又创建了一个新的对象也名为str，然后再把原来的str的值和“de”加起来再赋值给新的str，而原来的str就会被JVM的垃圾回收机制（GC）给回收掉了，所以，str实际上并没有被更改，也就是前面说的String对象一旦创建之后就不可更改了。所以，Java中对String对象进行的操作实际上是一个不断创建新的对象并且将旧的对象回收的一个过程，所以执行速度很慢。</p>
+<p>而StringBuilder和StringBuffer的对象是变量，对变量进行操作就是直接对该对象进行更改，而不进行创建和回收的操作，所以速度要比String快很多。</p>
+<p>另外，有时候我们会这样对字符串进行赋值：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>String str<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;abc&#34;</span><span style="color:#f92672">+</span><span style="color:#e6db74">&#34;de&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>StringBuilder stringBuilder<span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> StringBuilder<span style="color:#f92672">().</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;abc&#34;</span><span style="color:#f92672">).</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;de&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>str<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>stringBuilder<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">());</span>
+</span></span></code></pre></div><p>这样输出结果也是“abcde”和“abcde”，但是String的速度却比StringBuilder的反应速度要快很多，这是因为第1行中的操作会发生常量折叠，这个操作和String str = ”abcde”; 是完全一样的，所以会很快，而如果写成下面这种形式：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>String str1<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;abc&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>String str2<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;de&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>String str<span style="color:#f92672">=</span>str1<span style="color:#f92672">+</span>str2<span style="color:#f92672">;</span>
+</span></span></code></pre></div><p>那么JVM就会像上面说的那样，不断的创建、回收对象来进行这个操作了。速度就会很慢。</p>
+<ol start="2">
+<li>再来说线程安全，<strong>在线程安全上，StringBuilder是线程不安全的，而StringBuffer是线程安全的</strong></li>
+</ol>
+<p>如果一个StringBuffer对象在字符串缓冲区被多个线程使用时，StringBuffer中很多方法可以带有synchronized关键字，所以可以保证线程是安全的，但StringBuilder的方法则没有该关键字，所以不能保证线程安全，有可能会出现一些错误的操作。所以如果要进行的操作是多线程的，那么就要使用StringBuffer，但是在单线程的情况下，还是建议使用速度比较快的StringBuilder。</p>
+<ol start="3">
+<li>总结一下
+<strong>String：适用于少量的字符串操作的情况</strong></li>
+</ol>
+<p>　　<strong>StringBuilder：适用于单线程下在字符缓冲区进行大量操作的情况</strong></p>
+<p>　　<strong>StringBuffer：适用多线程下在字符缓冲区进行大量操作的情况</strong></p>
+<h4 id="53-string创建的两种方式">5.3 String创建的两种方式</h4>
+<p>一是new型：String s = new String(“abc”)；
+另一种是双引号型：String s = “abc”;
+那么这两种方式有什么区别呢？
+答:这两种方法生成的字符串对象，在内存中的存取机制不同。
+Java为String类型提供了<strong>缓冲池机制</strong>，当使用双引号定义对象时，Java环境首先去字符串缓冲池（在堆中）寻找相同内容的字符串，如果存在就直接拿出来应用，如果不存在则创建一个新的字符串放在缓冲池中。示例代码如下：
+String a = “tom”;
+String b = “tom”;
+在上诉代码中，变量a和b使用的是缓冲区中的同一个存储对象。
+在使用String构造方法定义对象时，Java环境会和创建其他类型的对象一样，每次调用时，都会去创建一个新的对象。示例代码如下：
+String a = new String(“tom”);
+String b = new String(“tom”);
+在上述代码中，变量a 和b 使用的是两个不同的存储对象，只是对象中的内容相同。
+通常情况下，建议使用string a=”tom”;</p>
+<p>new就是在堆中创建一个新的String对象，不管&quot;abc&quot;在内存中是否存在，都会在堆中开辟新空间。</p>
+<h4 id="54-string-a--abc在内存中创建了几个对象">5.4 String a = “a”+“b”+“c”;在内存中创建了几个对象？</h4>
+<p>1个对象
+String a = “a”+“b”+&ldquo;c&quot;经过编译器优化后得到的效果为String a = “abc”
+java编译期会进行常量折叠，全字面量字符串相加是可以折叠为一个字面常量，而且是进入常量池的。
+在JAVA虚拟机（JVM）中存在着一个字符串池，其中保存着很多String对象，并且可以被共享使用，因此它提高了效率。由于String类是final的，它的值一经创建就不可改变，因此我们不用担心String对象共享而带来程序的混乱。字符串池由String类维护，我们可以调用intern()方法来访问字符串池。
+对于String a=“abc”;，这行代码被执行的时候，JAVA虚拟机首先在字符串池中查找是否已经存在了值为&quot;abc&quot;的这么一个对象，它的判断依据是String类equals(Object obj)方法的返回值。如果有，则不再创建新的对象，直接返回已存在对象的引用；如果没有，则先创建这个对象，然后把它加入到字符串池中，再将它的引用返回。
+字符串内部拼接：只有使用引号包含文本的方式创建的String对象之间使用“+”连接产生的新对象才会被加入字符串池中。对于所有包含new方式新建对象（包括null）的“+”连接表达式，它所产生的新对象都不会被加入字符串池中，</p>
+<h4 id="55-string-snew-stringabc创建了几个对象">5.5 String s=new String(“abc”)创建了几个对象？</h4>
+<p>2个对象</p>
+<p>new String(“abc”)可看成&quot;abc&rdquo;（创建String对象）和new String(String original)（String构造器，创建String对象）2个对象。
+我们正是使用new调用了String类的上面那个构造器方法创建了一个对象，并将它的引用赋值给了str变量。同时我们注意到，被调用的构造器方法接受的参数也是一个String对象，这个对象正是&quot;abc&quot;。</p>
+<h4 id="56-stringbuffer和stringbuilder的扩容机制">5.6 StringBuffer和StringBuilder的扩容机制</h4>
+<p>初始长度（16+new的字符串的长度），如果容量不够则进行扩容，扩容后的大小为（n+1）*2</p>
+<h4 id="57-stringbuffer和stringbuilder的equals有坑">5.7 StringBuffer和StringBuilder的equals()有坑</h4>
+<p>这两个类未重写equals方法而且声明为final类，无法继承去重写，所以要比较字符串的字面值的时候要先toString()再equals才行。</p>
+<h3 id="6java的四种引用类型">6.JAVA的四种引用类型</h3>
+<h4 id="61-finalize方法">6.1 finalize()方法</h4>
+<p>对象**被垃圾收集器回收的时候（GC的时候）**就会调用finalize()，注意：不要重写，重写容易OOM，<strong>垃圾回收在子线程</strong>。</p>
+<h4 id="62-强引用">6.2 强引用</h4>
+<p>最常用的引用，一个对象在没有引用的时候，一旦发生gc则会被回收</p>
+<h4 id="63-软引用softreference">6.3 软引用(SoftReference)</h4>
+<p>调用get()获取，一般用作<strong>缓存机制</strong>，如果内存足够的时候，发生gc是不会回收掉软引用的，但是如果<strong>内存不够的时候，软引用会被垃圾收集器回收</strong>，加载大图放在内存可以使用软引用。（图片缓存）</p>
+<h4 id="64-弱引用weakreference">6.4 弱引用(WeakReference)</h4>
+<p>调用get()获取，<strong>一旦发生gc，则立即被垃圾回收器回收掉。</strong>(可以用于防止内存泄漏)</p>
+<h4 id="65-虚引用phantomreference">6.5 虚引用(PhantomReference)</h4>
+<p>一般写类库的人才会使用，平常一般不会使用到，什么时候调用get()都get不到，new的时候会把对象的引用放到引用队列（ReferenceQueue）里面，解决的问题：在垃圾回收的时候，被回收的对象会放到回收队列，gc的时候，一般不会真正回收，会先去回收队列检查，Cleaner去检查看看有没有这个对象，就是<strong>回收检查</strong>的作用，只有在队列找到虚引用的对象，才会回收。<strong>虚引用最大作用：管理直接内存（堆外内存）</strong> 使用：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>ByteBuffer bb <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ByteBuffer<span style="color:#f92672">.</span><span style="color:#a6e22e">allocateDirect</span><span style="color:#f92672">(</span><span style="color:#ae81ff">1024</span><span style="color:#f92672">);</span><span style="color:#75715e">//分配堆外内存
+</span></span></span></code></pre></div><h3 id="7数组">7.数组</h3>
+<p>在java中数组也是对象。因此，对象存放在内存中的原理同样适用于数组。
+当创建一个数组时，在堆中会为数组对象分配一段内存空间，并返回一个引用。数组对象的引用存放在栈中，实际的数组对象存放在堆中。</p>
+<h4 id="71-多维数组在内存中存储方式">7.1 多维数组在内存中存储方式</h4>
+<p><img src="/post/java2%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/index.assets/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzI5OTY2MjAz,size_16,color_FFFFFF,t_70-1627569487898.png"
+	width="834"
+	height="509"
+	srcset="/post/java2%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/index.assets/_hua9c2b851b033ca8ee1449dc1b8827ea5_15987_da4296db16242cd27e71f3eeaec31bf8.png 480w, /post/java2%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/index.assets/_hua9c2b851b033ca8ee1449dc1b8827ea5_15987_602539dd760d77e4100f91fc26ec7529.png 1024w"
+	loading="lazy"
+	
+		alt="在这里插入图片描述"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="163"
+		data-flex-basis="393px"
+	
+></p>
+<h4 id="72-对数组二次封装模仿arraylist的api">7.2 对数组二次封装，模仿ArrayList的API</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * 通过对数组封装实现自己的Array类
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyArrayList</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">private</span> E<span style="color:#f92672">[]</span> data<span style="color:#f92672">;</span> <span style="color:#75715e">// 定义一个整型的一维数组的成员变量
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> size<span style="color:#f92672">;</span> <span style="color:#75715e">// 数组中元素个数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#75715e">// 获取数组中元素的个数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getSize</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> size<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 判断数组是否为空
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> size <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 向数组的第index位置插入元素e
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> index<span style="color:#f92672">,</span> E e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    	<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>index <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> index <span style="color:#f92672">&gt;</span> size<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalArgumentException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Add failed. Require index &gt;= 0 and index &lt;= size.&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>size <span style="color:#f92672">-</span> data<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> newCapacity <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">+</span> <span style="color:#f92672">(</span>data<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">);</span>	<span style="color:#75715e">// 扩容1.5倍
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            resize<span style="color:#f92672">(</span>newCapacity<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> size <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">;</span> i <span style="color:#f92672">&gt;=</span> index<span style="color:#f92672">;</span> i<span style="color:#f92672">--)</span>
+</span></span><span style="display:flex;"><span>            data<span style="color:#f92672">[</span>i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> data<span style="color:#f92672">[</span>i<span style="color:#f92672">];</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        data<span style="color:#f92672">[</span>index<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> e<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        size<span style="color:#f92672">++;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 动态数组扩容 newCapacity 扩容长度
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">resize</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> newCapactity<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        E<span style="color:#f92672">[]</span> newData <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>E<span style="color:#f92672">[])</span> <span style="color:#66d9ef">new</span> Object<span style="color:#f92672">[</span>newCapactity<span style="color:#f92672">];</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> size<span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            newData<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> data<span style="color:#f92672">[</span>i<span style="color:#f92672">];</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        data <span style="color:#f92672">=</span> newData<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        newData <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h4 id="73-定义一个int型数组">7.3 定义一个int型数组</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ArrayDemo</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String args<span style="color:#f92672">[])</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">int</span> data<span style="color:#f92672">[]</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">[</span><span style="color:#ae81ff">3</span><span style="color:#f92672">];</span> <span style="color:#75715e">/*开辟了一个长度为3的数组*/</span>
+</span></span><span style="display:flex;"><span>		data<span style="color:#f92672">[</span><span style="color:#ae81ff">0</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span><span style="color:#f92672">;</span> <span style="color:#75715e">// 第一个元素
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		data<span style="color:#f92672">[</span><span style="color:#ae81ff">1</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">20</span><span style="color:#f92672">;</span> <span style="color:#75715e">// 第二个元素
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		data<span style="color:#f92672">[</span><span style="color:#ae81ff">2</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span><span style="color:#f92672">;</span> <span style="color:#75715e">// 第三个元素
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">;</span> x <span style="color:#f92672">&lt;</span> data<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span> x<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>			System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>data<span style="color:#f92672">[</span>x<span style="color:#f92672">]);</span> <span style="color:#75715e">//通过循环控制索引
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h4 id="74-采用静态初始化定义数组">7.4 采用静态初始化定义数组</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ArrayDemo</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String args<span style="color:#f92672">[])</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">int</span> data<span style="color:#f92672">[]</span> <span style="color:#f92672">=</span> <span style="color:#f92672">{</span><span style="color:#ae81ff">1</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">4</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">545</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">11</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">32</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">13131</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">4444</span><span style="color:#f92672">};</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> data<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>			System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>data<span style="color:#f92672">[</span>i<span style="color:#f92672">]);</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h4 id="75-定义一个二维数组">7.5 定义一个二维数组</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ArrayDemo</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String args<span style="color:#f92672">[])</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">//此时的数组并不是一个等列数组
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">int</span> data<span style="color:#f92672">[][]</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">[][]</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#f92672">{</span><span style="color:#ae81ff">1</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">3</span><span style="color:#f92672">},</span> <span style="color:#f92672">{</span><span style="color:#ae81ff">4</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">5</span><span style="color:#f92672">},</span> <span style="color:#f92672">{</span><span style="color:#ae81ff">6</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">7</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">8</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">9</span><span style="color:#f92672">}};</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">//如果在进行输出的时候一定要使用双重循环，
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#75715e">//外部的循环控制输出的行数，而内部的循环控制输出列数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> data<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">;</span> j <span style="color:#f92672">&lt;</span> data<span style="color:#f92672">[</span>i<span style="color:#f92672">].</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span> j<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>				System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">print</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;data[&#34;</span> <span style="color:#f92672">+</span> i <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;][&#34;</span> <span style="color:#f92672">+</span> j <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;]=&#34;</span> <span style="color:#f92672">+</span> data<span style="color:#f92672">[</span>i<span style="color:#f92672">][</span>j<span style="color:#f92672">]</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;、&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>			System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div>
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2023 浩&amp;琳
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
