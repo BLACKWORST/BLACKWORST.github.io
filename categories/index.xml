@@ -6,7 +6,15 @@
         <description>Recent content in Categories on 浩&amp;琳</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Sun, 26 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://haolovelin.com/categories/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Fri, 20 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://haolovelin.com/categories/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>浩和琳的点滴</title>
+        <link>https://haolovelin.com/categories/%E6%B5%A9%E5%92%8C%E7%90%B3%E7%9A%84%E7%82%B9%E6%BB%B4/</link>
+        <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
+        
+        <guid>https://haolovelin.com/categories/%E6%B5%A9%E5%92%8C%E7%90%B3%E7%9A%84%E7%82%B9%E6%BB%B4/</guid>
+        <description>&lt;img src="https://haolovelin.com/categories/%E6%B5%A9%E5%92%8C%E7%90%B3%E7%9A%84%E7%82%B9%E6%BB%B4/%E6%B5%A9%E5%92%8C%E7%90%B3%E7%9A%84%E7%82%B9%E6%BB%B4.jpg" alt="Featured image of post 浩和琳的点滴" /&gt;</description>
+        </item>
+        <item>
         <title>编程学习</title>
         <link>https://haolovelin.com/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/</link>
         <pubDate>Sun, 26 Jun 2022 00:00:00 +0000</pubDate>
@@ -29,14 +37,6 @@
         
         <guid>https://haolovelin.com/categories/javase/</guid>
         <description>&lt;img src="https://haolovelin.com/categories/javase/java.jpg" alt="Featured image of post JavaSE" /&gt;</description>
-        </item>
-        <item>
-        <title>浩和琳的点滴</title>
-        <link>https://haolovelin.com/categories/%E6%B5%A9%E5%92%8C%E7%90%B3%E7%9A%84%E7%82%B9%E6%BB%B4/</link>
-        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-        
-        <guid>https://haolovelin.com/categories/%E6%B5%A9%E5%92%8C%E7%90%B3%E7%9A%84%E7%82%B9%E6%BB%B4/</guid>
-        <description>&lt;img src="https://haolovelin.com/categories/%E6%B5%A9%E5%92%8C%E7%90%B3%E7%9A%84%E7%82%B9%E6%BB%B4/%E6%B5%A9%E5%92%8C%E7%90%B3%E7%9A%84%E7%82%B9%E6%BB%B4.jpg" alt="Featured image of post 浩和琳的点滴" /&gt;</description>
         </item>
         
     </channel>
